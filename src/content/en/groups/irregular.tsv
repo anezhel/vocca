@@ -1,0 +1,116 @@
+v1	v2	v3	uk	ru	level	hint	fakes	ipa1	ipa2	ipa3	note_uk	note_ru	ex1	ex1_uk	ex1_ru	ex2	ex2_uk	ex2_ru	ex3	ex3_uk	ex3_ru
+# Неправильні дієслова: v1 — v2 — v3. Складність рахується сама: усі форми однакові / дві однакові / усі різні.
+# fakes — неправильні варіанти для тренажера через кому. У прикладах [дужками] виділено форму дієслова.
+be	was / were	been	бути	быть	A1	unique	beed, wased, beened, bein														
+have	had	had	мати	иметь	A1	twin	haved, haded, hav, hadden	hæv													
+do	did	done	робити	делать	A1	unique	doed, didden, dun, doned	duː													
+go	went	gone	іти, їхати	идти, ехать	A1	unique	goed, wented, goned, wen	ɡoʊ	wɛnt	ɡɔn			I [go] to work by bus.	Я їжджу на роботу автобусом.	Я езжу на работу на автобусе.	We [went] to the sea last summer.	Минулого літа ми їздили на море.	Прошлым летом мы ездили на море.	They have [gone] home.	Вони пішли додому.	Они ушли домой.
+get	got	gotten	отримувати	получать	A1	us	getted, gat, gotted, goten	ɡet			gotten — американська форма, у британській англійській got.	gotten — американская форма, в британском английском got.									
+make	made	made	робити, створювати	делать, создавать	A1	twin	maked, maden, mode, mak	meɪk													
+say	said	said	сказати	сказать	A1	twin	sayed, sain, sayd, sait	seɪ			said вимовляється /sed/.	said произносится /sed/.									
+see	saw	seen	бачити	видеть	A1	en	seed, sawed, seened, sow	siː													
+come	came	come	приходити	приходить	A1	aba	comed, comen, camed, cam	kʌm													
+take	took	taken	брати	брать	A1	en	taked, tooken, tooked, tuk	teɪk													
+know	knew	known	знати	знать	A1	own	knowed, knewn, knowen, knewed	noʊ													
+give	gave	given	давати	давать	A1	en	gived, gaven, gove, gaved	ɡɪv													
+eat	ate	eaten	їсти	есть	A1	en	eated, ated, eatn, aten	iːt													
+drink	drank	drunk	пити	пить	A1	iau	drinked, drinken, drunked, dranked	drɪŋk													
+buy	bought	bought	купувати	покупать	A1	ought	buyed, boughten, bougt, buyt	baɪ	bɔːt	bɔːt			I [buy] bread every day.	Я купую хліб щодня.	Я покупаю хлеб каждый день.	Yesterday we [bought] bread.	Учора ми купили хліб.	Вчера мы купили хлеб.	We have already [bought] bread.	Ми вже купили хліб.	Мы уже купили хлеб.
+sleep	slept	slept	спати	спать	A1	twin	sleeped, slep, slepted, sleept	sliːp													
+write	wrote	written	писати	писать	A1	itten	writed, writen, wrotten, wroted	raɪt													
+read	read	read	читати	читать	A1	same	readed, red, rode, readen	riːd			Пишеться однаково, але читається по-різному: /riːd/ — /red/ — /red/.	Пишется одинаково, но читается по-разному: /riːd/ — /red/ — /red/.									
+run	ran	run	бігати, бігти	бегать, бежать	A1	aba	runned, ranned, runed, rann	rʌn													
+sit	sat	sat	сидіти	сидеть	A1	twin	sitted, sitten, satted, sot	sɪt													
+swim	swam	swum	плавати	плавать	A1	iau	swimmed, swammed, swimed, swummed	swɪm													
+meet	met	met	зустрічати	встречать	A1	twin	meeted, metted, mett, meten	miːt													
+think	thought	thought	думати	думать	A1	ought	thinked, thoughted, thunk, thinken	θɪŋk													
+find	found	found	знаходити	находить	A1	twin	finded, founded, fand, finden	faɪnd													
+tell	told	told	розповідати	рассказывать	A1	twin	telled, tolled, tald, tolden	tel													
+speak	spoke	spoken	говорити	говорить	A1	oken	speaked, spoked, speaken, spake	spiːk													
+put	put	put	класти	класть	A1	same	putted, puted, pot, putten	pʊt													
+begin	began	begun	починати	начинать	A2	iau	beginned, begined, begon, begain	bɪˈɡɪn													
+bring	brought	brought	приносити	приносить	A2	ought	bringed, brang, brung, broughted	brɪŋ													
+build	built	built	будувати	строить	A2	twin	builded, builted, bilt, buildt	bɪld													
+catch	caught	caught	ловити	ловить	A2	ought	catched, caughted, cought, catchen	kætʃ													
+choose	chose	chosen	вибирати	выбирать	A2	oken	choosed, choosen, chosed, chusen	tʃuːz													
+cost	cost	cost	коштувати	стоить	A2	same	costed, costen, cast, coss	kɑːst													
+cut	cut	cut	різати	резать	A2	same	cutted, cutten, cuted, cot	kʌt	kʌt	kʌt			I [cut] the bread.	Я ріжу хліб.	Я режу хлеб.	Yesterday we [cut] the grass.	Учора ми скосили траву.	Вчера мы подстригли траву.	We have already [cut] the cake.	Ми вже розрізали торт.	Мы уже разрезали торт.
+drive	drove	driven	керувати машиною	водить машину	A2	itten	drived, droven, droved, drivened	draɪv													
+fall	fell	fallen	падати	падать	A2	en	falled, fellen, fallt, fallened														
+feel	felt	felt	відчувати	чувствовать	A2	twin	feeled, felted, feelt, felten	fiːl													
+fly	flew	flown	літати	летать	A2	own	flied, flyed, flewed, flyen	flaɪ													
+forget	forgot	forgotten	забувати	забывать	A2	en	forgetted, forgeted, forgotted, forgat	fərˈɡet													
+grow	grew	grown	рости	расти	A2	own	growed, grewn, growen, grewed	ɡroʊ													
+hear	heard	heard	чути	слышать	A2	twin	heared, herd, hearen, hard	hɪr													
+hold	held	held	тримати	держать	A2	twin	holded, helded, holden, hald	hoʊld													
+keep	kept	kept	зберігати, тримати	хранить, держать	A2	twin	keeped, keept, kepted, kipt	kiːp													
+leave	left	left	іти, залишати	уходить, оставлять	A2	twin	leaved, lefted, leaven, leeft	liːv													
+lose	lost	lost	втрачати	терять	A2	twin	losed, losted, loosed, lossed	luːz													
+pay	paid	paid	платити	платить	A2	twin	payed, paiden, payd, payen	peɪ													
+ride	rode	ridden	їздити (верхи, на велосипеді)	ездить (верхом, на велосипеде)	A2	itten	rided, roden, rodden, ridded	raɪd													
+ring	rang	rung	дзвонити	звонить	A2	iau	ringed, ranged, runged, rong														
+send	sent	sent	надсилати	отправлять	A2	twin	sended, sented, sendt, sant	send													
+sell	sold	sold	продавати	продавать	A2	twin	selled, solded, sellt, salt	sel													
+sing	sang	sung	співати	петь	A2	iau	singed, sanged, singen, sunged	sɪŋ													
+spend	spent	spent	витрачати, проводити (час)	тратить, проводить (время)	A2	twin	spended, spented, spendt, spand	spend													
+stand	stood	stood	стояти	стоять	A2	twin	standed, stooded, standen, stant	stænd													
+teach	taught	taught	навчати, викладати	учить, преподавать	A2	ought	teached, taughted, teacht, tought	tiːtʃ													
+throw	threw	thrown	кидати	бросать	A2	own	throwed, threwn, throwen, threwed	θroʊ													
+understand	understood	understood	розуміти	понимать	A2	twin	understanded, understooded, understanden, understant	ˌʌndərˈstænd													
+wake	woke	woken	прокидатися	просыпаться	A2	oken	waked, woked, wokened, wak	weɪk													
+wear	wore	worn	носити (одяг)	носить (одежду)	A2	ore	weared, wored, wearen, wearn	wer													
+win	won	won	перемагати, вигравати	побеждать, выигрывать	A2	twin	winned, wonned, winn, wan	wɪn													
+break	broke	broken	ламати	ломать	A2	oken	breaked, broked, breaken, brok	breɪk													
+draw	drew	drawn	малювати	рисовать	A2	own	drawed, drewn, drawen, drewed	drɔː													
+hurt	hurt	hurt	завдавати болю	причинять боль	A2	same	hurted, hurten, hort, hurtt	hɜːrt													
+let	let	let	дозволяти	позволять	A2	same	letted, letten, lat, leted	let													
+lend	lent	lent	позичати (комусь)	одалживать (кому-то)	A2	twin	lended, lented, lendt, lant	lend													
+mean	meant	meant	означати, мати на увазі	значить, иметь в виду	A2	twin	meaned, ment, meanted, meanen	miːn			meant вимовляється /ment/.	meant произносится /ment/.									
+shut	shut	shut	зачиняти	закрывать	A2	same	shutted, shutten, shuted, shat	ʃʌt													
+become	became	become	ставати	становиться	A2	aba	becomed, becomen, becamed, becam	bɪˈkʌm													
+bite	bit	bitten	кусати	кусать	B1	itten	bited, biten, bote, bitted	baɪt													
+blow	blew	blown	дути	дуть	B1	own	blowed, blewn, blowen, blewed	bloʊ													
+burst	burst	burst	лопатися	лопаться	B1	same	bursted, bursten, borst, brust														
+dig	dug	dug	копати	копать	B1	twin	digged, dugged, diggen, dag	dɪɡ													
+feed	fed	fed	годувати	кормить	B1	twin	feeded, fedded, feeden, fod	fiːd													
+fight	fought	fought	битися, боротися	драться, бороться	B1	ought	fighted, foughted, faught, fighten	faɪt													
+forgive	forgave	forgiven	прощати	прощать	B1	en	forgived, forgaven, forgove, forgaved	fərˈɡɪv													
+freeze	froze	frozen	замерзати	замерзать	B1	oken	freezed, frozed, freezen, froozen	friːz													
+hang	hung	hung	вішати, висіти	вешать, висеть	B1	twin	hunged, hangen, hong, hanget	hæŋ													
+hide	hid	hidden	ховати	прятать	B1	itten	hided, hidded, hoden, hiden	haɪd													
+lead	led	led	вести	вести	B1	twin	leaded, ledded, leded, lod	liːd													
+lie	lay	lain	лежати	лежать	B1	en	layed, lyed, lien, lainen	laɪ			Не плутайте з lie — lied — lied («брехати»).	Не путайте с lie — lied — lied («врать»).									
+light	lit	lit	запалювати	зажигать	B1	twin	litted, lited, lote, lat														
+prove	proved	proven	доводити	доказывать	B1	us	provened, proofed, prooven, provt	pruːv			В американській англійській зазвичай proven, proved теж трапляється.	В американском английском обычно proven, proved тоже встречается.									
+quit	quit	quit	кидати, звільнятися	бросать, увольняться	B1	same	quited, quitten, quat, quot	kwɪt			В американській англійській усі три форми — quit.	В американском английском все три формы — quit.									
+rise	rose	risen	підніматися	подниматься	B1	itten	rised, rosen, rosed, risened	raɪz													
+seek	sought	sought	шукати	искать	B1	ought	seeked, soughted, seeken, saught	siːk													
+shake	shook	shaken	трясти	трясти	B1	en	shaked, shooked, shooken, shakt	ʃeɪk													
+shine	shone	shone	світити, сяяти	светить, сиять	B1	twin	shinen, shoned, shonen, shane				«Начистити до блиску» — shine — shined — shined.	«Начистить до блеска» — shine — shined — shined.									
+shoot	shot	shot	стріляти	стрелять	B1	twin	shooted, shotted, shooten, shat	ʃuːt													
+sink	sank	sunk	тонути	тонуть	B1	iau	sinked, sunked, sinken, sanked														
+steal	stole	stolen	красти	красть	B1	oken	stealed, stoled, stealen, stoln	stiːl													
+stick	stuck	stuck	приклеювати	приклеивать	B1	twin	sticked, stucked, sticken, stack	stɪk													
+tear	tore	torn	рвати	рвать	B1	ore	tored, tearen, torned, tare														
+set	set	set	ставити, встановлювати	ставить, устанавливать	B1	same	setted, setten, seted, sot														
+spread	spread	spread	поширювати	распространять	B1	same	spreaded, spreaden, sprad, spred	spred													
+bet	bet	bet	битися об заклад, робити ставку	спорить, делать ставку	B1	same	beted, betten, bat, bot														
+bend	bent	bent	гнути	гнуть	B2	twin	bendt, benten, bented, band	bend													
+bind	bound	bound	зв’язувати	связывать	B2	twin	binded, bounden, bindt, band														
+breed	bred	bred	розводити	разводить	B2	twin	breeded, bredded, breeden, brod														
+cling	clung	clung	чіплятися	цепляться	B2	twin	clinged, clang, clungen, clunged														
+dive	dove	dived	пірнати	нырять	B2	us	diven, doved, divd, dave	daɪv			У США частіше dove, але dived у другій формі теж правильно.	В США чаще dove, но dived во второй форме тоже правильно.									
+fit	fit	fit	пасувати (за розміром)	подходить (по размеру)	B2	same	fat, fitten, fited, fut	fɪt			В американській англійській fit — fit — fit, у британській fitted.	В американском английском fit — fit — fit, в британском fitted.									
+forbid	forbade	forbidden	забороняти	запрещать	B2	en	forbidded, forbad, forbidened, forbaden	fərˈbɪd													
+overcome	overcame	overcome	долати	преодолевать	B2	aba	overcomed, overcomen, overcamed, overcam	ˈoʊvərkəm													
+slide	slid	slid	ковзати	скользить	B2	twin	slided, slidden, slode, slidded	slaɪd													
+spin	spun	spun	крутити	вращать	B2	twin	spinned, spunned, spinen, spon														
+split	split	split	розколювати, ділити	раскалывать, делить	B2	same	splitted, splitten, splat, splited	splɪt													
+strike	struck	struck	ударяти	ударять	B2	twin	striked, strucked, striken, strake														
+swear	swore	sworn	присягатися	клясться	B2	ore	sweared, swored, swearen, swarn														
+swing	swung	swung	гойдатися	качаться	B2	twin	swinged, swang, swunged, swingen														
+weep	wept	wept	плакати	плакать	B2	twin	weeped, wepted, weepen, wipt														
+sting	stung	stung	жалити	жалить	B2	twin	stinged, stang, stunged, stingen														
+undertake	undertook	undertaken	братися (за справу)	браться (за дело)	B2	en	undertaked, undertooken, undertooked, undertuk														
+withdraw	withdrew	withdrawn	знімати (гроші), відкликати	снимать (деньги), отзывать	B2	own	withdrawed, withdrewn, withdrawen, withdrewed	wɪðˈdrɔː													
+arise	arose	arisen	виникати	возникать	B2	itten	arised, arosen, arosed, arisened														

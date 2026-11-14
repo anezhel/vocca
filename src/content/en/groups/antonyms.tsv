@@ -1,0 +1,197 @@
+word	ipa	uk	ru	level	link	literal_uk	literal_ru	hint_uk	hint_ru	to1	to1_ipa	to1_uk	to1_ru	to2	to2_ipa	to2_uk	to2_ru	to3	to3_ipa	to3_uk	to3_ru	ex1	ex1_uk	ex1_ru	ex2	ex2_uk	ex2_ru	ex3	ex3_uk	ex3_ru	note_uk	note_ru
+# Один рядок = один екран групи: слово (word) і до трьох пов’язаних слів (to1, to2, to3).
+# ex1–ex3 — приклади, [дужками] можна виділити слово; note — пояснення внизу екрана. Порожні колонки не показуються.
+big	bɪɡ	великий	большой	A1						small	smɔːl	маленький	маленький	little	ˈlɪtl	малий, трохи	маленький, немного					This is a [big] box.	Це велика коробка.	Это большая коробка.	This is a [small] box.	Це маленька коробка.	Это маленькая коробка.	We have a [little] time.	У нас є трохи часу.	У нас есть немного времени.	small — просто про розмір. little — теж «маленький», але м’якше, з емоцією, і про кількість: a little time — трохи часу.	small — просто о размере. little — тоже «маленький», но мягче, с эмоцией, и о количестве: a little time — немного времени.
+happy	ˈhæpi	щасливий	счастливый	A1						sad	sæd	сумний	грустный																			
+good	ɡʊd	добрий	хороший	A1						bad	bæd	поганий	плохой																			
+fast	fæst	швидкий	быстрый	A1						slow	sloʊ	повільний	медленный																			
+beautiful	ˈbjuːtəfəl	гарний	красивый	A1						ugly	ˈʌɡli	потворний	уродливый																			
+easy	ˈiːzi	легкий	лёгкий	A1						difficult	ˈdɪfɪkəlt	складний	трудный																			
+start	stɑːrt	починати	начинать	A1						finish	ˈfɪnɪʃ	закінчувати	заканчивать																			
+correct	kəˈrekt	правильний, точний	правильный, точный	A1						wrong	rɔːŋ	хибний	неверный																			
+hello	həˈloʊ	добрий день	здравствуйте	A1						goodbye	ɡʊdˈbaɪ	до побачення	до свидания																			
+many	ˈmeni	багато	много	A1						few	fjuː	мало	мало																			
+always	ˈɔːlweɪz	завжди	всегда	A1						never	ˈnevər	ніколи	никогда																			
+angry	ˈæŋɡri	сердитий	сердитый	A2						calm	kɑːm	спокійний	спокойный																			
+clean	kliːn	чистий	чистый	A2						dirty	ˈdɜːrti	брудний	грязный																			
+loud	laʊd	гучний	громкий	A2						quiet	ˈkwaɪət	тихий	тихий																			
+smart	smɑːrt	розумний	умный	A2						stupid	ˈstuːpəd	дурний	глупый																			
+kind	kaɪnd	добрий	добрый	A2						mean	miːn	злий, підлий	злой, вредный																			
+strong	strɔːŋ	сильний	сильный	A2						weak	wiːk	слабкий	слабый																			
+cheap	tʃiːp	дешевий	дешёвый	A2						expensive	ɪkˈspensɪv	дорогий	дорогой																			
+sick	sɪk	хворий	больной	A2						healthy	ˈhelθi	здоровий	здоровый																			
+true	truː	правдивий	правдивый, верный	A2						false		хибний	ложный																			
+famous	ˈfeɪməs	відомий	знаменитый	A2						unknown		невідомий	неизвестный																			
+interesting	ˈɪntrəstɪŋ	цікавий	интересный	A2						boring	ˈbɔːrɪŋ	нудний	скучный																			
+delicious	dɪˈlɪʃəs	дуже смачний	очень вкусный	A2						disgusting		огидний	отвратительный																			
+great	ɡreɪt	чудовий	отличный	A2						terrible	ˈterəbəl	жахливий	ужасный																			
+wonderful	ˈwʌndərfəl	чудовий, дивовижний	чудесный, замечательный	A2						awful	ˈɑːfəl	жахливий, огидний	ужасный, отвратительный																			
+late	leɪt	пізній	поздний, опоздавший	A2						early	ˈɜːrli	ранній	ранний																			
+usual	ˈjuːʒəwəl	звичайний	обычный	A2						unusual	ənˈjuːʒuəl	незвичайний	необычный																			
+near	nɪr	близький	близкий	A2						far	fɑːr	далекий	далёкий																			
+cold	koʊld	холодний	холодный	A2						hot	hɑːt	гарячий, спекотний	горячий, жаркий																			
+new	nuː	новий	новый	A2						old	oʊld	старий	старый																			
+old	oʊld	старий (про людей)	старый (о людях)	A2						young	jʌŋ	молодий	молодой																			
+rich	rɪtʃ	багатий	богатый	A2						poor	pʊr	бідний	бедный																			
+thin	θɪn	тонкий	тонкий	A2						thick	θɪk	товстий	толстый																			
+high	haɪ	високий	высокий	A2						low	loʊ	низький	низкий																			
+funny	ˈfʌni	смішний	смешной	A2						serious	ˈsɪriəs	серйозний	серьёзный																			
+alone	əˈloʊn	сам, наодинці	один, в одиночку	A2						together	təˈɡeðər	разом	вместе																			
+like	laɪk	подобатися, любити	нравиться, любить	A2						dislike	dɪˈslaɪk	не любити	не любить																			
+answer	ˈænsər	відповідати	отвечать	A2						ask	æsk	питати	спрашивать																			
+find	faɪnd	знаходити	находить	A2						lose	luːz	губити	терять																			
+close	kloʊz	зачиняти	закрывать	A2						open	ˈoʊpən	відчиняти	открывать																			
+arrive	əˈraɪv	прибувати, приїжджати	прибывать, приезжать	A2						leave	liːv	іти, їхати	уходить, уезжать																			
+save	seɪv	заощаджувати	копить, экономить	A2						spend	spend	витрачати	тратить																			
+give	ɡɪv	давати	давать	A2						take	teɪk	брати	брать																			
+fix	fɪks	лагодити	чинить	A2						break	breɪk	ламати	ломать																			
+turn on		вмикати	включать	A2						turn off		вимикати	выключать																			
+friend	frend	друг	друг	A2						enemy		ворог	враг																			
+beginning		початок	начало	A2						end	end	кінець	конец																			
+noise	nɔɪz	шум	шум	A2						silence		тиша	тишина																			
+entrance		вхід	вход	A2						exit		вихід	выход																			
+inside		всередині	внутри	A2						outside		надворі	снаружи																			
+above	əˈbʌv	над, вище	над, выше	A2						below	bɪˈloʊ	під, нижче	под, ниже																			
+before	bɪˈfɔːr	раніше, перш	раньше, прежде	A2						later	ˈleɪtər	пізніше	позже																			
+quickly		швидко	быстро	A2						slowly		повільно	медленно																			
+everything	ˈevriθɪŋ	усе	всё	A2						nothing	ˈnʌθɪŋ	нічого	ничего																			
+everybody		усі, кожен	все, каждый	A2						nobody	ˈnoʊbɑːdi	ніхто	никто																			
+tired	ˈtaɪərd	втомлений	уставший	B1						energetic	ˌenərˈdʒetɪk	енергійний	энергичный																			
+same	seɪm	однаковий, той самий	одинаковый, тот же	B1						different	ˈdɪfərənt	різний, інший	разный, другой																			
+similar		схожий	похожий	B1						different	ˈdɪfərənt	різний	разный																			
+full	fʊl	повний	полный	B1						empty	ˈempti	порожній	пустой																			
+dark	dɑːrk	темний	тёмный	B1						bright		яскравий, світлий	яркий, светлый																			
+wet	wet	мокрий	мокрый	B1						dry	draɪ	сухий	сухой																			
+safe	seɪf	безпечний	безопасный	B1						dangerous	ˈdeɪndʒərəs	небезпечний	опасный																			
+polite	pəˈlaɪt	ввічливий	вежливый	B1						rude	ruːd	грубий	грубый																			
+busy	ˈbɪzi	зайнятий	занятой	B1						free	friː	вільний	свободный																			
+important	ɪmˈpɔːrtənt	важливий	важный	B1						minor		незначний	незначительный																			
+alive	əˈlaɪv	живий	живой	B1						dead	ded	мертвий	мёртвый																			
+calm	kɑːm	спокійний	спокойный	B1						nervous	ˈnɜːrvəs	нервовий	нервный																			
+honest	ˈɑːnɪst	чесний	честный	B1						dishonest	dɪˈsɑːnəst	нечесний	нечестный																			
+lucky	ˈlʌki	везучий	везучий	B1						unlucky		невдачливий	невезучий																			
+careful	ˈkerfəl	обережний	осторожный	B1						careless	ˈkerləs	недбалий	небрежный																			
+generous	ˈdʒenərəs	щедрий	щедрый	B1						stingy		скупий	скупой																			
+shy	ʃaɪ	сором’язливий	застенчивый	B1						outgoing	ˈaʊtɡoʊɪŋ	товариський	общительный																			
+lazy	ˈleɪzi	лінивий	ленивый	B1						hard-working		працьовитий	трудолюбивый																			
+strange	streɪndʒ	дивний	странный	B1						normal	ˈnɔːrməl	нормальний	нормальный																			
+ancient	ˈeɪnʃənt	стародавній	древний	B1						modern	ˈmɑːdərn	сучасний	современный																			
+wide	waɪd	широкий	широкий	B1						narrow	ˈneroʊ	вузький	узкий																			
+short	ʃɔːrt	короткий	короткий	B1						long	lɔːŋ	довгий	длинный, долгий																			
+soft	sɑːft	м’який	мягкий	B1						hard	hɑːrd	твердий	твёрдый																			
+cheerful	ˈtʃɪrfəl	веселий, життєрадісний	весёлый, жизнерадостный	B1						gloomy		похмурий	мрачный																			
+positive	ˈpɑːzətɪv	позитивний	позитивный	B1						negative	ˈneɡətɪv	негативний	отрицательный																			
+ordinary	ˈɔːrdəneri	звичайний, пересічний	обычный, заурядный	B1						special	ˈspeʃəl	особливий	особенный																			
+comfortable	ˈkʌmftərbəl	зручний	удобный	B1						uncomfortable		незручний	неудобный																			
+complicated	ˈkɑːmpləkeɪtəd	складний	сложный	B1						simple	ˈsɪmpəl	простий	простой																			
+awake	əˈweɪk	що не спить	не спящий, бодрствующий	B1						asleep	əˈsliːp	сплячий	спящий																			
+absent		відсутній	отсутствующий	B1						present	priˈzent	присутній	присутствующий																			
+certain	ˈsɜːrtən	упевнений	уверенный	B1						unsure		невпевнений	неуверенный																			
+clear		ясний, зрозумілий	ясный, понятный	B1						unclear		неясний	неясный																			
+raw	rɑː	сирий (про їжу)	сырой (о еде)	B1						cooked		приготований	приготовленный																			
+boiling		дуже гарячий, киплячий	очень горячий, кипящий	B1						freezing	ˈfriːzɪŋ	крижаний	ледяной																			
+fair	fer	справедливий	справедливый	B1						unfair	ʌnˈfer	несправедливий	несправедливый																			
+legal	ˈliːɡəl	законний	законный	B1						illegal	ɪˈliːɡəl	незаконний	незаконный																			
+private	ˈpraɪvət	приватний, особистий	частный, личный	B1						public	ˈpʌblɪk	громадський	общественный																			
+patient	ˈpeɪʃənt	терплячий	терпеливый	B1						impatient	ɪmˈpeɪʃənt	нетерплячий	нетерпеливый																			
+grateful	ˈɡreɪtfəl	вдячний	благодарный	B1						ungrateful		невдячний	неблагодарный																			
+rough	rʌf	шорсткий, нерівний	шершавый, неровный	B1						smooth		гладкий	гладкий																			
+love	lʌv	любити	любить	B1						hate	heɪt	ненавидіти	ненавидеть																			
+buy	baɪ	купувати	покупать	B1						sell	sel	продавати	продавать																			
+remember	rɪˈmembər	пам’ятати	помнить	B1						forget	fərˈɡet	забувати	забывать																			
+build	bɪld	будувати	строить	B1						destroy	dɪˈstrɔɪ	руйнувати	разрушать																			
+create	kriˈeɪt	створювати	создавать	B1						destroy	dɪˈstrɔɪ	знищувати	уничтожать																			
+increase	ɪnˈkriːs	збільшувати(ся)	увеличивать(ся)	B1						decrease	dɪˈkriːs	зменшувати(ся)	уменьшать(ся)																			
+rise	raɪz	підніматися	подниматься	B1						fall	fɔːl	падати, знижуватися	падать, снижаться																			
+shout	ʃaʊt	кричати	кричать	B1						whisper	ˈwɪspər	шепотіти	шептать																			
+laugh	læf	сміятися	смеяться	B1						cry	kraɪ	плакати	плакать																			
+accept		приймати	принимать	B1						refuse	rəˈfjuːz	відмовлятися	отказываться																			
+continue	kənˈtɪnju	продовжувати	продолжать	B1						stop	stɑːp	припиняти	прекращать																			
+push	pʊʃ	штовхати	толкать	B1						pull	pʊl	тягнути	тянуть																			
+allow		дозволяти	разрешать	B1						forbid	fərˈbɪd	забороняти	запрещать																			
+appear		з’являтися	появляться	B1						disappear	ˌdɪsəˈpɪr	зникати	исчезать																			
+improve	ɪmˈpruːv	покращувати(ся)	улучшать(ся)	B1						get worse		ставати гіршим	становиться хуже																			
+send	send	надсилати	отправлять	B1						receive	rəˈsiːv	отримувати	получать																			
+throw	θroʊ	кидати	бросать	B1						catch	kætʃ	ловити	ловить																			
+stay	steɪ	залишатися	оставаться	B1						leave	liːv	іти	уходить																			
+succeed	səkˈsiːd	досягати успіху	преуспевать	B1						fail	feɪl	зазнавати невдачі	терпеть неудачу																			
+enter	ˈentər	входити	входить	B1						exit		виходити	выходить																			
+top		верх, вершина	верх, вершина	B1						bottom		низ, дно	низ, дно																			
+problem	ˈprɑːbləm	проблема	проблема	B1						solution	səˈluːʃən	рішення	решение																			
+truth	truːθ	правда	правда	B1						lie	laɪ	брехня	ложь																			
+success	səkˈses	успіх	успех	B1						failure	ˈfeɪljər	невдача	неудача																			
+advantage	ədˈvæntɪdʒ	перевага	преимущество	B1						disadvantage	ˌdɪsədˈvæntɪdʒ	недолік	недостаток																			
+war	wɔːr	війна	война	B1						peace	piːs	мир	мир																			
+strength		сила	сила	B1						weakness		слабкість	слабость																			
+danger		небезпека	опасность	B1						safety	ˈseɪfti	безпека	безопасность																			
+joy	dʒɔɪ	радість	радость	B1						sadness	ˈsædnəs	смуток	грусть																			
+reward	rɪˈwɔːrd	нагорода	награда	B1						punishment	ˈpʌnɪʃmənt	покарання	наказание																			
+victory		перемога	победа	B1						defeat	dɪˈfiːt	поразка	поражение																			
+question	ˈkwestʃən	питання	вопрос	B1						answer	ˈænsər	відповідь	ответ																			
+boss	bɔːs	начальник	начальник	B1						employee	ɪmˈplɔɪi	працівник	сотрудник																			
+teacher	ˈtiːtʃər	учитель	учитель	B1						student	ˈstuːdənt	учень, студент	ученик, студент																			
+often	ˈɔːfən	часто	часто	B1						rarely	ˈrerli	рідко	редко																			
+loudly		голосно	громко	B1						quietly		тихо	тихо																			
+carefully		обережно, уважно	осторожно, внимательно	B1						carelessly		недбало	небрежно																			
+maybe	ˈmeɪbi	можливо	может быть	B1						definitely	ˈdefənətli	безперечно	определённо																			
+brave	breɪv	хоробрий	храбрый	B2						cowardly	ˈkaʊərdli	боягузливий	трусливый																			
+possible	ˈpɑːsəbəl	можливий	возможный	B2						impossible	ɪmˈpɑːsəbəl	неможливий	невозможный																			
+friendly	ˈfrendli	доброзичливий	дружелюбный	B2						hostile	ˈhɑːstəl	ворожий	враждебный																			
+guilty	ˈɡɪlti	винний	виновный	B2						innocent	ˈɪnəsənt	невинний	невиновный																			
+cruel	ˈkruːəl	жорстокий	жестокий	B2						kind	kaɪnd	добрий	добрый																			
+wild	waɪld	дикий	дикий	B2						tame		ручний, свійський	ручной, домашний																			
+temporary	ˈtempəreri	тимчасовий	временный	B2						permanent	ˈpɜːrmənənt	постійний	постоянный																			
+major		головний, великий	главный, крупный	B2						minor		другорядний	второстепенный																			
+artificial	ˌɑːrtəˈfɪʃəl	штучний	искусственный	B2						natural	ˈnætʃərəl	натуральний, природний	натуральный, природный																			
+tight	taɪt	тісний, тугий	тесный, тугой	B2						loose	luːs	вільний, просторий (про одяг)	свободный, просторный (об одежде)																			
+humble		скромний	скромный	B2						arrogant	ˈerəɡənt	зарозумілий	высокомерный																			
+proud	praʊd	гордий	гордый	B2						ashamed	əˈʃeɪmd	присоромлений	пристыженный																			
+flexible	ˈfleksəbəl	гнучкий	гибкий	B2						rigid		жорсткий, негнучкий	жёсткий, негибкий																			
+efficient	ɪˈfɪʃənt	ефективний	эффективный	B2						inefficient		неефективний	неэффективный																			
+accurate	ˈækjərət	точний	точный	B2						inaccurate		неточний	неточный																			
+rare	rer	рідкісний	редкий	B2						common	ˈkɑːmən	поширений	распространённый																			
+reliable	rɪˈlaɪəbəl	надійний	надёжный	B2						unreliable	ˌʌnrɪˈlaɪəbəl	ненадійний	ненадёжный																			
+essential	ɪˈsenʃəl	необхідний, украй важливий	необходимый, крайне важный	B2						unnecessary		непотрібний	ненужный																			
+dull		нудний, сірий	скучный, унылый	B2						exciting		захопливий	захватывающий																			
+attractive	əˈtræktɪv	привабливий	привлекательный	B2						unattractive		непривабливий	непривлекательный																			
+ignorant		неосвічений	невежественный	B2						knowledgeable		обізнаний	знающий																			
+mature		зрілий	зрелый	B2						childish		дитячий, інфантильний	ребяческий																			
+sudden		раптовий	внезапный	B2						expected		очікуваний	ожидаемый																			
+domestic		внутрішній (про країну)	внутренний (о стране)	B2						foreign	ˈfɔːrən	іноземний, закордонний	иностранный, зарубежный																			
+urban	ˈɜːrbən	міський	городской	B2						rural	ˈrʊrəl	сільський	сельский																			
+valuable	ˈvæljəbəl	цінний	ценный	B2						worthless		нічого не вартий	ничего не стоящий																			
+optional		необов’язковий	необязательный	B2						required		обов’язковий	обязательный																			
+mild		м’який (про погоду, хворобу)	мягкий (о погоде, болезни)	B2						severe	səˈvɪr	суворий, тяжкий	суровый, тяжёлый																			
+profit	ˈprɑːfət	прибуток	прибыль	B2						loss	lɔːs	збиток	убыток																			
+wealth		багатство	богатство	B2						poverty	ˈpɑːvərti	бідність	бедность																			
+majority	məˈdʒɔːrəti	більшість	большинство	B2						minority	maɪˈnɔːrəti	меншість	меньшинство																			
+hope	hoʊp	надія	надежда	B2						despair	dɪˈsper	відчай	отчаяние																			
+cause	kɑːz	причина	причина	B2						effect		наслідок	следствие																			
+growth		зростання	рост	B2						decline	dɪˈklaɪn	спад	спад																			
+permission		дозвіл	разрешение	B2						ban		заборона	запрет																			
+criticism	ˈkrɪtɪsɪzəm	критика	критика	B2						praise	preɪz	похвала	похвала																			
+ally		союзник	союзник	B2						enemy		ворог	враг																			
+defend	dɪˈfend	захищати	защищать	B2						attack	əˈtæk	нападати	нападать																			
+admit	ədˈmɪt	визнавати	признавать	B2						deny	dɪˈnaɪ	заперечувати	отрицать																			
+reject	rɪˈdʒekt	відхиляти	отклонять	B2						accept		приймати	принимать																			
+include	ɪnˈkluːd	включати	включать	B2						exclude	ɪksˈkluːd	виключати	исключать																			
+hide	haɪd	ховати	прятать	B2						reveal	rɪˈviːl	розкривати	раскрывать																			
+encourage		заохочувати, надихати	поощрять, вдохновлять	B2						discourage	dɪˈskɜːrɪdʒ	відбивати бажання	отбивать охоту																			
+obey		слухатися	подчиняться	B2						disobey		не слухатися	не слушаться																			
+employ		наймати	нанимать	B2						fire	ˈfaɪər	звільняти	увольнять																			
+lose	luːz	губити	терять	B2						find	faɪnd	знаходити	находить																			
+win	wɪn	перемагати	побеждать	B2						lose	luːz	програвати	проигрывать																			
+praise	preɪz	хвалити	хвалить	B2						criticize	ˈkrɪtɪsaɪz	критикувати	критиковать																			
+approve	əˈpruːv	схвалювати	одобрять	B2						disapprove		не схвалювати	не одобрять																			
+waste	weɪst	марнувати	тратить впустую	B2						save	seɪv	берегти	беречь																			
+gather	ˈɡæðər	збирати	собирать	B2						scatter		розкидати	разбрасывать																			
+connect		з’єднувати	соединять	B2						disconnect		роз’єднувати	разъединять																			
+strengthen		зміцнювати	укреплять	B2						weaken		послаблювати	ослаблять																			
+respect	rɪˈspekt	поважати	уважать	B2						despise		зневажати	презирать																			
+exaggerate	ɪɡˈzædʒəreɪt	перебільшувати	преувеличивать	B2						understate		применшувати	преуменьшать																			
+permanently		назавжди, постійно	навсегда, постоянно	B2						temporarily		тимчасово	временно																			
+together	təˈɡeðər	разом	вместе	B2						separately		окремо	отдельно																			
+easily		легко	легко	B2						with difficulty		насилу	с трудом																			
+gradually	ˈɡrædʒuəli	поступово	постепенно	B2						suddenly	ˈsʌdənli	раптово	внезапно																			
+deliberately	dɪˈlɪbərətli	навмисно	намеренно	B2						accidentally		випадково	случайно																			
+partly		частково	частично	B2						completely	kəmˈpliːtli	повністю	полностью																			

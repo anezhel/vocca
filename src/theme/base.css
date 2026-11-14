@@ -1,0 +1,54 @@
+/* Основа: шрифт, фон, экран, закреплённая нижняя панель. Цвета и размеры — только из токенов (tokens.css). */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100dvh; background: var(--bg-canvas); color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; -webkit-user-select: none; user-select: none; }
+button:disabled { cursor: default; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--border-strong); outline-offset: 2px; }
+h1, p, ol { margin: 0; }
+a { color: inherit; }
+hr { border: 0; border-top: 1px solid var(--border-muted); margin: 0; width: 100%; }
+svg { flex: none; }
+
+#app { max-width: 430px; margin: 0 auto; min-height: 100dvh; position: relative; overflow-x: clip; }
+
+.screen { position: relative; min-height: 100dvh; padding: calc(env(safe-area-inset-top) + 14px) var(--layout-screen-x) 40px; }
+.screen--bar { padding-bottom: calc(var(--layout-content-bottom) + env(safe-area-inset-bottom)); }
+.screen--tab { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+.screen__content { position: relative; display: flex; flex-direction: column; gap: var(--space-14); }
+
+/* Нижняя панель с кнопкой: контент уходит под неё через переход из прозрачного в цвет фона */
+.bottom-bar {
+  position: fixed; z-index: 20; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px;
+  padding: var(--space-28) var(--layout-screen-x) calc(env(safe-area-inset-bottom) + 20px);
+  background: linear-gradient(to bottom, transparent, var(--bg-canvas) 35%);
+  display: flex; flex-direction: column; gap: var(--space-10);
+}
+
+/* Цветные пятна вверху экрана (Aura/Blur/Glow) */
+.backdrop { position: absolute; z-index: 0; inset: 0 0 auto 0; height: 440px; overflow: hidden; pointer-events: none; }
+.backdrop i { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .85; }
+.backdrop i:nth-child(1) { width: 300px; height: 260px; left: -90px; top: -110px; background: var(--effect-glow-1); }
+.backdrop i:nth-child(2) { width: 320px; height: 260px; right: -110px; top: -60px; background: var(--effect-glow-2); }
+.backdrop i:nth-child(3) { width: 260px; height: 200px; left: 30%; top: 90px; background: var(--effect-glow-3); opacity: .5; }
+.backdrop--cool i:nth-child(1) { background: var(--tint-sky); }
+.backdrop--cool i:nth-child(2) { background: var(--effect-glow-3); }
+.backdrop--cool i:nth-child(3) { background: var(--tint-lavender); }
+
+/* Утилиты */
+.muted { color: var(--text-secondary); }
+.soft { color: rgba(255, 255, 255, .8); }
+.center { text-align: center; }
+.grow { flex: 1; min-width: 0; }
+.pad-x { padding: 0 var(--space-4); }
+.top-space { height: var(--space-24); }
+.row-2 { display: grid; grid-template-columns: 1fr 1.35fr; gap: var(--space-12); }
+.row-between { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
+.row-hint { display: grid; grid-template-columns: 52px 1fr; gap: var(--space-12); align-items: center; }
+.row-hint > :only-child { grid-column: 1 / -1; }
+.loading { min-height: 100dvh; display: grid; place-items: center; }
+.fatal { padding: 60px 24px; font-size: 16px; line-height: 1.5; }

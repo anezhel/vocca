@@ -1,0 +1,17 @@
+{
+  "name": "Vocca — англійські слова щодня",
+  "short_name": "Vocca",
+  "description": "Англійські слова A1–B2: повторення за розкладом, неправильні дієслова, групи слів.",
+  "lang": "uk",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f1f0f3",
+  "theme_color": "#f1f0f3",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
