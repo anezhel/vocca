@@ -95,6 +95,14 @@ export function Sheet({ onClose, children, cls }) {
   </div>`;
 }
 
+// Модальное окно по центру экрана (например, «20 слів пройдено» в группах)
+export function Modal({ onClose, children, cls }) {
+  useEffect(() => { const k = (e) => e.key === 'Escape' && onClose && onClose(); addEventListener('keydown', k); return () => removeEventListener('keydown', k); }, []);
+  return html`<div class="modal-wrap" onClick=${onClose}>
+    <div class=${cx('modal', cls)} role="dialog" aria-modal="true" onClick=${(e) => e.stopPropagation()}>${children}</div>
+  </div>`;
+}
+
 // Лист с выбором одного варианта (настройки)
 export function PickSheet({ title, sub, options, value, onPick, onClose, multi }) {
   const [sel, setSel] = useState(multi ? [...value] : value);

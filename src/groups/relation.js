@@ -6,7 +6,7 @@ import { tri } from '../content/index.js';
 import { t, L, pn } from '../i18n/index.js';
 import { update, progress } from '../core/store.js';
 import { addToLearning, isAdded, ttsLang, tipSeen, setTipSeen } from '../core/words.js';
-import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Example, Sheet, cx } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Example, Sheet, Modal, cx } from '../ui/kit.js';
 
 function load(rows) {
   const ids = new Set();
@@ -109,15 +109,16 @@ function GroupScreen({ course, group, route, go, back, toast }) {
   </${Screen}>`;
 }
 
-// Лист 19a: «20 слів пройдено» → «До груп» / «Продовжити». Когда в группе ничего не осталось — «Групу пройдено» → «Ще раз».
+// Окно 19a по центру: «20 слів пройдено» → «Продовжити» / «До груп». Одно на все группы, в тексте — название группы.
+// Когда в группе ничего не осталось — «Групу «…» пройдено» → «Ще раз» / «До груп».
 function DoneSheet({ title, n, left, onGroups, onMore, onAgain }) {
-  return html`<${Sheet} onClose=${onGroups}>
+  return html`<${Modal} onClose=${onGroups}>
     <span class="ib ib--accent" style="--ib:56px"><${Icon} name="check" size=${24} /></span>
     <div class="sheet__head"><div class="t-heading-h2">${left ? t('groups.portionDone', { x: pn(n, 'words') }) : t('groups.groupDone', { title })}</div>
       <p class="t-body-15 muted">${left ? t('groups.portionLeft', { title, x: pn(left, 'words') }) : t('groups.groupDoneText')}</p></div>
-    <div class="row-2 row-2--wide"><${Button} variant="secondary" label=${t('groups.toGroups')} onClick=${onGroups} />
-      <${Button} label=${left ? t('common.continue') : t('common.again')} onClick=${left ? onMore : onAgain} /></div>
-  </${Sheet}>`;
+    <div class="modal__actions"><${Button} label=${left ? t('common.continue') : t('common.again')} onClick=${left ? onMore : onAgain} />
+      <${Button} variant="secondary" label=${t('groups.toGroups')} onClick=${onGroups} /></div>
+  </${Modal}>`;
 }
 
 // Лист 11a: «huge — у твоїх словах для вивчення»
