@@ -61,17 +61,19 @@ export const Toggle = ({ on, onChange, label }) => html`<button class=${cx('togg
 export const Stat = ({ value, label }) => html`<div class="stat card"><div class="t-stat-m">${value}</div><div class="t-label-12 muted">${label}</div></div>`;
 
 // Шаги вверху занятия: штрих на каждое слово. Больше 16 — сплошная полоса.
-export function Steps({ total, done }) {
-  if (total > 16) return html`<div class="steps-bar"><i style=${`width:${Math.round((done / Math.max(1, total)) * 100)}%`}></i></div>`;
+// solid — одна сплошная линия (экраны групп), иначе отрезки; больше 16 шагов — всегда линия
+export function Steps({ total, done, solid }) {
+  if (solid || total > 16) return html`<div class=${cx('steps-bar', solid && 'steps-bar--full')}><i style=${`width:${Math.round((done / Math.max(1, total)) * 100)}%`}></i></div>`;
   return html`<div class="steps">${Array.from({ length: Math.max(1, total) }, (_, i) => html`<i class=${i <= done ? 'on' : ''}></i>`)}</div>`;
 }
 
 // Верхняя панель: крестик или «назад», шаги с подписью, справа — место под иконку
-export const TopBar = ({ onClose, onBack, label, total, done, right }) => html`<div class="top-bar">
+// count — счётчик «4 / 8» справа; с ним прогресс рисуется сплошной линией (экраны групп 11, 19–27)
+export const TopBar = ({ onClose, onBack, label, total, done, right, count }) => html`<div class="top-bar">
   ${onClose && html`<${IconButton} icon="close" onClick=${onClose} label=${t('common.close')} />`}
   ${onBack && html`<${IconButton} icon="arrow-left" size=${48} onClick=${onBack} label=${t('common.back')} />`}
-  <div class="top-bar__mid">${label && html`<div class="t-label-13 muted">${label}</div>`}${total != null && html`<${Steps} total=${total} done=${done} />`}</div>
-  <div class="top-bar__right">${right || ''}</div>
+  <div class="top-bar__mid">${label && html`<div class="t-label-13 muted">${label}</div>`}${total != null && html`<${Steps} total=${total} done=${done} solid=${!!count} />`}</div>
+  <div class=${cx('top-bar__right', count && 'top-bar__right--auto')}>${count ? html`<${Counter}>${count}</${Counter}>` : right || ''}</div>
 </div>`;
 
 export const Counter = ({ children }) => html`<span class="counter t-label-13-medium">${children}</span>`;

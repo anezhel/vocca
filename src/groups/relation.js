@@ -69,7 +69,7 @@ function GroupScreen({ course, group, route, go, back, toast }) {
   const hl = [item.w, ...item.targets.map((x) => x.w)];
   const chip = L(group.chip, { link: item.link });
   return html`<${Screen} bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
-    <${TopBar} onClose=${back} label=${t('groups.counter', { title, n: pos + 1, total: list.length })} total=${list.length} done=${pos} />
+    <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
     <${Title} main=${title} cls="title--group" />
     <div class="rel">
       <div class="card rel__base">
