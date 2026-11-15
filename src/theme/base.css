@@ -47,6 +47,7 @@ svg { flex: none; }
 .pad-x { padding: 0 var(--space-4); }
 .top-space { height: var(--space-24); }
 .row-2 { display: grid; grid-template-columns: 1fr 1.35fr; gap: var(--space-12); }
+.row-2--wide { grid-template-columns: 128px 1fr; }
 .row-between { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
 .row-hint { display: grid; grid-template-columns: 52px 1fr; gap: var(--space-12); align-items: center; }
 .row-hint > :only-child { grid-column: 1 / -1; }

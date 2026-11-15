@@ -39,13 +39,20 @@ function stats(course, g) {
   return { total, learned, due: 0, status, subtitle };
 }
 
-// Экран группы: по одному экрану, внизу «Далі». За заход — CONFIG.groupSessionSize экранов.
+// Экран группы: по одному экрану, внизу «Далі». За заход — CONFIG.groupSessionSize экранов,
+// потом лист 19a: «Продовжити» — следующая порция, «До груп» — назад к списку.
 function GroupScreen({ course, group, route, go, back, toast }) {
   const seen = state(course, group).seen;
-  const [list] = useState(() => {
+  const N = CONFIG.groupSessionSize;
+  // Очередь на этот заход: сначала непросмотренные; если всё просмотрено или «Повторити» — вся группа
+  const [queue, setQueue] = useState(() => {
     const unseen = group.items.filter((i) => !seen[i.id]);
-    return (route.review || !unseen.length ? group.items : unseen).slice(0, CONFIG.groupSessionSize);
+    return route.review || !unseen.length ? group.items : unseen;
   });
+  const [start, setStart] = useState(0);
+  const [done, setDone] = useState(false);
+  const list = queue.slice(start, start + N);
+  const left = Math.max(0, queue.length - start - list.length);
   const [pos, setPos] = useState(0);
   const [sheet, setSheet] = useState(null);
   const [, redraw] = useState(0);
@@ -55,7 +62,9 @@ function GroupScreen({ course, group, route, go, back, toast }) {
 
   const next = () => {
     update(() => { const p = progress(course.id); p.groups[group.id] = p.groups[group.id] || { seen: {} }; p.groups[group.id].seen[item.id] = Date.now(); });
-    if (pos + 1 < list.length) { setPos(pos + 1); scrollTo(0, 0); } else { toast(t('groups.finished', { x: pn(list.length, 'screens') })); back(); }
+    if (pos + 1 < list.length) { setPos(pos + 1); scrollTo(0, 0); } else setDone(true);
+  };
+  const restart = (q, s) => { setQueue(q); setStart(s); setPos(0); setDone(false); scrollTo(0, 0);
   };
 
   const learn = (tg) => {
@@ -95,7 +104,20 @@ function GroupScreen({ course, group, route, go, back, toast }) {
       ${item.note && html`<div class="card card--pad"><${Overline}>${L(group.note, { link: item.link })}</${Overline}><p class="t-body-15">${L(item.note)}</p></div>`}
     </div>
     ${sheet && html`<${AddedSheet} word=${sheet} onClose=${() => setSheet(null)} />`}
+    ${done && html`<${DoneSheet} title=${title} n=${list.length} left=${left} onGroups=${back}
+      onMore=${() => restart(queue, start + N)} onAgain=${() => restart(group.items, 0)} />`}
   </${Screen}>`;
+}
+
+// Лист 19a: «20 слів пройдено» → «До груп» / «Продовжити». Когда в группе ничего не осталось — «Групу пройдено» → «Ще раз».
+function DoneSheet({ title, n, left, onGroups, onMore, onAgain }) {
+  return html`<${Sheet} onClose=${onGroups}>
+    <span class="ib ib--accent" style="--ib:56px"><${Icon} name="check" size=${24} /></span>
+    <div class="sheet__head"><div class="t-heading-h2">${left ? t('groups.portionDone', { x: pn(n, 'words') }) : t('groups.groupDone', { title })}</div>
+      <p class="t-body-15 muted">${left ? t('groups.portionLeft', { title, x: pn(left, 'words') }) : t('groups.groupDoneText')}</p></div>
+    <div class="row-2 row-2--wide"><${Button} variant="secondary" label=${t('groups.toGroups')} onClick=${onGroups} />
+      <${Button} label=${left ? t('common.continue') : t('common.again')} onClick=${left ? onMore : onAgain} /></div>
+  </${Sheet}>`;
 }
 
 // Лист 11a: «huge — у твоїх словах для вивчення»
