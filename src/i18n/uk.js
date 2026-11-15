@@ -46,7 +46,7 @@ export default {
     wordsDone: '{w} сьогодні', repeated: '{n} повторено', freshDone: '{n} нових',
     learned: 'Вивчено слів', forecast: 'Прогноз повторень', forecastSub: 'Слів до повторення по днях', days: '{n} днів',
     todayShort: 'Сьог.', tomorrow: 'Завтра', newNow: 'нових слів зараз', reviewsToday: '{x} сьогодні', newWords: 'Нові слова · {n}',
-    nextAt: 'Наступне повторення о {time}', forecastPick: 'Скільки днів показати на графіку',
+    nextAt: 'Наступне повторення о {time}', forecastPick: 'Скільки днів показати на графіку', forecastTitle: 'Скільки днів показати', show: 'Показати',
     period: { 5: 'найближчі повторення', 10: 'півтора тижня наперед', 30: 'місяць наперед' }, nextIn: '{x} · {when}', streak: 'Серія днів',
   },
   lesson: {
