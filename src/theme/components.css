@@ -97,6 +97,7 @@ button.card { width: 100%; text-align: left; }
 @keyframes fade { from { opacity: 0; } }
 .pick-list { display: flex; flex-direction: column; gap: var(--space-8); }
 .pick { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-14) var(--space-16); border-radius: var(--radius-20); background: var(--bg-surface); width: 100%; }
+.pick__num { width: 44px; color: var(--text-primary); }
 .pick__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .radio { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border-radio); display: grid; place-items: center; flex: none; }
 .radio--box { border-radius: var(--radius-8); }
