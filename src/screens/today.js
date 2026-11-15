@@ -74,9 +74,9 @@ function Forecast({ course }) {
     <div class="row-between"><div><div class="t-title-m">${t('today.forecast')}</div><div class="t-label-12 muted">${t('today.forecastSub')}</div></div>
       <button class="pill" onClick=${() => setPick(true)}>${pn(days, 'days')} <${Icon} name="chevron-down" size=${16} /></button></div>
     <${LineChart} values=${data} labels=${data.map((_, i) => label(i))} sel=${sel} onSel=${setSel} tip=${(v) => pn(v, 'words')} />
-    ${pick && html`<${PickSheet} title=${t('today.forecast')} sub=${t('today.forecastPick')} value=${days} onClose=${() => setPick(false)}
+    ${pick && html`<${PickSheet} title=${t('today.forecastTitle')} confirm=${t('today.show')} value=${days} onClose=${() => setPick(false)}
       onPick=${(v) => { setDays(v); setSel(1); }}
-      options=${CONFIG.forecastDays.map((n) => ({ value: n, lead: html`<span class="t-number-s pick__num">${n}</span>`, label: plural(n, 'days'), sub: t('today.period.' + n) }))} />`}
+      options=${CONFIG.forecastDays.map((n) => ({ value: n, lead: html`<span class="t-number-s pick__num">${n}</span>`, label: plural(n, 'days') }))} />`}
   </div>`;
 }
 
