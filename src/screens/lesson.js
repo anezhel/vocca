@@ -90,6 +90,7 @@ function Answer({ course, w, lesson, bar, item, mode, onRate, onExplain }) {
   const simple = CONFIG.answerButtons === 'simple';
   const ex = w.ex[0];
   const when = (r) => {
+    if (r === 'known') return t('lesson.rate.knownSub');
     r = asRating(r);
     const sec = nextInterval(card, r, mode);
     if (mode === 'smart') return r === 'again' ? t('when.today') : interval(sec, true);
@@ -97,10 +98,9 @@ function Answer({ course, w, lesson, bar, item, mode, onRate, onExplain }) {
   };
   const tile = (r) => html`<button class="rate card" data-r=${r} onClick=${() => onRate(r)}>
         <span class="t-title-m">${t('lesson.rate.' + (r === 'again' && mode === 'smart' ? 'againShort' : r))}</span><span class="t-label-12 muted">${when(r)}</span></button>`;
-  // 'simple': Не знаю · Забуто плитками, «Знаю це слово» — кнопкой под ними
+  // 'simple': Не знаю · Забуто в ряд, «Знаю це слово» — такой же плиткой во всю ширину под ними
   const buttons = simple
-    ? html`<div class="rates-simple"><div class="rates rates--2">${ratings.filter((r) => r !== 'known').map(tile)}</div>
-        <${Button} variant="secondary" label=${t('lesson.rate.known')} onClick=${() => onRate('known')} /></div>`
+    ? html`<div class="rates rates--2">${ratings.map(tile)}</div>`
     : html`${mode !== 'smart' && html`<div class="t-label-14 muted center">${t('lesson.rememberQ')}</div>`}
       <div class=${cx('rates', 'rates--' + ratings.length)}>${ratings.map(tile)}</div>`;
   return html`<${Screen} cls="screen--answer" bottom=${buttons}>

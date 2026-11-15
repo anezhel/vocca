@@ -51,7 +51,7 @@ export default {
     recall: 'Вспомни {lang}', sayAloud: 'Скажи вслух {lang} · {n} с', sayAloudGo: 'Скажи вслух {lang}', show: 'Показать ответ', whatMeans: 'Что это значит?',
     newWord: 'Новое слово · {n} / {total}', meaning: 'Что это значит', examples: 'Примеры', synonyms: 'Синонимы',
     english: 'По-английски', native: 'По-русски', rememberQ: 'Помнишь это слово?', firstLetter: 'Первая буква: {x}',
-    rate: { again: 'Не помню', againShort: 'Забыто', hard: 'Трудно', good: 'Знаю', easy: 'Легко', remember: 'Помню', dontKnow: 'Не знаю', forgot: 'Забыто', known: 'Знаю это слово' },
+    rate: { again: 'Не помню', againShort: 'Забыто', hard: 'Трудно', good: 'Знаю', easy: 'Легко', remember: 'Помню', dontKnow: 'Не знаю', forgot: 'Забыто', known: 'Знаю это слово', knownSub: 'в выученные' },
     exitTitle: 'Выйти из занятия?', exitText: 'Прогресс сохранён. Остальные слова повторим позже.', exit: 'Выйти', stay: 'Остаться',
     noWords: 'На сегодня слов нет', noWordsText: 'Выбери уровни в настройках или возвращайся завтра.',
   },

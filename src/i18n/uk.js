@@ -51,7 +51,7 @@ export default {
     recall: 'Згадай {lang}', sayAloud: 'Скажи вголос {lang} · {n} с', sayAloudGo: 'Скажи вголос {lang}', show: 'Показати відповідь', whatMeans: 'Що це означає?',
     newWord: 'Нове слово · {n} / {total}', meaning: 'Що це означає', examples: 'Приклади', synonyms: 'Синоніми',
     english: 'По-англійськи', native: 'Українською', rememberQ: 'Пам’ятаєш це слово?', firstLetter: 'Перша буква: {x}',
-    rate: { again: 'Не пам’ятаю', againShort: 'Забуто', hard: 'Важко', good: 'Знаю', easy: 'Легко', remember: 'Пам’ятаю', dontKnow: 'Не знаю', forgot: 'Забуто', known: 'Знаю це слово' },
+    rate: { again: 'Не пам’ятаю', againShort: 'Забуто', hard: 'Важко', good: 'Знаю', easy: 'Легко', remember: 'Пам’ятаю', dontKnow: 'Не знаю', forgot: 'Забуто', known: 'Знаю це слово', knownSub: 'у вивчені' },
     exitTitle: 'Вийти із заняття?', exitText: 'Прогрес збережено. Решту слів повторимо пізніше.', exit: 'Вийти', stay: 'Залишитися',
     noWords: 'На сьогодні слів немає', noWordsText: 'Обери рівні в налаштуваннях або повертайся завтра.',
   },
