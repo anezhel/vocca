@@ -1,4 +1,4 @@
-// План на сегодня и ход занятия: новое слово → «Згадай» → ответ → оценка.
+// План на сегодня и ход занятия: сначала повторение, потом новые слова.
 import { CONFIG } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { getState, update, progress, dayLog } from './store.js';
@@ -50,22 +50,34 @@ export function planToday(course, now = Date.now()) {
   };
 }
 
-// Очередь занятия. practice = «Повторити слова, які вчу»: слова со статусом «Вчу», без изменения расписания.
+// Очередь занятия: сначала все слова на повторение, потом новые (между ними — экран «Повторення готово»).
+// practice = «Повторити слова, які вчу»: слова со статусом «Вчу», без изменения расписания.
 export function startLesson(course, plan, practice = false) {
   let queue;
   if (practice) {
     const ids = learningIds(course);
     queue = ids.sort(() => Math.random() - 0.5).slice(0, CONFIG.repeatSize).map((id) => ({ kind: 'recall', id }));
   } else {
-    queue = [];
-    const r = [...plan.reviews], f = [...plan.fresh];
-    while (r.length || f.length) {
-      for (let i = 0; i < 2 && r.length; i++) queue.push({ kind: 'recall', id: r.shift() });
-      if (f.length) queue.push({ kind: 'new', id: f.shift() });
-    }
+    queue = [...plan.reviews.map((id) => ({ kind: 'recall', id })), ...plan.fresh.map((id) => ({ kind: 'new', id }))];
   }
-  return { queue, total: queue.length, done: 0, practice, startedAt: Date.now(), stats: { reviews: 0, fresh: 0 }, freshIds: [] };
+  return { queue, total: queue.length, done: 0, practice, reviewTotal: practice ? 0 : plan.reviews.length,
+    startedAt: Date.now(), stats: { reviews: 0, fresh: 0 }, freshIds: [] };
 }
+
+// Повторение ещё идёт и после него есть новые слова — тогда видна кнопка «Перейти до нових слів»
+export const canSkipReviews = (lesson, item) => !lesson.practice && item.kind === 'recall' && !item.fresh && lesson.queue.some((x) => x.kind === 'new');
+
+// «Перейти до нових слів»: оставшиеся повторения убираем из занятия. Расписание не меняется —
+// эти слова остаются в «повторити» на главной и придут в следующем занятии.
+export function skipReviews(lesson) {
+  const rest = lesson.queue.filter((x) => x.kind === 'recall' && !x.fresh);
+  lesson.queue = lesson.queue.filter((x) => !rest.includes(x));
+  lesson.total -= rest.length;
+  lesson.skipped = rest.length;
+}
+
+// Экран «Повторення готово» перед первым новым словом — если в занятии было повторение и его не пропустили
+export const reviewBreak = (lesson, item) => item.kind === 'new' && lesson.reviewTotal > 0 && !lesson.skipped && !lesson.breakSeen && lesson.stats.reviews > 0;
 
 // Слова со статусом «Вчу» — для «Повторити слова, які вчу»
 export function learningIds(course) {

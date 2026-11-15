@@ -41,7 +41,7 @@ export default {
     morning: 'Доброе утро!', day: 'Добрый день!', evening: 'Добрый вечер!', night: 'Доброй ночи!',
     timeTo: 'Пора повторить слова', allDone: 'На сегодня всё', noLevels: 'Выбери уровни слов',
     wordsToday: '{w} на сегодня', about: '≈ {n} {u}', review: '{n} повторить', fresh: '+{n} новых',
-    timeToMain: 'Время повторить', timeToAccent: 'слова', learnNew: 'Учить новые слова', statsRepeated: 'Повторено слов', statsLearned: 'Добавлено в выученные', statsSub: 'Статистика по дням',
+    timeToMain: 'Время повторить', timeToAccent: 'слова', learnNew: 'Учить новые слова', learnWords: 'Учить слова', statsRepeated: 'Повторено слов', statsLearned: 'Добавлено в выученные', statsSub: 'Статистика по дням',
     learn: 'Учить слова', learnMore: 'Повторить ещё раз', chooseLevels: 'Выбрать уровни',
     repeatLearning: 'Повторить слова, которые учу', moreNew: 'Ещё {n} новых слов', planDone: 'План на сегодня', planDoneAccent: 'выполнен',
     wordsDone: '{w} сегодня', repeated: '{n} повторено', freshDone: '{n} новых',
@@ -52,7 +52,8 @@ export default {
   },
   lesson: {
     recall: 'Вспомни {lang}', sayAloud: 'Скажи вслух {lang} · {n} с', sayAloudGo: 'Скажи вслух {lang}', show: 'Показать ответ', whatMeans: 'Что это значит?',
-    newWord: 'Новое слово · {n} / {total}', cardNew: 'Новое слово', cardReview: 'Повторение', meaning: 'Что это значит', examples: 'Примеры', synonyms: 'Синонимы',
+    newWord: 'Новое слово · {n} / {total}', cardNew: 'Новое слово', cardReview: 'Повторение', meaning: 'Объяснение слова', synonymsLink: 'синонимы', skipToNew: 'Перейти к новым словам',
+    reviewDone: 'Повторение готово', reviewDoneCap: '{w} повторено', reviewDoneNext: 'Теперь — {x}.', examples: 'Примеры', synonyms: 'Синонимы',
     english: 'По-английски', native: 'По-русски', rememberQ: 'Помнишь это слово?', firstLetter: 'Первая буква: {x}',
     rate: { again: 'Не помню', againShort: 'Забыто', hard: 'Трудно', good: 'Знаю', easy: 'Легко', remember: 'Помню', dontKnow: 'Не знаю', forgot: 'Забыто', known: 'Знаю это слово', knownSub: 'в выученные' },
     exitTitle: 'Выйти из занятия?', exitText: 'Прогресс сохранён. Остальные слова повторим позже.', exit: 'Выйти', stay: 'Остаться',
