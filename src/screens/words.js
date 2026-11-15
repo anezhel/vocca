@@ -1,11 +1,11 @@
-// Экран 18 «Слова» (все слова курса с фильтрами) и 04a «Вивчені слова».
+// Экран 18 «Слова» (все слова курса с фильтрами) и 04a «Вивчено» (выученные, можно вернуть в изучение).
 import { html, useState, useMemo } from '../../lib/preact-htm.js';
 import { LEVELS } from '../content/index.js';
 import { t, L, num } from '../i18n/index.js';
 import { progress } from '../core/store.js';
 import { status, isLearned } from '../core/srs.js';
-import { shown, ttsLang } from '../core/words.js';
-import { Screen, Title, Segmented, WordRow, TopBar, Icon, cx } from '../ui/kit.js';
+import { shown, ttsLang, returnToLearning } from '../core/words.js';
+import { Screen, Title, Segmented, WordRow, TopBar, Icon, IconButton, Button, Sheet, LevelTag, SpeakButton, Example, cx } from '../ui/kit.js';
 
 const PAGE = 60;
 const DAY = 86400;
@@ -47,20 +47,59 @@ export function Words({ course }) {
   </${Screen}>`;
 }
 
-export function Learned({ course, back }) {
+// 04a «Вивчено»: только выученные слова. Строка раскрывается (стрелка или нажатие на строку):
+// примеры и «Повернути у вивчення» → лист 04b с подтверждением.
+export function Learned({ course, back, toast }) {
   const p = progress(course.id);
   const [lvl, setLvl] = useState('all');
-  const words = allWords(course).filter((w) => { const c = p.cards[w.id]; return c && (isLearned(c) || (c.ivl || 0) >= 7 * DAY); });
-  const learnedN = words.filter((w) => isLearned(p.cards[w.id])).length;
+  const [open, setOpen] = useState(null);
+  const [ask, setAsk] = useState(null);
+  const [shownN, setShownN] = useState(PAGE);
+  const [, redraw] = useState(0);
+  const words = allWords(course).filter((w) => isLearned(p.cards[w.id]));
   const list = words.filter((w) => lvl === 'all' || w.lvl === lvl);
   const lang = ttsLang(course);
+  const giveBack = (w) => {
+    returnToLearning(course, w.id);
+    setAsk(null); setOpen(null); redraw((n) => n + 1);
+    if (toast) toast(t('words.returned', { w: shown(course, w) }));
+  };
   return html`<${Screen}>
     <${TopBar} onBack=${back} />
-    <${Title} main=${t('words.learnedTitle')} accent=${t('words.learnedOf', { a: num(learnedN), b: num(course.words.length) })} />
-    <div class="chips">${['all', ...LEVELS].map((l) => html`<button class=${cx('chip', lvl === l && 'chip--on')} onClick=${() => setLvl(l)}>
+    <${Title} main=${t('words.learnedTitle')} />
+    <div class="chips chips--learned">${['all', ...LEVELS].map((l) => html`<button class=${cx('chip', lvl === l && 'chip--on')} onClick=${() => { setLvl(l); setShownN(PAGE); }}>
       ${l === 'all' ? t('words.allN', { n: words.length }) : l}</button>`)}</div>
-    <div class="word-list">${list.length ? list.map((w) => html`<${WordRow} key=${w.id} word=${shown(course, w)} lvl=${w.lvl} tr=${L(w.tr)}
-      status=${isLearned(p.cards[w.id]) ? 'learned' : 'learning'} statusLabel=${isLearned(p.cards[w.id]) ? null : t('words.status.reinforcing')} speak=${{ text: shown(course, w), lang }} />`)
+    <div class="word-list word-list--tight">${list.length ? list.slice(0, shownN).map((w) => html`<${LearnedRow} key=${w.id} course=${course} w=${w} lang=${lang}
+      open=${open === w.id} onToggle=${() => setOpen(open === w.id ? null : w.id)} onReturn=${() => setAsk(w)} />`)
       : html`<p class="t-body-15 muted center">${t('words.empty')}</p>`}</div>
+    ${list.length > shownN && html`<button class="more t-label-15-medium" onClick=${() => setShownN(shownN + PAGE)}>${t('common.more')}</button>`}
+    ${ask && html`<${ReturnSheet} course=${course} w=${ask} onClose=${() => setAsk(null)} onYes=${() => giveBack(ask)} />`}
   </${Screen}>`;
+}
+
+// Строка выученного слова (компонент Aura/Learned row: Collapsed / Expanded)
+function LearnedRow({ course, w, lang, open, onToggle, onReturn }) {
+  const word = shown(course, w);
+  return html`<div class=${cx('learned-row card', open && 'learned-row--open')}>
+    <div class="learned-row__top" onClick=${onToggle}>
+      <div class="word-row__text"><div class="word-row__head"><span class="t-label-17">${word}</span><${LevelTag} lvl=${w.lvl} /></div>
+        <div class="t-label-14 muted">${L(w.tr)}</div></div>
+      <${SpeakButton} text=${word} lang=${lang} />
+      <span class="ib ib--grey learned-row__chev" style="--ib:40px" role="button" aria-expanded=${open} aria-label=${t('words.examples')}><${Icon} name="chevron-down" size=${18} /></span>
+    </div>
+    ${open && html`<div class="learned-row__body">
+      ${w.ex.length > 0 && html`<div class="examples">${w.ex.slice(0, 2).map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div>`}
+      <button class="learned-row__back t-label-14-strong" onClick=${onReturn}><${Icon} name="refresh" size=${16} />${t('words.returnToLearning')}</button>
+    </div>`}
+  </div>`;
+}
+
+// Лист 04b: «Повернути у вивчення?»
+function ReturnSheet({ course, w, onClose, onYes }) {
+  return html`<${Sheet} onClose=${onClose}>
+    <div class="sheet__head sheet__head--row"><div><div class="t-heading-h2">${shown(course, w)}</div><div class="t-label-15 muted">${L(w.tr)}</div></div>
+      <${IconButton} icon="close" onClick=${onClose} label=${t('common.close')} /></div>
+    <p class="t-body-15 muted">${t('words.returnText')}</p>
+    <${Button} variant="dark" label=${t('words.returnToLearning')} onClick=${onYes} />
+  </${Sheet}>`;
 }

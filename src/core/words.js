@@ -34,3 +34,11 @@ export function isAdded(course, text) {
 
 export const tipSeen = (key) => !!getState().tips[key];
 export const setTipSeen = (key) => update((s) => { s.tips[key] = true; });
+
+// 04b «Повернути у вивчення»: выученное слово снова в «Вчу» и придёт уже в ближайшем занятии
+export function returnToLearning(course, id, now = Date.now()) {
+  update(() => {
+    const p = progress(course.id), c = p.cards[id] || {};
+    p.cards[id] = { reps: Math.max(1, c.reps || 0), ivl: 0, due: now, last: c.last || now, ease: c.ease || 2.5, mode: p.mode, step: 0, lapses: c.lapses || 0 };
+  });
+}
