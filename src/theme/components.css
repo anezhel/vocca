@@ -152,18 +152,20 @@ button.card { width: 100%; text-align: left; }
 .hero .t-number-hero, .hero .t-number-xl { line-height: .9; }
 .hero > div:last-child { padding-bottom: var(--space-10); }
 .info-card { display: flex; align-items: center; gap: var(--space-14); padding: var(--space-14) 18px; }
-.learned-card { display: flex; flex-direction: column; gap: var(--space-4); }
+.learned-card { display: flex; flex-direction: column; gap: var(--space-16); padding: var(--space-20); border-radius: var(--radius-28); text-align: left; }
+.learned-card__head { display: flex; justify-content: space-between; align-items: flex-start; }
+.learned-card .level-bar { margin-top: 0; }
 .level-bar { display: flex; gap: var(--space-4); height: 44px; margin-top: var(--space-8); }
-.level-bar__seg { border-radius: var(--radius-12); display: flex; align-items: center; padding: 0 var(--space-10); min-width: 6px; overflow: hidden; color: var(--text-on-pastel); }
+.level-bar__seg { border-radius: 10px; display: flex; align-items: center; padding: 0 var(--space-10); min-width: 6px; overflow: hidden; color: var(--text-on-pastel); }
 .chart { width: 100%; height: auto; margin-top: var(--space-10); overflow: visible; }
-.chart__grid { stroke: var(--border-default); stroke-dasharray: 3 4; }
-.chart__guide { stroke: var(--text-tertiary); stroke-dasharray: 3 3; }
+.chart__grid { stroke: var(--border-default); stroke-dasharray: 3 5; }
+.chart__guide { stroke: var(--text-tertiary); stroke-dasharray: 2 3; }
 .chart__line { stroke: var(--text-primary); stroke-width: 1.6; fill: none; }
 .chart__pt { cursor: pointer; }
 .chart__pt circle { fill: var(--bg-inverse); }
 .chart__pt circle.is-sel { fill: var(--bg-chart-today); stroke: var(--bg-inverse); stroke-width: 1.5; }
 .chart__pt circle.is-hollow { fill: var(--bg-surface); stroke: var(--border-radio); stroke-width: 1.5; }
-.chart__pt text { font-size: 11px; fill: var(--text-secondary); }
+.chart__pt text { font-size: 12px; fill: var(--text-secondary); }
 .chart__pt text.is-sel { fill: var(--text-primary); font-weight: 600; }
 .chart__tip rect { fill: var(--bg-inverse); }
 .chart__tip text { fill: var(--text-on-inverse); font-size: 12px; font-weight: 600; }
@@ -334,10 +336,15 @@ button.card { width: 100%; text-align: left; }
 .btn--accent { background: var(--bg-accent); color: var(--text-on-accent); border: 1px solid var(--border-default); justify-content: space-between; padding: 0 var(--space-8) 0 var(--space-24); }
 .btn--accent .btn__circle, .btn--circle-white .btn__circle { background: var(--bg-surface); color: var(--text-primary); }
 
-/* 04 · статистика: «Повторено слів» (линия) и «Додано у вивчені» (столбики) */
-.stats-card__title { white-space: pre-line; line-height: 1.2; }
+/* 04 · статистика: «Повторено слів» и «Додано у вивчені» — линии, после сегодня пунктир к «Завтра» */
+.level-bar__seg--thin { border-radius: var(--radius-full); padding: 0; }
+.stats-card { display: flex; flex-direction: column; gap: var(--space-8); padding: var(--space-20); border-radius: var(--radius-28); }
+.stats-card__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-12); }
+.stats-card__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.stats-card__pill { height: 40px; padding: 0 var(--space-12) 0 var(--space-16); }
+.stats-card .chart { margin-top: 0; }
 .chart--line circle { fill: var(--bg-surface); stroke: var(--text-primary); stroke-width: 1.4; }
 .chart--line circle.is-sel { fill: var(--bg-chart-today); stroke: var(--bg-inverse); stroke-width: 2; }
-.chart__bar { fill: var(--bg-accent); }
-.chart__bar.is-sel { stroke: var(--text-primary); stroke-width: 2; }
-.chart__bar.is-sel-solid { fill: var(--bg-inverse); }
+.chart--line circle.chart__next { fill: var(--bg-surface); stroke: var(--border-radio); stroke-width: 1.4; }
+.chart__tail { fill: none; stroke: var(--text-tertiary); stroke-width: 1.6; stroke-dasharray: 3 3; }
+.chart__next-label { font-size: 12px; fill: var(--text-secondary); opacity: .6; }
