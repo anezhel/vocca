@@ -60,7 +60,7 @@ function GroupScreen({ course, group, route, go, back, toast }) {
 
   const learn = (tg) => {
     const text = group.meaning ? item.w : tg.w;
-    const ex = item.ex.find((e) => e.en.toLowerCase().includes(text.toLowerCase().split(' ')[0])) || item.ex[0];
+    const ex = item.ex.find((e) => e.en.toLowerCase().includes(text.toLowerCase().split(' ')[0]));
     addToLearning(course, { w: text, ipa: group.meaning ? item.ipa : tg.ipa, lvl: item.lvl, tr: group.meaning ? tg.tr : tg.tr, ex: ex ? [ex] : [] });
     redraw((n) => n + 1);
     if (!tipSeen('added')) setSheet(text);

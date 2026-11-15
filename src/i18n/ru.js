@@ -42,7 +42,8 @@ export default {
     learn: 'Учить слова', learnMore: 'Повторить ещё раз', chooseLevels: 'Выбрать уровни',
     learned: 'Выучено слов', forecast: 'Прогноз повторений', forecastSub: 'Слов к повторению по дням', days: '{n} дней',
     todayShort: 'Сег.', tomorrow: 'Завтра', newNow: 'новых слов сейчас', reviewsToday: '{x} сегодня', newWords: 'Новые слова · {n}',
-    nextAt: 'Следующее повторение в {time}', nextIn: '{x} · {when}', streak: 'Серия дней',
+    nextAt: 'Следующее повторение в {time}', forecastPick: 'На сколько дней показать график',
+    period: { 5: 'ближайшие повторения', 10: 'полторы недели вперёд', 30: 'месяц вперёд' }, nextIn: '{x} · {when}', streak: 'Серия дней',
   },
   lesson: {
     recall: 'Вспомни {lang}', sayAloud: 'Скажи вслух {lang} · {n} с', sayAloudGo: 'Скажи вслух {lang}', show: 'Показать ответ', whatMeans: 'Что это значит?',

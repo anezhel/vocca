@@ -42,7 +42,8 @@ export default {
     learn: 'Вчити слова', learnMore: 'Повторити ще раз', chooseLevels: 'Обрати рівні',
     learned: 'Вивчено слів', forecast: 'Прогноз повторень', forecastSub: 'Слів до повторення по днях', days: '{n} днів',
     todayShort: 'Сьог.', tomorrow: 'Завтра', newNow: 'нових слів зараз', reviewsToday: '{x} сьогодні', newWords: 'Нові слова · {n}',
-    nextAt: 'Наступне повторення о {time}', nextIn: '{x} · {when}', streak: 'Серія днів',
+    nextAt: 'Наступне повторення о {time}', forecastPick: 'Скільки днів показати на графіку',
+    period: { 5: 'найближчі повторення', 10: 'півтора тижня наперед', 30: 'місяць наперед' }, nextIn: '{x} · {when}', streak: 'Серія днів',
   },
   lesson: {
     recall: 'Згадай {lang}', sayAloud: 'Скажи вголос {lang} · {n} с', sayAloudGo: 'Скажи вголос {lang}', show: 'Показати відповідь', whatMeans: 'Що це означає?',

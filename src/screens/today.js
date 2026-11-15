@@ -1,13 +1,13 @@
 // Экран 04 «Сьогодні»: сколько слов на сегодня, кнопка «Вчити слова», выучено, прогноз повторений.
 import { html, useState } from '../../lib/preact-htm.js';
-import { feature } from '../config.js';
+import { CONFIG, feature } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { t, pn, plural, num, interval, L } from '../i18n/index.js';
 import { progress } from '../core/store.js';
 import { planToday } from '../core/session.js';
 import { learnedStats, forecast, streak } from '../core/stats.js';
 import { clock, addDays, weekday } from '../core/dates.js';
-import { Screen, Title, Button, Icon, IconButton, Pill } from '../ui/kit.js';
+import { Screen, Title, Button, Icon, IconButton, Pill, PickSheet } from '../ui/kit.js';
 
 function greeting() {
   const h = new Date().getHours();
@@ -49,16 +49,26 @@ export function Today({ course, go }) {
   </${Screen}>`;
 }
 
+// Карточка прогноза; «5 днів ⌄» открывает лист снизу с выбором периода (CONFIG.forecastDays)
 function Forecast({ course }) {
-  const [days, setDays] = useState(5);
+  const [days, setDays] = useState(CONFIG.forecastDays[0]);
   const [sel, setSel] = useState(1);
+  const [pick, setPick] = useState(false);
   const data = forecast(course, days);
   const names = t('week');
-  const label = (i) => (i === 0 ? t('today.todayShort') : i === 1 ? t('today.tomorrow') : names[weekday(addDays(Date.now(), i))]);
+  const label = (i) => {
+    if (i === 0) return t('today.todayShort');
+    if (i === 1) return t('today.tomorrow');
+    const d = new Date(addDays(Date.now(), i));
+    return days > 7 ? `${d.getDate()}.${String(d.getMonth() + 1).padStart(2, '0')}` : names[weekday(d.getTime())];
+  };
   return html`<div class="card card--pad">
     <div class="row-between"><div><div class="t-title-m">${t('today.forecast')}</div><div class="t-label-12 muted">${t('today.forecastSub')}</div></div>
-      <button class="pill" onClick=${() => { setDays(days === 5 ? 7 : days === 7 ? 14 : 5); setSel(1); }}>${t('today.days', { n: days })} <${Icon} name="chevron-down" size=${16} /></button></div>
+      <button class="pill" onClick=${() => setPick(true)}>${pn(days, 'days')} <${Icon} name="chevron-down" size=${16} /></button></div>
     <${LineChart} values=${data} labels=${data.map((_, i) => label(i))} sel=${sel} onSel=${setSel} tip=${(v) => pn(v, 'words')} />
+    ${pick && html`<${PickSheet} title=${t('today.forecast')} sub=${t('today.forecastPick')} value=${days} onClose=${() => setPick(false)}
+      onPick=${(v) => { setDays(v); setSel(1); }}
+      options=${CONFIG.forecastDays.map((n) => ({ value: n, lead: html`<span class="t-number-s pick__num">${n}</span>`, label: plural(n, 'days'), sub: t('today.period.' + n) }))} />`}
   </div>`;
 }
 
@@ -69,6 +79,8 @@ export function LineChart({ values, labels, sel, onSel, tip, hollowFrom = Infini
   const x = (i) => pad + (i * (W - pad * 2)) / Math.max(1, n - 1);
   const y = (v) => H - 28 - (v / max) * (H - 60);
   const pts = values.map((v, i) => [x(i), y(v)]);
+  const every = n > 7 ? Math.ceil(n / 6) : 1;          // при 10 и 30 днях подписи не у каждой точки
+  const r = n > 14 ? 3 : 4.5;
   const upto = Math.min(n, hollowFrom);
   let d = '';
   pts.slice(0, upto).forEach(([px, py], i, a) => {
@@ -81,10 +93,10 @@ export function LineChart({ values, labels, sel, onSel, tip, hollowFrom = Infini
     ${sel != null && html`<line x1=${x(sel)} x2=${x(sel)} y1=${y(values[sel])} y2=${H - 24} class="chart__guide" />`}
     <path d=${d} class="chart__line" />
     ${pts.map(([px, py], i) => html`<g onClick=${() => onSel && onSel(i)} class="chart__pt">
-      <circle cx=${px} cy=${i >= hollowFrom ? H - 34 : py} r=${i === sel ? 7 : 4.5} class=${i >= hollowFrom ? 'is-hollow' : i === sel ? 'is-sel' : ''} />
-      <rect x=${px - 18} y="0" width="36" height=${H} fill="transparent" />
-      <text x=${px} y=${H - 4} text-anchor="middle" class=${i === sel ? 'is-sel' : ''}>${labels[i]}</text></g>`)}
-    ${sel != null && tip && values[sel] != null && html`<g class="chart__tip"><rect x=${x(sel) - 32} y=${y(values[sel]) - 34} width="64" height="24" rx="12" />
-      <text x=${x(sel)} y=${y(values[sel]) - 18} text-anchor="middle">${tip(values[sel])}</text></g>`}
+      <circle cx=${px} cy=${i >= hollowFrom ? H - 34 : py} r=${i === sel ? 7 : r} class=${i >= hollowFrom ? 'is-hollow' : i === sel ? 'is-sel' : ''} />
+      <rect x=${px - (W / n) / 2} y="0" width=${W / n} height=${H} fill="transparent" />
+      ${(i % every === 0 || (every === 1 && i === sel)) && html`<text x=${px} y=${H - 4} text-anchor="middle" class=${i === sel ? 'is-sel' : ''}>${labels[i]}</text>`}</g>`)}
+    ${sel != null && tip && values[sel] != null && html`<g class="chart__tip"><rect x=${Math.min(Math.max(x(sel), 34), W - 34) - 32} y=${y(values[sel]) - 34} width="64" height="24" rx="12" />
+      <text x=${Math.min(Math.max(x(sel), 34), W - 34)} y=${y(values[sel]) - 18} text-anchor="middle">${tip(values[sel])}</text></g>`}
   </svg>`;
 }
