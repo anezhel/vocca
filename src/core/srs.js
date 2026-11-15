@@ -25,9 +25,15 @@ function stepOf(card, mode) {
 }
 
 // Интервал в секундах после оценки. Карточка не меняется.
+// 'learn' — «Вчити» на карточке: новое слово — первая ступень, повторение — следующая (в умном режиме — как «Знаю»).
 export function nextInterval(card, rating, mode) {
   card = card || {};
   rating = asRating(rating);
+  if (rating === 'learn') {
+    if (mode === 'smart') return !card.reps || !card.ivl ? CONFIG.modes.smart.first.hard * DAY : nextInterval(card, 'good', mode);
+    const l = ladder(mode);
+    return l[card.reps ? Math.min(stepOf(card, mode) + 1, l.length - 1) : 0];
+  }
   if (mode === 'smart') {
     const m = CONFIG.modes.smart;
     const ivl = (card.ivl || 0) / DAY, ease = card.ease || m.startEase;
@@ -54,7 +60,7 @@ export function schedule(card, rating, mode, now = Date.now()) {
     if (rating === 'easy') c.ease += 0.15;
     c.step = null;
   } else {
-    c.step = rating === 'again' ? 0 : Math.min(stepOf(c, mode) + 1, ladder(mode).length - 1);
+    c.step = rating === 'again' || (rating === 'learn' && !c.reps) ? 0 : Math.min(stepOf(c, mode) + 1, ladder(mode).length - 1);
     if (rating === 'again') c.lapses = (c.lapses || 0) + 1;
   }
   c.mode = mode;

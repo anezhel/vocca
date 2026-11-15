@@ -4,7 +4,7 @@ import { CONFIG, feature } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { t, pn, plural, num, interval, L } from '../i18n/index.js';
 import { progress } from '../core/store.js';
-import { planToday } from '../core/session.js';
+import { planToday, learningIds, freshLeft } from '../core/session.js';
 import { learnedStats, forecast, streak } from '../core/stats.js';
 import { clock, addDays, weekday } from '../core/dates.js';
 import { Screen, Title, Button, Icon, IconButton, Pill, PickSheet } from '../ui/kit.js';
@@ -20,17 +20,25 @@ export function Today({ course, go }) {
   const learned = learnedStats(course);
   const st = streak();
   const done = plan.total === 0;
-  const cta = plan.noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${() => go('settings', { pick: 'levels' })} />`
-    : done ? html`<${Button} label=${t('today.learnMore')} disabled=${!plan.doneToday} onClick=${() => go('lesson', { practice: true })} />`
-    : html`<${Button} label=${t('today.learn')} onClick=${() => go('lesson')} />`;
+  const finished = done && plan.doneToday > 0;   // 04s · план на сьогодні виконано
+  const learning = learningIds(course).length;
+  // Без лимитов: после плана — «Ще 5 нових слів»; повторить слова, которые учишь, можно всегда
+  const main = plan.noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${() => go('settings', { pick: 'levels' })} />`
+    : !done ? html`<${Button} label=${t('today.learn')} onClick=${() => go('lesson')} />`
+    : freshLeft(course) ? html`<${Button} label=${t('today.moreNew', { n: p.newPerDay })} onClick=${() => go('lesson', { extra: true })} />` : '';
+  const repeat = !plan.noLevels && learning > 0 && html`<${Button} variant="secondary" label=${t('today.repeatLearning')} onClick=${() => go('lesson', { practice: true })} />`;
+  const cta = html`${main}${repeat}`;
   return html`<${Screen} cls="screen--tab">
     <div class="top-bar"><span class="t-brand-wordmark brand">Vocca</span><span class="top-bar__mid"></span>
       ${feature('streak') && html`<span class="pill pill--glass streak-pill"><${Icon} name="flame" size=${18} /><span class="t-label-15-medium">${st.days}</span></span>`}</div>
-    <${Title} main=${greeting()} accent=${plan.noLevels ? t('today.noLevels') : done ? t('today.allDone') : t('today.timeTo')} />
-    <div class="hero hero--today"><div class="t-number-hero">${plan.total}</div>
-      <div><div class="t-label-17">${t('today.wordsToday', { w: plural(plan.total, 'words') })}</div>
+    ${finished ? html`<${Title} main=${t('today.planDone')} accent=${t('today.planDoneAccent')} />`
+      : html`<${Title} main=${greeting()} accent=${plan.noLevels ? t('today.noLevels') : done ? t('today.allDone') : t('today.timeTo')} />`}
+    <div class="hero hero--today"><div class="t-number-hero">${finished ? plan.doneToday : plan.total}</div>
+      <div><div class="t-label-17">${finished ? t('today.wordsDone', { w: plural(plan.doneToday, 'words') }) : t('today.wordsToday', { w: plural(plan.total, 'words') })}</div>
         ${!done && html`<div class="t-label-14 muted">${t('today.about', { n: plan.minutes, u: plural(plan.minutes, 'minutes') })}</div>`}</div></div>
     <div class="pills">
+      ${finished && plan.doneToday - plan.freshToday > 0 && html`<${Pill}>${t('today.repeated', { n: plan.doneToday - plan.freshToday })}</${Pill}>`}
+      ${finished && plan.freshToday > 0 && html`<${Pill}>${t('today.freshDone', { n: plan.freshToday })}</${Pill}>`}
       ${plan.reviews.length > 0 && html`<${Pill}>${t('today.review', { n: plan.reviews.length })}</${Pill}>`}
       ${plan.fresh.length > 0 && html`<${Pill}>${t('today.fresh', { n: plan.fresh.length })}</${Pill}>`}
       ${p.levels.length > 0 && html`<${Pill} onClick=${() => go('settings', { pick: 'levels' })}>${p.levels.join(' · ')}</${Pill}>`}

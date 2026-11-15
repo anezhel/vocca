@@ -5,8 +5,9 @@ import { CONFIG } from '../config.js';
 import { tri } from '../content/index.js';
 import { t, L, pn } from '../i18n/index.js';
 import { update, progress } from '../core/store.js';
-import { addToLearning, isAdded, ttsLang, tipSeen, setTipSeen } from '../core/words.js';
-import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Example, Sheet, cx } from '../ui/kit.js';
+import { ttsLang } from '../core/words.js';
+import { Screen, TopBar, Title, Button, SpeakButton, Overline, Example } from '../ui/kit.js';
+import { GroupDone } from './done.js';
 
 function load(rows) {
   const ids = new Set();
@@ -39,32 +40,39 @@ function stats(course, g) {
   return { total, learned, due: 0, status, subtitle };
 }
 
-// Экран группы: по одному экрану, внизу «Далі». За заход — CONFIG.groupSessionSize экранов.
+// Экран группы: по одному экрану, внизу «Далі». За заход — CONFIG.groupSessionSize экранов,
+// потом экран итога 19c (done.js): «Продовжити вчити» / «Повторити» / «Повернутися».
 function GroupScreen({ course, group, route, go, back, toast }) {
   const seen = state(course, group).seen;
-  const [list] = useState(() => {
+  const N = CONFIG.groupSessionSize;
+  // Очередь на этот заход: сначала непросмотренные; если всё просмотрено или «Повторити» — вся группа
+  const [queue, setQueue] = useState(() => {
     const unseen = group.items.filter((i) => !seen[i.id]);
-    return (route.review || !unseen.length ? group.items : unseen).slice(0, CONFIG.groupSessionSize);
+    return route.review || !unseen.length ? group.items : unseen;
   });
+  const [start, setStart] = useState(0);
+  const [done, setDone] = useState(false);
+  const list = queue.slice(start, start + N);
+  const left = Math.max(0, queue.length - start - list.length);
   const [pos, setPos] = useState(0);
-  const [sheet, setSheet] = useState(null);
-  const [, redraw] = useState(0);
   const item = list[pos];
   const lang = ttsLang(course);
   const title = L(group.title);
 
   const next = () => {
     update(() => { const p = progress(course.id); p.groups[group.id] = p.groups[group.id] || { seen: {} }; p.groups[group.id].seen[item.id] = Date.now(); });
-    if (pos + 1 < list.length) { setPos(pos + 1); scrollTo(0, 0); } else { toast(t('groups.finished', { x: pn(list.length, 'screens') })); back(); }
+    if (pos + 1 < list.length) { setPos(pos + 1); scrollTo(0, 0); } else setDone(true);
+  };
+  const restart = (q, s) => { setQueue(q); setStart(s); setPos(0); setDone(false); scrollTo(0, 0);
   };
 
-  const learn = (tg) => {
-    const text = group.meaning ? item.w : tg.w;
-    const ex = item.ex.find((e) => e.en.toLowerCase().includes(text.toLowerCase().split(' ')[0]));
-    addToLearning(course, { w: text, ipa: group.meaning ? item.ipa : tg.ipa, lvl: item.lvl, tr: group.meaning ? tg.tr : tg.tr, ex: ex ? [ex] : [] });
-    redraw((n) => n + 1);
-    if (!tipSeen('added')) setSheet(text);
-  };
+
+  if (done) {
+    const seenNow = state(course, group).seen;
+    return html`<${GroupDone} title=${title} seen=${group.items.filter((i) => seenNow[i.id]).length} total=${group.items.length}
+      words=${list.map((i) => i.w)} left=${left} onBack=${back}
+      onMore=${() => restart(queue, start + N)} onRepeat=${() => restart(queue, start)} />`;
+  }
 
   const hl = [item.w, ...item.targets.map((x) => x.w)];
   const chip = L(group.chip, { link: item.link });
@@ -72,44 +80,27 @@ function GroupScreen({ course, group, route, go, back, toast }) {
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
     <${Title} main=${title} cls="title--group" />
     <div class="rel">
+      <div class="rel__pair">
       <div class="card rel__base">
         <div class="rel__text"><div class="t-word-l">${item.w}</div>
           <div class="t-label-14 muted">${L(item.literal) || L(item.tr)}</div></div>
-        ${item.w && html`<${SpeakButton} text=${item.w} lang=${lang} />`}
+        ${item.w && html`<${SpeakButton} text=${item.w} lang=${lang} kind="outline" />`}
       </div>
       ${chip && html`<div class="rel__chip t-label-12-strong">${chip}</div>`}
-      ${item.targets.map((tg) => {
-        const text = group.meaning ? item.w : tg.w;
-        const added = isAdded(course, text);
-        return html`<div class="card rel__target">
+      <div class="rel__targets">${item.targets.map((tg) => html`<div class="card rel__target">
           <div class="rel__row"><div class="rel__text">
             <div class=${group.meaning ? 't-word-l' : 't-word-xl'}>${group.meaning ? L(tg.tr) : tg.w}</div>
             <div class="t-label-14 rel__sub">${group.meaning ? L(item.hint) : L(tg.tr)}</div></div>
             ${!group.meaning && html`<${SpeakButton} text=${tg.w} lang=${lang} kind="outline" />`}</div>
-          <button class=${cx('rel__learn', added && 'rel__learn--on')} disabled=${added} onClick=${() => learn(tg)}>
-            <${Icon} name=${added ? 'check' : 'plus'} size=${18} /><span class="t-label-16">${added ? t('common.added') : t('common.learn')}</span></button>
-        </div>`;
-      })}
+        </div>`)}</div>
+      </div>
       ${item.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${L(group.examples)}</${Overline}>
         <div class="examples">${item.ex.map((ex) => html`<${Example} ex=${ex} hl=${hl} />`)}</div></div>`}
       ${item.note && html`<div class="card card--pad"><${Overline}>${L(group.note, { link: item.link })}</${Overline}><p class="t-body-15">${L(item.note)}</p></div>`}
     </div>
-    ${sheet && html`<${AddedSheet} word=${sheet} onClose=${() => setSheet(null)} />`}
   </${Screen}>`;
 }
 
-// Лист 11a: «huge — у твоїх словах для вивчення»
-function AddedSheet({ word, onClose }) {
-  const [never, setNever] = useState(false);
-  const close = () => { if (never) setTipSeen('added'); onClose(); };
-  return html`<${Sheet} onClose=${close}>
-    <div class="sheet__head"><div class="t-heading-h2">${t('groups.addedTitle', { w: word })}</div></div>
-    <p class="t-body-15">${t('groups.addedText')}</p>
-    <p class="t-body-15 muted">${t('groups.addedWhere')}</p>
-    <button class="check-row" onClick=${() => setNever(!never)}><span class=${cx('radio radio--box', never && 'radio--on')}>${never && html`<${Icon} name="check" size=${16} />`}</span>
-      <span class="t-label-15">${t('groups.dontShow')}</span></button>
-    <${Button} variant="outline" label=${t('common.gotIt')} onClick=${close} />
-  </${Sheet}>`;
-}
+
 
 export default { load, stats, Screen: GroupScreen };

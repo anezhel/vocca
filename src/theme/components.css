@@ -11,7 +11,7 @@ button.card { width: 100%; text-align: left; }
 
 /* ── Заголовок экрана ── */
 .title { margin: var(--space-4) 0 var(--space-6); }
-.title--group { margin-bottom: 0; }
+.title--group { margin-bottom: 2px; }
 .brand { line-height: 44px; }
 
 /* ── Верхняя панель и шаги ── */
@@ -40,7 +40,7 @@ button.card { width: 100%; text-align: left; }
 .btn--outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--border-strong); }
 .btn--dark { background: var(--bg-inverse); color: var(--text-on-inverse); }
 .btn--danger { background: var(--bg-danger); color: var(--text-danger); }
-.cta-wrap { margin-top: var(--space-4); }
+.cta-wrap { margin-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-8); }
 
 /* ── Aura/Icon button: Style × Size ── */
 .ib { width: var(--ib); height: var(--ib); border-radius: 50%; display: inline-grid; place-items: center; flex: none; color: var(--text-primary); transition: transform .12s; }
@@ -96,6 +96,10 @@ button.card { width: 100%; text-align: left; }
   padding: var(--space-10) var(--layout-screen-x) calc(env(safe-area-inset-bottom) + var(--space-24)); display: flex; flex-direction: column; gap: var(--space-14); animation: up .25s ease-out; }
 .sheet__grab { width: 40px; height: 5px; border-radius: 3px; background: var(--border-default); margin: 0 auto var(--space-4); flex: none; }
 .sheet__head { display: flex; flex-direction: column; gap: var(--space-4); }
+.modal-wrap { position: fixed; z-index: 50; inset: 0; background: var(--bg-dim); display: flex; align-items: center; justify-content: center; padding: var(--space-20); animation: fade .2s; }
+.modal { width: 100%; max-width: 390px; background: var(--bg-surface); border-radius: var(--radius-32); padding: var(--space-24); display: flex; flex-direction: column; align-items: center; gap: var(--space-16); text-align: center; animation: pop .2s ease-out; }
+.modal__actions { width: 100%; display: flex; flex-direction: column; gap: var(--space-10); }
+@keyframes pop { from { transform: scale(.94); opacity: 0; } }
 @keyframes up { from { transform: translateY(40px); opacity: .4; } }
 @keyframes fade { from { opacity: 0; } }
 .pick-list { display: flex; flex-direction: column; gap: var(--space-8); }
@@ -219,15 +223,15 @@ button.card { width: 100%; text-align: left; }
 .meter-row { display: flex; align-items: center; gap: var(--space-10); }
 .meter-row .meter { margin-top: 0; }
 .repeat-btn { display: inline-flex; align-items: center; gap: var(--space-6); padding: 9px var(--space-14); border-radius: var(--radius-full); background: var(--bg-chart-today); white-space: nowrap; flex: none; }
-.rel { display: flex; flex-direction: column; gap: var(--space-12); }
+.rel { display: flex; flex-direction: column; gap: var(--space-16); }
+.rel__pair { display: flex; flex-direction: column; gap: var(--space-8); }
+.rel__targets { display: flex; flex-direction: column; gap: var(--space-4); }
 .rel__base { display: flex; align-items: center; gap: var(--space-12); padding: 18px var(--space-20); }
 .rel__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; }
-.rel__chip { align-self: center; position: relative; z-index: 2; margin: -22px 0; padding: 6px var(--space-12); border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
+.rel__chip { align-self: center; position: relative; z-index: 2; margin: -18px 0; padding: 6px var(--space-12); border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
 .rel__target { background: var(--bg-accent); color: var(--text-on-accent); border-radius: var(--radius-28); padding: var(--space-20); display: flex; flex-direction: column; gap: var(--space-16); box-shadow: none; }
 .rel__row { display: flex; align-items: flex-start; gap: var(--space-12); }
 .rel__sub { color: var(--text-on-pastel); opacity: .75; }
-.rel__learn { height: 48px; border-radius: var(--radius-full); background: var(--bg-surface); display: flex; align-items: center; justify-content: center; gap: var(--space-8); }
-.rel__learn--on { opacity: .75; }
 
 /* ── Неправильные глаголы ── */
 .forms3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
@@ -297,3 +301,18 @@ button.card { width: 100%; text-align: left; }
 /* ── Тост ── */
 .toast { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 110px); max-width: 360px;
   background: var(--bg-inverse); color: var(--text-on-inverse); padding: var(--space-12) 18px; border-radius: var(--radius-full); font-size: 14px; font-weight: 500; text-align: center; animation: up .25s; }
+
+/* 19c · итог порции в группе (src/groups/done.js) */
+.done { position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: center; gap: 40px; padding-top: 48px; text-align: center; }
+.done::before { content: ''; position: absolute; z-index: -1; left: 50%; top: 120px; width: 560px; height: 440px; transform: translate(-50%, -50%); background: radial-gradient(closest-side, var(--bg-surface), transparent); pointer-events: none; }
+.done__head { display: flex; flex-direction: column; gap: var(--space-8); padding: 0 var(--space-8); }
+.done__words { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-8) var(--space-4); }
+.ring { position: relative; width: var(--ring); height: var(--ring); flex: none; }
+.ring svg { display: block; }
+.ring__track { stroke: var(--bg-accent); }
+.ring__bar { stroke: var(--bg-inverse); transition: stroke-dasharray .6s ease-out; }
+.ring__dot { fill: var(--bg-inverse); }
+.ring__mid { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.counter--dark { background: var(--bg-inverse); color: var(--text-on-inverse); border-color: transparent; }
+.done-actions { display: flex; flex-direction: column; gap: var(--space-8); }
+.link-btn { height: 52px; width: 100%; text-align: center; }
