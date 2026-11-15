@@ -5,7 +5,7 @@ import { t, L, pn, plural, interval } from '../i18n/index.js';
 import { clock } from '../core/dates.js';
 import { getState, progress } from '../core/store.js';
 import { planToday, startLesson, learnNew, rate, finishLesson } from '../core/session.js';
-import { ratingsFor, nextInterval } from '../core/srs.js';
+import { ratingsFor, nextInterval, asRating } from '../core/srs.js';
 import { streak, week } from '../core/stats.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
@@ -87,16 +87,23 @@ function Answer({ course, w, lesson, bar, item, mode, onRate, onExplain }) {
   useEffect(() => { if (getState().autoplay) tts.speak(word, lang); }, [w.id]);
   const card = progress(course.id).cards[w.id];
   const ratings = ratingsFor(mode);
+  const simple = CONFIG.answerButtons === 'simple';
   const ex = w.ex[0];
   const when = (r) => {
+    r = asRating(r);
     const sec = nextInterval(card, r, mode);
     if (mode === 'smart') return r === 'again' ? t('when.today') : interval(sec, true);
     return r === 'again' && mode === 'fixed' ? t('when.again15', { x: interval(sec).replace(/^\S+\s/, '') }) : interval(sec);
   };
-  return html`<${Screen} cls="screen--answer" bottom=${html`
-      ${mode !== 'smart' && html`<div class="t-label-14 muted center">${t('lesson.rememberQ')}</div>`}
-      <div class=${cx('rates', 'rates--' + ratings.length)}>${ratings.map((r) => html`<button class="rate card" data-r=${r} onClick=${() => onRate(r)}>
-        <span class="t-title-m">${t('lesson.rate.' + (r === 'again' && mode === 'smart' ? 'againShort' : r))}</span><span class="t-label-12 muted">${when(r)}</span></button>`)}</div>`}>
+  const tile = (r) => html`<button class="rate card" data-r=${r} onClick=${() => onRate(r)}>
+        <span class="t-title-m">${t('lesson.rate.' + (r === 'again' && mode === 'smart' ? 'againShort' : r))}</span><span class="t-label-12 muted">${when(r)}</span></button>`;
+  // 'simple': Не знаю · Забуто плитками, «Знаю це слово» — кнопкой под ними
+  const buttons = simple
+    ? html`<div class="rates-simple"><div class="rates rates--2">${ratings.filter((r) => r !== 'known').map(tile)}</div>
+        <${Button} variant="secondary" label=${t('lesson.rate.known')} onClick=${() => onRate('known')} /></div>`
+    : html`${mode !== 'smart' && html`<div class="t-label-14 muted center">${t('lesson.rememberQ')}</div>`}
+      <div class=${cx('rates', 'rates--' + ratings.length)}>${ratings.map(tile)}</div>`;
+  return html`<${Screen} cls="screen--answer" bottom=${buttons}>
     <${TopBar} ...${bar} label=${counter(lesson)} />
     <div class="word-card">
       <div class="word-card__head"><div><div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>

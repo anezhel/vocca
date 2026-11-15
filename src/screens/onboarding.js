@@ -66,7 +66,9 @@ export function Levels({ go, back }) {
 
 export function ModeCards({ value, onChange }) {
   const fixed = CONFIG.modes.fixed.ladder.map((x) => dur(parseFloat(x) * { m: 60, h: 3600, d: 86400 }[x.slice(-1)])).join(' → ');
-  const items = [['smart', t('modes.smartDesc')], ['fixed', fixed], ['daily', t('modes.dailyDesc')]];
+  const simple = CONFIG.answerButtons === 'simple';
+  const first = fixed.split(' → ')[0];
+  const items = [['smart', t(simple ? 'modes.smartDescSimple' : 'modes.smartDesc')], ['fixed', simple ? t('modes.fixedDescSimple', { x: first }) : fixed], ['daily', t('modes.dailyDesc')]];
   return html`<div class="mode-cards">${items.map(([m, desc]) => html`<button class=${cx('mode-card', 'card', value === m && 'mode-card--on')} onClick=${() => onChange(m)}>
     <span class="mode-card__text"><span class="t-title-m">${t('modes.' + m)} ${m === 'smart' && html`<span class="badge t-label-12-medium">${t('onboarding.recommended')}</span>`}</span>
     <span class="t-label-13 muted">${desc}</span></span>

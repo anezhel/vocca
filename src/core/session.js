@@ -3,7 +3,7 @@ import { CONFIG } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { getState, update, progress, dayLog } from './store.js';
 import { dayKey, endOfDay, startOfDay } from './dates.js';
-import { schedule, markKnown } from './srs.js';
+import { schedule, markKnown, asRating } from './srs.js';
 import { wordById } from './words.js';
 
 export const minutesFor = (nNew, nReview) => Math.max(1, Math.round((nNew * CONFIG.secondsPerNew + nReview * CONFIG.secondsPerReview) / 60));
@@ -31,6 +31,7 @@ export function planToday(course, now = Date.now()) {
   const later = [];
   for (const [id, c] of Object.entries(p.cards)) {
     if (!wordById(course, id)) continue;
+    if (c.known && !CONFIG.recheckKnown) continue;
     if (c.due <= until) due.push([id, c]);
     else if (c.due <= endOfDay(now)) later.push(c.due);
   }
@@ -54,7 +55,7 @@ export function startLesson(course, plan, practice = false) {
   let queue;
   if (practice) {
     const p = progress(course.id), start = startOfDay();
-    const ids = Object.entries(p.cards).filter(([id, c]) => c.last >= start && wordById(course, id)).map(([id]) => id);
+    const ids = Object.entries(p.cards).filter(([id, c]) => c.last >= start && wordById(course, id) && !(c.known && !CONFIG.recheckKnown)).map(([id]) => id);
     queue = ids.sort(() => Math.random() - 0.5).slice(0, 20).map((id) => ({ kind: 'recall', id }));
   } else {
     queue = [];
@@ -80,10 +81,20 @@ export function learnNew(course, lesson, id, known) {
 
 function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.queue.filter((x) => x !== id); }
 
-// Оценка после ответа. «Забуто» в умном режиме — слово вернётся в этом же занятии.
+// Оценка после ответа. «Забуто» в умном режиме — слово вернётся в этом же занятии
+// (с кнопками 'simple' — один раз, чтобы занятие не шло по кругу).
+// «Знаю це слово» — слово сразу выучено.
 export function rate(course, lesson, item, rating) {
   const p = progress(course.id);
-  const again = rating === 'again' && p.mode === 'smart';
+  if (rating === 'known') {
+    if (!lesson.practice) update(() => { p.cards[item.id] = markKnown(); dropFromQueue(course, item.id); const d = dayLog(dayKey()); if (item.fresh) d.fresh++; else d.reviews++; });
+    lesson.done++;
+    if (item.fresh) lesson.stats.fresh++; else lesson.stats.reviews++;
+    return;
+  }
+  const simple = CONFIG.answerButtons === 'simple';
+  rating = asRating(rating);
+  const again = rating === 'again' && p.mode === 'smart' && !(simple && item.retry);
   if (!lesson.practice) {
     update(() => {
       p.cards[item.id] = schedule(p.cards[item.id], rating, p.mode);

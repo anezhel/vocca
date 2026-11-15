@@ -80,7 +80,7 @@ export function Settings({ course, route }) {
       <${ModeCards} value=${p.mode} onChange=${(m) => set((st, c) => { c.mode = m; })} />
       <${Button} label=${t('common.done')} onClick=${close} /></${Sheet}>`}
     ${open === 'how' && html`<${Sheet} onClose=${close}><div class="sheet__head"><div class="t-heading-h2">${t('settings.howTitle')}</div></div>
-      <p class="t-body-16">${t('settings.howText')}</p><${Button} label=${t('common.gotIt')} onClick=${close} /></${Sheet}>`}
+      <p class="t-body-16">${t(CONFIG.answerButtons === 'simple' ? 'settings.howTextSimple' : 'settings.howText')}</p><${Button} label=${t('common.gotIt')} onClick=${close} /></${Sheet}>`}
     ${open === 'reset' && html`<${ConfirmSheet} title=${t('settings.resetTitle')} text=${t('settings.resetText')} yes=${t('settings.resetYes')} no=${t('common.cancel')} danger
       onYes=${() => { resetCourse(course.id); update((st) => { progress(course.id).levels = p.levels; }); close(); }} onNo=${close} />`}
   </${Screen}>`;
