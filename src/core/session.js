@@ -3,7 +3,7 @@ import { CONFIG } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { getState, update, progress, dayLog } from './store.js';
 import { dayKey, endOfDay, startOfDay } from './dates.js';
-import { schedule, markKnown, asRating, status } from './srs.js';
+import { schedule, markKnown, asRating, status, isLearned } from './srs.js';
 import { wordById } from './words.js';
 
 export const minutesFor = (nNew, nReview) => Math.max(1, Math.round((nNew * CONFIG.secondsPerNew + nReview * CONFIG.secondsPerReview) / 60));
@@ -84,7 +84,7 @@ export const freshLeft = (course) => pickFresh(course, progress(course.id), 1).l
 // Знакомое слово дневной план не тратит: вместо него сразу приходит следующее новое.
 export function learnNew(course, lesson, id, known) {
   if (known) {
-    update(() => { progress(course.id).cards[id] = markKnown(); dropFromQueue(course, id); });
+    update(() => { progress(course.id).cards[id] = markKnown(); dropFromQueue(course, id); countLearned(); });
     const inLesson = new Set(lesson.queue.map((x) => x.id));
     const next = pickFresh(course, progress(course.id), 50).find((x) => !inLesson.has(x));
     if (next) lesson.queue.splice(1, 0, { kind: 'new', id: next });
@@ -95,6 +95,9 @@ export function learnNew(course, lesson, id, known) {
   }
 }
 
+// «Додано у вивчені» на главной: +1 к сегодняшнему дню (вызывать внутри update)
+export function countLearned(delta = 1) { const d = dayLog(dayKey()); d.learned = Math.max(0, (d.learned || 0) + delta); }
+
 function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.queue.filter((x) => x !== id); }
 
 // Оценка после ответа. «Забуто» в умном режиме — слово вернётся в этом же занятии
@@ -103,7 +106,10 @@ function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.
 export function rate(course, lesson, item, rating) {
   const p = progress(course.id);
   if (rating === 'known') {
-    update(() => { p.cards[item.id] = markKnown(); dropFromQueue(course, item.id); if (!lesson.practice) { const d = dayLog(dayKey()); if (item.fresh) d.fresh++; else d.reviews++; } });
+    update(() => {
+      p.cards[item.id] = markKnown(); dropFromQueue(course, item.id); countLearned();
+      const d = dayLog(dayKey()); if (lesson.practice) d.practice = (d.practice || 0) + 1; else if (item.fresh) d.fresh++; else d.reviews++;
+    });
     lesson.done++;
     if (item.fresh) lesson.stats.fresh++; else lesson.stats.reviews++;
     return;
@@ -113,7 +119,9 @@ export function rate(course, lesson, item, rating) {
   const again = rating === 'again' && p.mode === 'smart' && !(simple && item.retry);
   if (!lesson.practice) {
     update(() => {
+      const was = isLearned(p.cards[item.id]);
       p.cards[item.id] = schedule(p.cards[item.id], rating, p.mode);
+      if (!was && isLearned(p.cards[item.id])) { p.cards[item.id].learnedAt = Date.now(); countLearned(); }
       dropFromQueue(course, item.id);
       if (!again) { const d = dayLog(dayKey()); if (item.fresh) d.fresh++; else d.reviews++; }
     });
@@ -131,9 +139,12 @@ export function rate(course, lesson, item, rating) {
 export function keepLearning(course, lesson, item) {
   const p = progress(course.id);
   const isNew = item.kind === 'new' || item.fresh;
+  if (lesson.practice) update(() => { const d = dayLog(dayKey()); d.practice = (d.practice || 0) + 1; });
   if (!lesson.practice) {
     update(() => {
+      const was = isLearned(p.cards[item.id]);
       p.cards[item.id] = schedule(p.cards[item.id], 'learn', p.mode);
+      if (!was && isLearned(p.cards[item.id])) { p.cards[item.id].learnedAt = Date.now(); countLearned(); }
       dropFromQueue(course, item.id);
       const d = dayLog(dayKey()); if (isNew) d.fresh++; else d.reviews++;
     });

@@ -72,7 +72,7 @@ export function schedule(card, rating, mode, now = Date.now()) {
 }
 
 // «Я знаю це» / «Знаю це слово» — слово сразу выучено. Вернётся на проверку через месяц, только если CONFIG.recheckKnown
-export const markKnown = (now = Date.now()) => ({ known: true, ivl: 30 * DAY, due: now + 30 * DAY * 1000, reps: 1, last: now, ease: CONFIG.modes.smart.startEase });
+export const markKnown = (now = Date.now()) => ({ known: true, learnedAt: now, ivl: 30 * DAY, due: now + 30 * DAY * 1000, reps: 1, last: now, ease: CONFIG.modes.smart.startEase });
 
 export const isLearned = (card) => !!card && (card.known || (card.ivl || 0) >= CONFIG.learnedAfterDays * DAY);
 export const status = (card) => (!card ? 'fresh' : isLearned(card) ? 'learned' : 'learning');

@@ -329,3 +329,15 @@ button.card { width: 100%; text-align: left; }
 .learned-row__body { display: flex; flex-direction: column; gap: var(--space-14); }
 .learned-row__back { width: 100%; height: 45px; border-radius: var(--radius-full); background: var(--bg-canvas); display: flex; align-items: center; justify-content: center; gap: 6px; }
 .chips--learned .chip:not(.chip--on) { background: transparent; border-color: var(--border-strong); }
+
+/* 04 · кнопки: лаймовая «Повторити слова, які вчу» с иконкой в белом кружке, у чёрной — белый кружок */
+.btn--accent { background: var(--bg-accent); color: var(--text-on-accent); border: 1px solid var(--border-default); justify-content: space-between; padding: 0 var(--space-8) 0 var(--space-24); }
+.btn--accent .btn__circle, .btn--circle-white .btn__circle { background: var(--bg-surface); color: var(--text-primary); }
+
+/* 04 · статистика: «Повторено слів» (линия) и «Додано у вивчені» (столбики) */
+.stats-card__title { white-space: pre-line; line-height: 1.2; }
+.chart--line circle { fill: var(--bg-surface); stroke: var(--text-primary); stroke-width: 1.4; }
+.chart--line circle.is-sel { fill: var(--bg-chart-today); stroke: var(--bg-inverse); stroke-width: 2; }
+.chart__bar { fill: var(--bg-accent); }
+.chart__bar.is-sel { stroke: var(--text-primary); stroke-width: 2; }
+.chart__bar.is-sel-solid { fill: var(--bg-inverse); }
