@@ -31,7 +31,7 @@ export function GroupDone({ title, seen, total, words, left, onMore, onRepeat, o
     <div class="done">
       <${Ring} value=${seen} total=${total} />
       <div class="done__head"><h1 class="t-heading-h1">${t('groups.wellDone')}</h1>
-        <p class="t-label-15 muted">${left > 0 ? t('groups.portionLeft', { title, x: pn(left, unit) }) : t('groups.allPassed', { title })}</p></div>
+        <p class="t-body-16 muted">${left > 0 ? t('groups.portionLeft', { title, x: pn(left, unit) }) : t('groups.allPassed', { title })}</p></div>
       <div class="done__words">${shown.map((w) => html`<span class="counter t-label-15">${w}</span>`)}
         ${more > 0 && html`<span class="counter counter--dark t-label-15">+${more}</span>`}</div>
     </div>

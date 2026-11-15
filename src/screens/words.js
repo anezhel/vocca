@@ -1,4 +1,5 @@
 // Экран 18 «Слова» (все слова курса с фильтрами) и 04a «Вивчено» (выученные, можно вернуть в изучение).
+// В строках нет меток статуса: звук и стрелка с примерами; у выученных — «Повернути у вивчення».
 import { html, useState, useMemo } from '../../lib/preact-htm.js';
 import { LEVELS } from '../content/index.js';
 import { t, L, num } from '../i18n/index.js';
@@ -15,9 +16,12 @@ function allWords(course) {
   return [...Object.values(p.custom), ...course.words];
 }
 
-export function Words({ course }) {
+export function Words({ course, toast }) {
   const p = progress(course.id);
   const [filter, setFilter] = useState('all');
+  const [open, setOpen] = useState(null);
+  const [ask, setAsk] = useState(null);
+  const [, redraw] = useState(0);
   const [levels, setLevels] = useState([]);
   const [shownN, setShownN] = useState(PAGE);
   const words = allWords(course);
@@ -30,20 +34,26 @@ export function Words({ course }) {
     return !levels.length || levels.includes(w.lvl);
   });
   const lang = ttsLang(course);
+  const giveBack = (w) => {
+    returnToLearning(course, w.id);
+    setAsk(null); redraw((n) => n + 1);
+    if (toast) toast(t('words.returned', { w: shown(course, w) }));
+  };
   const tog = (l) => { setLevels(levels.includes(l) ? levels.filter((x) => x !== l) : [...levels, l]); setShownN(PAGE); };
   return html`<${Screen} cls="screen--tab">
     <div class="top-space"></div>
-    <${Title} main=${t('words.title')} accent=${t('words.inCourse', { n: num(course.words.length) })} />
+    <${Title} main=${t('words.title')} />
     <${Segmented} cls="seg--wide" value=${filter} onChange=${(v) => { setFilter(v); setShownN(PAGE); }}
       options=${[['all', 'all'], ['learning', 'learning'], ['learned', 'learned'], ['fresh', 'fresh']].map(([v, k]) => ({ value: v, label: t('words.' + k) }))} />
     <div class="level-tiles">${LEVELS.map((l) => html`<button class=${cx('level-tile', levels.includes(l) && 'level-tile--on')} data-level=${l} onClick=${() => tog(l)}>
       <span class="t-number-xs">${l}</span><span class="t-label-12">${num(counts[l])} ${t('pl.words.2')}</span>
       ${levels.includes(l) && html`<span class="level-tile__check"><${Icon} name="check" size=${14} /></span>`}</button>`)}</div>
-    <div class="word-list">${list.length ? list.slice(0, shownN).map((w) => {
-      const s = p.queue.includes(w.id) && !p.cards[w.id] ? 'learning' : status(p.cards[w.id]);
-      return html`<${WordRow} key=${w.id} word=${shown(course, w)} lvl=${w.lvl} tr=${L(w.tr)} status=${s} speak=${{ text: shown(course, w), lang }} />`;
-    }) : html`<p class="t-body-15 muted center">${t('words.empty')}</p>`}</div>
+    <div class="word-list word-list--tight">${list.length ? list.slice(0, shownN).map((w) => html`<${ExpandRow} key=${w.id} course=${course} w=${w} lang=${lang}
+      open=${open === w.id} onToggle=${() => setOpen(open === w.id ? null : w.id)}
+      onReturn=${status(p.cards[w.id]) === 'learned' ? () => setAsk(w) : null} />`)
+      : html`<p class="t-body-15 muted center">${t('words.empty')}</p>`}</div>
     ${list.length > shownN && html`<button class="more t-label-15-medium" onClick=${() => setShownN(shownN + PAGE)}>${t('common.more')}</button>`}
+    ${ask && html`<${ReturnSheet} course=${course} w=${ask} onClose=${() => setAsk(null)} onYes=${() => giveBack(ask)} />`}
   </${Screen}>`;
 }
 
@@ -69,7 +79,7 @@ export function Learned({ course, back, toast }) {
     <${Title} main=${t('words.learnedTitle')} />
     <div class="chips chips--learned">${['all', ...LEVELS].map((l) => html`<button class=${cx('chip', lvl === l && 'chip--on')} onClick=${() => { setLvl(l); setShownN(PAGE); }}>
       ${l === 'all' ? t('words.allN', { n: words.length }) : l}</button>`)}</div>
-    <div class="word-list word-list--tight">${list.length ? list.slice(0, shownN).map((w) => html`<${LearnedRow} key=${w.id} course=${course} w=${w} lang=${lang}
+    <div class="word-list word-list--tight">${list.length ? list.slice(0, shownN).map((w) => html`<${ExpandRow} key=${w.id} course=${course} w=${w} lang=${lang}
       open=${open === w.id} onToggle=${() => setOpen(open === w.id ? null : w.id)} onReturn=${() => setAsk(w)} />`)
       : html`<p class="t-body-15 muted center">${t('words.empty')}</p>`}</div>
     ${list.length > shownN && html`<button class="more t-label-15-medium" onClick=${() => setShownN(shownN + PAGE)}>${t('common.more')}</button>`}
@@ -77,8 +87,9 @@ export function Learned({ course, back, toast }) {
   </${Screen}>`;
 }
 
-// Строка выученного слова (компонент Aura/Learned row: Collapsed / Expanded)
-function LearnedRow({ course, w, lang, open, onToggle, onReturn }) {
+// Строка слова с примерами (компонент Aura/Word row expand: Collapsed / Expanded) — экраны 18 и 04a.
+// onReturn — только у выученных слов: кнопка «Повернути у вивчення».
+function ExpandRow({ course, w, lang, open, onToggle, onReturn }) {
   const word = shown(course, w);
   return html`<div class=${cx('learned-row card', open && 'learned-row--open')}>
     <div class="learned-row__top" onClick=${onToggle}>
@@ -89,7 +100,7 @@ function LearnedRow({ course, w, lang, open, onToggle, onReturn }) {
     </div>
     ${open && html`<div class="learned-row__body">
       ${w.ex.length > 0 && html`<div class="examples">${w.ex.slice(0, 2).map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div>`}
-      <button class="learned-row__back t-label-14-strong" onClick=${onReturn}><${Icon} name="refresh" size=${16} />${t('words.returnToLearning')}</button>
+      ${onReturn && html`<button class="learned-row__back t-label-14-strong" onClick=${onReturn}><${Icon} name="refresh" size=${16} />${t('words.returnToLearning')}</button>`}
     </div>`}
   </div>`;
 }
