@@ -92,7 +92,8 @@ export default {
   words: {
     title: 'Слова', inCourse: '{n} в курсе', all: 'Все', learning: 'Учу', learned: 'Выучено', fresh: 'Новые',
     status: { learning: 'учу', learned: 'выучено', fresh: 'новое', reinforcing: 'закрепляется' },
-    empty: 'Здесь пока пусто', learnedTitle: 'Выученные слова', learnedOf: '{a} из {b}', allN: 'Все {n}',
+    empty: 'Здесь пока пусто', learnedTitle: 'Выучено', returnToLearning: 'Вернуть в изучение', returned: '{w} — снова в изучении', examples: 'Примеры',
+    returnText: 'Слово в выученных и больше не показывается. Вернуть его в изучение? Оно снова появится в занятиях со статусом «учу».', learnedOf: '{a} из {b}', allN: 'Все {n}',
   },
   settings: {
     title: 'Настройки', learning: 'Учёба', sound: 'Звук и напоминания', look: 'Оформление', account: 'Аккаунт', data: 'Данные', about: 'О приложении',

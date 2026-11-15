@@ -3,6 +3,7 @@ import { LEVELS } from '../content/index.js';
 import { getState, progress, update } from './store.js';
 import { dayKey, addDays, startOfWeek, daysFrom, endOfDay } from './dates.js';
 import { isLearned } from './srs.js';
+import { CONFIG } from '../config.js';
 import { wordById } from './words.js';
 
 export function learnedStats(course) {
@@ -23,6 +24,7 @@ export function forecast(course, days = 5, now = Date.now()) {
   const out = Array(days).fill(0);
   for (const [id, c] of Object.entries(p.cards)) {
     if (!wordById(course, id) || c.due == null) continue;
+    if (c.known && !CONFIG.recheckKnown) continue; // «Я знаю це» — больше не придёт
     const d = c.due <= endOfDay(now) ? 0 : daysFrom(now, c.due);
     if (d < days) out[d]++;
   }

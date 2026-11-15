@@ -317,3 +317,15 @@ button.card { width: 100%; text-align: left; }
 .counter--dark { background: var(--bg-inverse); color: var(--text-on-inverse); border-color: transparent; }
 .done-actions { display: flex; flex-direction: column; gap: var(--space-8); }
 .link-btn { height: 52px; width: 100%; text-align: center; }
+
+/* 04a · Вивчено: строка выученного слова раскрывается — примеры и «Повернути у вивчення» */
+.word-list--tight { gap: 6px; }
+.chips--learned { margin-bottom: var(--space-10); }
+.learned-row { display: flex; flex-direction: column; gap: var(--space-14); padding: var(--space-16) var(--space-16) var(--space-16) var(--space-20); }
+.learned-row__top { display: flex; align-items: center; gap: var(--space-8); cursor: pointer; }
+.learned-row__top .word-row__text { margin-right: var(--space-4); }
+.learned-row__chev svg { transition: transform .2s; }
+.learned-row--open .learned-row__chev svg { transform: rotate(180deg); }
+.learned-row__body { display: flex; flex-direction: column; gap: var(--space-14); }
+.learned-row__back { width: 100%; height: 45px; border-radius: var(--radius-full); background: var(--bg-canvas); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.chips--learned .chip:not(.chip--on) { background: transparent; border-color: var(--border-strong); }
