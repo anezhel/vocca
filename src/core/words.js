@@ -1,6 +1,7 @@
 // Слово для показа: учитывает вариант английского (США / Британия) и язык интерфейса.
 import { getState, progress, update } from './store.js';
 import { L } from '../i18n/index.js';
+import { dayKey as dayKeyOf } from './dates.js';
 
 export const wordById = (course, id) => course.byId.get(id) || progress(course.id).custom[id] || null;
 
@@ -39,6 +40,9 @@ export const setTipSeen = (key) => update((s) => { s.tips[key] = true; });
 export function returnToLearning(course, id, now = Date.now()) {
   update(() => {
     const p = progress(course.id), c = p.cards[id] || {};
+    const today = new Date(now).toDateString();
+    const learnedAt = c.learnedAt || (c.known ? c.last : null);
+    if (learnedAt && new Date(learnedAt).toDateString() === today) { const d = getState().log[dayKeyOf(now)]; if (d && d.learned) d.learned--; }
     p.cards[id] = { reps: Math.max(1, c.reps || 0), ivl: 0, due: now, last: c.last || now, ease: c.ease || 2.5, mode: p.mode, step: 0, lapses: c.lapses || 0 };
   });
 }

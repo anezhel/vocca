@@ -31,6 +31,16 @@ export function forecast(course, days = 5, now = Date.now()) {
   return out;
 }
 
+// Статистика по дням для главной: последние `days` дней, сегодня — последний.
+// repeated — слова, пройденные в «Вчити слова» и «Повторити слова, які вчу»; learned — добавлено в «Вивчено».
+export function history(days, now = Date.now()) {
+  const log = getState().log;
+  return Array.from({ length: days }, (_, i) => {
+    const ts = addDays(now, i - days + 1), d = log[dayKey(ts)] || {};
+    return { ts, repeated: (d.reviews || 0) + (d.fresh || 0) + (d.practice || 0), learned: Math.max(0, d.learned || 0) };
+  });
+}
+
 const studied = (key) => { const d = getState().log[key]; return !!d && (d.reviews + d.fresh > 0); };
 
 // Серия: дни подряд с занятием. Один пропущенный день закрывает заморозка (одна в неделю).
