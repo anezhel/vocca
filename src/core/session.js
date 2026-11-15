@@ -3,7 +3,7 @@ import { CONFIG } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { getState, update, progress, dayLog } from './store.js';
 import { dayKey, endOfDay, startOfDay } from './dates.js';
-import { schedule, markKnown, asRating } from './srs.js';
+import { schedule, markKnown, asRating, status } from './srs.js';
 import { wordById } from './words.js';
 
 export const minutesFor = (nNew, nReview) => Math.max(1, Math.round((nNew * CONFIG.secondsPerNew + nReview * CONFIG.secondsPerReview) / 60));
@@ -50,13 +50,12 @@ export function planToday(course, now = Date.now()) {
   };
 }
 
-// Очередь занятия. practice = «Повторити ще раз»: слова сегодняшнего дня без изменения интервалов.
+// Очередь занятия. practice = «Повторити слова, які вчу»: слова со статусом «Вчу», без изменения расписания.
 export function startLesson(course, plan, practice = false) {
   let queue;
   if (practice) {
-    const p = progress(course.id), start = startOfDay();
-    const ids = Object.entries(p.cards).filter(([id, c]) => c.last >= start && wordById(course, id) && !(c.known && !CONFIG.recheckKnown)).map(([id]) => id);
-    queue = ids.sort(() => Math.random() - 0.5).slice(0, 20).map((id) => ({ kind: 'recall', id }));
+    const ids = learningIds(course);
+    queue = ids.sort(() => Math.random() - 0.5).slice(0, CONFIG.repeatSize).map((id) => ({ kind: 'recall', id }));
   } else {
     queue = [];
     const r = [...plan.reviews], f = [...plan.fresh];
@@ -68,11 +67,28 @@ export function startLesson(course, plan, practice = false) {
   return { queue, total: queue.length, done: 0, practice, startedAt: Date.now(), stats: { reviews: 0, fresh: 0 }, freshIds: [] };
 }
 
-// Новое слово: «Вчити» → вспомним его через пару карточек; «Я знаю це» → сразу выучено.
+// Слова со статусом «Вчу» — для «Повторити слова, які вчу»
+export function learningIds(course) {
+  return Object.entries(progress(course.id).cards).filter(([id, c]) => wordById(course, id) && status(c) === 'learning').map(([id]) => id);
+}
+
+// «Ще 5 нових слів» после плана: новые слова сверх дневного лимита
+export function extraPlan(course) {
+  const p = progress(course.id);
+  const fresh = pickFresh(course, p, p.newPerDay);
+  return { reviews: [], fresh, total: fresh.length };
+}
+export const freshLeft = (course) => pickFresh(course, progress(course.id), 1).length > 0;
+
+// Новое слово: «Вчити» → вспомним его через пару карточек (в карточках — по расписанию); «Я знаю це» → сразу выучено.
+// Знакомое слово дневной план не тратит: вместо него сразу приходит следующее новое.
 export function learnNew(course, lesson, id, known) {
   if (known) {
-    update(() => { progress(course.id).cards[id] = markKnown(); dropFromQueue(course, id); dayLog(dayKey()).fresh++; });
-    lesson.done++; lesson.stats.fresh++;
+    update(() => { progress(course.id).cards[id] = markKnown(); dropFromQueue(course, id); });
+    const inLesson = new Set(lesson.queue.map((x) => x.id));
+    const next = pickFresh(course, progress(course.id), 50).find((x) => !inLesson.has(x));
+    if (next) lesson.queue.splice(1, 0, { kind: 'new', id: next });
+    else lesson.done++;
   } else {
     lesson.queue.splice(Math.min(CONFIG.repeatGap - 1, lesson.queue.length), 0, { kind: 'recall', id, fresh: true });
     lesson.freshIds.push(id);
@@ -87,7 +103,7 @@ function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.
 export function rate(course, lesson, item, rating) {
   const p = progress(course.id);
   if (rating === 'known') {
-    if (!lesson.practice) update(() => { p.cards[item.id] = markKnown(); dropFromQueue(course, item.id); const d = dayLog(dayKey()); if (item.fresh) d.fresh++; else d.reviews++; });
+    update(() => { p.cards[item.id] = markKnown(); dropFromQueue(course, item.id); if (!lesson.practice) { const d = dayLog(dayKey()); if (item.fresh) d.fresh++; else d.reviews++; } });
     lesson.done++;
     if (item.fresh) lesson.stats.fresh++; else lesson.stats.reviews++;
     return;
@@ -108,6 +124,23 @@ export function rate(course, lesson, item, rating) {
     lesson.done++;
     if (item.fresh) lesson.stats.fresh++; else lesson.stats.reviews++;
   }
+}
+
+// «Вчити» на карточке (lessonStyle: 'cards'): слово остаётся в «Вчу» и вернётся по расписанию режима.
+// В «Повторити слова, які вчу» расписание не меняется.
+export function keepLearning(course, lesson, item) {
+  const p = progress(course.id);
+  const isNew = item.kind === 'new' || item.fresh;
+  if (!lesson.practice) {
+    update(() => {
+      p.cards[item.id] = schedule(p.cards[item.id], 'learn', p.mode);
+      dropFromQueue(course, item.id);
+      const d = dayLog(dayKey()); if (isNew) d.fresh++; else d.reviews++;
+    });
+  }
+  if (item.kind === 'new') lesson.freshIds.push(item.id);
+  lesson.done++;
+  if (isNew) lesson.stats.fresh++; else lesson.stats.reviews++;
 }
 
 export function finishLesson(lesson) {

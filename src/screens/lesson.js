@@ -1,10 +1,11 @@
-// Занятие «Вчити слова»: 07 новое слово, 05 «Згадай англійською», 06 ответ и оценка, 06e «Що це означає?», 08 итог.
+// Занятие «Вчити слова». CONFIG.lessonStyle = 'cards': 07 новое слово и 07r повторение — карточки «Я знаю це / Вчити».
+// 'recall' (прежний сценарий): 07 новое слово, 05 «Згадай англійською», 06 ответ и оценка, 06e «Що це означає?». В конце — 08 итог.
 import { html, useState, useEffect, useRef } from '../../lib/preact-htm.js';
 import { CONFIG, feature } from '../config.js';
 import { t, L, pn, plural, interval } from '../i18n/index.js';
 import { clock } from '../core/dates.js';
 import { getState, progress } from '../core/store.js';
-import { planToday, startLesson, learnNew, rate, finishLesson } from '../core/session.js';
+import { planToday, startLesson, learnNew, rate, finishLesson, keepLearning, extraPlan, learningIds } from '../core/session.js';
 import { ratingsFor, nextInterval, asRating } from '../core/srs.js';
 import { streak, week } from '../core/stats.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
@@ -13,7 +14,7 @@ import { Screen, TopBar, Title, Button, Icon, IconButton, SpeakButton, LevelTag,
 import { LineChart } from './today.js';
 
 export function Lesson({ course, route, go, back }) {
-  const [lesson] = useState(() => startLesson(course, planToday(course), !!route.practice));
+  const [lesson] = useState(() => startLesson(course, route.extra ? extraPlan(course) : planToday(course), !!route.practice));
   const [view, setView] = useState('next');
   const [, redraw] = useState(0);
   const [sheet, setSheet] = useState(null);
@@ -33,7 +34,13 @@ export function Lesson({ course, route, go, back }) {
   const props = { course, w, lesson, bar, item };
 
   let body;
-  if (show === 'new') {
+  if (CONFIG.lessonStyle === 'cards') {
+    // 07 и 07r: одна карточка для нового слова и для повторения
+    const isNew = item.kind === 'new';
+    body = html`<${NewWord} ...${props} cards=${isNew ? 'new' : 'review'}
+      onKnow=${() => { if (isNew) learnNew(course, lesson, item.id, true); else rate(course, lesson, item, 'known'); advance(); }}
+      onLearn=${() => { keepLearning(course, lesson, item); advance(); }} />`;
+  } else if (show === 'new') {
     body = html`<${NewWord} ...${props} count=${lesson.freshIds.length + 1} onKnow=${() => { learnNew(course, lesson, item.id, true); advance(); }}
       onLearn=${() => { learnNew(course, lesson, item.id, false); advance(); }} />`;
   } else if (show === 'recall') {
@@ -120,15 +127,16 @@ function Answer({ course, w, lesson, bar, item, mode, onRate, onExplain }) {
 }
 
 // 07 · Нове слово
-function NewWord({ course, w, lesson, bar, count, onKnow, onLearn }) {
+function NewWord({ course, w, lesson, bar, count, onKnow, onLearn, cards }) {
   const lang = ttsLang(course);
   const word = shown(course, w);
   useEffect(() => { if (getState().autoplay) tts.speak(word, lang); }, [w.id]);
   const total = lesson.queue.filter((x) => x.kind === 'new').length + lesson.freshIds.length;
   const syn = (course.groupList.find((g) => g.id === 'synonyms')?.items || []).find((i) => i.w.toLowerCase() === w.w.toLowerCase());
   return html`<${Screen} bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.iKnow')} onClick=${onKnow} /><${Button} label=${t('common.learn')} onClick=${onLearn} /></div>`}>
-    <${TopBar} ...${bar} label=${t('lesson.newWord', { n: count, total })} />
-    <div class="new-head"><div><div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>
+    ${cards ? html`<${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${counter(lesson)} />`
+      : html`<${TopBar} ...${bar} label=${t('lesson.newWord', { n: count, total })} />`}
+    <div class="new-head"><div>${cards && html`<${Overline}>${t(cards === 'new' ? 'lesson.cardNew' : 'lesson.cardReview')}</${Overline}>`}<div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>
       ${ipaOf(course, w) && html`<div class="t-label-16 muted">/${ipaOf(course, w)}/</div>`}</div>
       <${SpeakButton} text=${word} lang=${lang} kind="dark" size=${52} /></div>
     <div class="tags"><${LevelTag} lvl=${w.lvl} size="m" />${w.pos && html`<${Pill}>${pos(w)}</${Pill}>`}</div>
@@ -160,6 +168,7 @@ function ExplainSheet({ course, w, onClose }) {
 
 // 08 · Підсумок заняття (08f, 08d — свой блок для режима)
 function Summary({ course, lesson, go }) {
+  const canRepeat = learningIds(course).length > 0;
   const mode = progress(course.id).mode;
   const st = streak();
   const wk = week();
@@ -167,7 +176,7 @@ function Summary({ course, lesson, go }) {
   const min = Math.max(1, Math.round((lesson.sec || 60) / 60));
   const total = lesson.stats.reviews + lesson.stats.fresh;
   const today = wk.findIndex((d) => d.today);
-  return html`<${Screen} bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.again')} onClick=${() => go('lesson', { practice: true }, true)} />
+  return html`<${Screen} bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.again')} disabled=${!canRepeat} onClick=${() => go('lesson', { practice: true }, true)} />
       <${Button} label=${t('common.home')} onClick=${() => go('today', {}, true)} /></div>`}>
     <div class="top-space"></div>
     <${Title} main=${t('summary.done')} accent=${t('summary.great')} />
