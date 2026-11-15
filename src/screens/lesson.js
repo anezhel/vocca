@@ -1,17 +1,19 @@
-// Занятие «Вчити слова». CONFIG.lessonStyle = 'cards': 07 новое слово и 07r повторение — карточки «Я знаю це / Вчити».
+// Занятие «Вчити слова»: сначала повторение (07p, можно пропустить), потом 07t «Повторення готово» и новые слова (07).
+// CONFIG.lessonStyle = 'cards': и новое слово, и повторение — одна карточка «Я знаю це / Вчити».
 // 'recall' (прежний сценарий): 07 новое слово, 05 «Згадай англійською», 06 ответ и оценка, 06e «Що це означає?». В конце — 08 итог.
 import { html, useState, useEffect, useRef } from '../../lib/preact-htm.js';
 import { CONFIG, feature } from '../config.js';
 import { t, L, pn, plural, interval } from '../i18n/index.js';
 import { clock } from '../core/dates.js';
 import { getState, progress } from '../core/store.js';
-import { planToday, startLesson, learnNew, rate, finishLesson, keepLearning, extraPlan, learningIds } from '../core/session.js';
+import { planToday, startLesson, learnNew, rate, finishLesson, keepLearning, extraPlan, learningIds, canSkipReviews, skipReviews, reviewBreak } from '../core/session.js';
 import { ratingsFor, nextInterval, asRating } from '../core/srs.js';
 import { streak, week } from '../core/stats.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
 import { Screen, TopBar, Title, Button, Icon, IconButton, SpeakButton, LevelTag, Pill, Overline, Example, Mark, Sheet, ConfirmSheet, Stat, cx } from '../ui/kit.js';
 import { LineChart } from './today.js';
+import { ReviewDone } from '../groups/done.js';
 
 export function Lesson({ course, route, go, back }) {
   const [lesson] = useState(() => startLesson(course, route.extra ? extraPlan(course) : planToday(course), !!route.practice));
@@ -25,6 +27,10 @@ export function Lesson({ course, route, go, back }) {
   if (!lesson.total) return html`<${Empty} back=${back} />`;
   if (!item) return html`<${Summary} course=${course} lesson=${lesson} go=${go} />`;
 
+  // 07t: повторение закончено — короткая пауза перед новыми словами
+  if (reviewBreak(lesson, item)) return html`<${ReviewDone} n=${lesson.stats.reviews} next=${lesson.queue.filter((x) => x.kind === 'new').length}
+    onNext=${() => { lesson.breakSeen = true; redraw((n) => n + 1); scrollTo(0, 0); }} onHome=${() => { finishLesson(lesson); back(); }} />`;
+
   const w = wordById(course, item.id);
   if (!w) { lesson.queue.shift(); redraw((n) => n + 1); return null; }
   const show = view === 'next' ? (item.kind === 'new' ? 'new' : 'recall') : view;
@@ -37,7 +43,8 @@ export function Lesson({ course, route, go, back }) {
   if (CONFIG.lessonStyle === 'cards') {
     // 07 и 07r: одна карточка для нового слова и для повторения
     const isNew = item.kind === 'new';
-    body = html`<${NewWord} ...${props} cards=${isNew ? 'new' : 'review'}
+    const skip = canSkipReviews(lesson, item) ? () => { skipReviews(lesson); setView('next'); redraw((n) => n + 1); scrollTo(0, 0); } : null;
+    body = html`<${NewWord} ...${props} cards=${isNew ? 'new' : 'review'} onSkip=${skip}
       onKnow=${() => { if (isNew) learnNew(course, lesson, item.id, true); else rate(course, lesson, item, 'known'); advance(); }}
       onLearn=${() => { keepLearning(course, lesson, item); advance(); }} />`;
   } else if (show === 'new') {
@@ -126,27 +133,36 @@ function Answer({ course, w, lesson, bar, item, mode, onRate, onExplain }) {
   </${Screen}>`;
 }
 
-// 07 · Нове слово
-function NewWord({ course, w, lesson, bar, count, onKnow, onLearn, cards }) {
+// 07 · Нове слово / 07p · Повторення: белая карточка слова; синонимы — отдельной карточкой под ней,
+// связаны чёрной плашкой «≈ синоніми». При повторении — лаймовая «Перейти до нових слів». Дальше «Приклади» и «Пояснення слова».
+function NewWord({ course, w, lesson, bar, count, onKnow, onLearn, cards, onSkip }) {
   const lang = ttsLang(course);
   const word = shown(course, w);
   useEffect(() => { if (getState().autoplay) tts.speak(word, lang); }, [w.id]);
   const total = lesson.queue.filter((x) => x.kind === 'new').length + lesson.freshIds.length;
   const syn = (course.groupList.find((g) => g.id === 'synonyms')?.items || []).find((i) => i.w.toLowerCase() === w.w.toLowerCase());
-  return html`<${Screen} bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.iKnow')} onClick=${onKnow} /><${Button} label=${t('common.learn')} onClick=${onLearn} /></div>`}>
+  const targets = syn ? syn.targets.filter((s) => s.w) : [];
+  return html`<${Screen} cls="screen--lesson" tone="lesson" bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.iKnow')} onClick=${onKnow} /><${Button} label=${t('common.learn')} onClick=${onLearn} /></div>`}>
     ${cards ? html`<${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${counter(lesson)} />`
       : html`<${TopBar} ...${bar} label=${t('lesson.newWord', { n: count, total })} />`}
-    <div class="new-head"><div>${cards && html`<${Overline}>${t(cards === 'new' ? 'lesson.cardNew' : 'lesson.cardReview')}</${Overline}>`}<div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>
-      ${ipaOf(course, w) && html`<div class="t-label-16 muted">/${ipaOf(course, w)}/</div>`}</div>
-      <${SpeakButton} text=${word} lang=${lang} kind="dark" size=${52} /></div>
-    <div class="tags"><${LevelTag} lvl=${w.lvl} size="m" />${w.pos && html`<${Pill}>${pos(w)}</${Pill}>`}</div>
-    <div class="t-translation-l new-tr">${cap(L(w.tr))}</div>
-    ${w.def && html`<div class="card card--pad"><${Overline}>${t('lesson.meaning')}</${Overline}>
-      ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`}
-    ${w.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${t('lesson.examples')}</${Overline}>
+    <div class="word-pair">
+      <div class="card word-main">
+        <div class="new-head"><div class="new-head__text">${cards && html`<${Overline}>${t(cards === 'new' ? 'lesson.cardNew' : 'lesson.cardReview')}</${Overline}>`}
+          <div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>
+          ${ipaOf(course, w) && html`<div class="t-label-16 muted">/${ipaOf(course, w)}/</div>`}</div>
+          <${SpeakButton} text=${word} lang=${lang} kind="dark" size=${40} /></div>
+        <div class="tags tags--word"><${LevelTag} lvl=${w.lvl} size="m" />${w.pos && html`<span class="pill pill--tag">${pos(w)}</span>`}</div>
+        <div class="t-translation-l">${cap(L(w.tr))}</div>
+      </div>
+      ${targets.length > 0 && html`<span class="word-pair__link t-label-12-medium">≈ ${t('lesson.synonymsLink')}</span>
+        <div class="card syn-card">${targets.map((s) => html`<div class="syn-row"><div class="syn-row__text"><span class="t-label-17">${s.w}</span>
+          ${s.tr && L(s.tr) && html`<span class="t-label-14 muted">${L(s.tr)}</span>`}</div><${SpeakButton} text=${s.w} lang=${lang} /></div>`)}</div>`}
+    </div>
+    ${onSkip && html`<${Button} variant="accent" label=${t('lesson.skipToNew')} onClick=${onSkip} />`}
+    ${w.ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
       <div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div></div>`}
-    ${syn && html`<div class="card card--pad"><${Overline}>${t('lesson.synonyms')}</${Overline}>
-      <div class="pills">${syn.targets.map((s) => html`<${Pill}><${Icon} name="arrow-up-right" size=${14} /> ${s.w}</${Pill}>`)}</div></div>`}
+    ${w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
+      ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`}
   </${Screen}>`;
 }
 
@@ -176,8 +192,9 @@ function Summary({ course, lesson, go }) {
   const min = Math.max(1, Math.round((lesson.sec || 60) / 60));
   const total = lesson.stats.reviews + lesson.stats.fresh;
   const today = wk.findIndex((d) => d.today);
-  return html`<${Screen} bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.again')} disabled=${!canRepeat} onClick=${() => go('lesson', { practice: true }, true)} />
-      <${Button} label=${t('common.home')} onClick=${() => go('today', {}, true)} /></div>`}>
+  // 08: «На головну», под ней лаймовая «Повторити слова, які вчу» (если есть слова со статусом «Вчу»)
+  return html`<${Screen} tone="lesson" bottom=${html`<div class="done-actions"><${Button} label=${t('common.home')} onClick=${() => go('today', {}, true)} />
+      ${canRepeat && html`<${Button} variant="accent" icon="refresh" label=${t('today.repeatLearning')} onClick=${() => go('lesson', { practice: true }, true)} />`}</div>`}>
     <div class="top-space"></div>
     <${Title} main=${t('summary.done')} accent=${t('summary.great')} />
     <div class="hero"><div class="t-number-xl">+${total}</div><div class="t-label-16">${t('summary.reviewed', { w: plural(total, 'words') })}</div></div>

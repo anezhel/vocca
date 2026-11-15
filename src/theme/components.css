@@ -348,3 +348,29 @@ button.card { width: 100%; text-align: left; }
 .chart--line circle.chart__next { fill: var(--bg-surface); stroke: var(--border-radio); stroke-width: 1.4; }
 .chart__tail { fill: none; stroke: var(--text-tertiary); stroke-width: 1.6; stroke-dasharray: 3 3; }
 .chart__next-label { font-size: 12px; fill: var(--text-secondary); opacity: .6; }
+
+/* 07 · Нове слово / 07p · Повторення: белая карточка слова, синонимы под ней со связкой «≈ синоніми» */
+.screen--lesson .screen__content { gap: var(--space-20); }
+.word-pair { display: flex; flex-direction: column; gap: var(--space-8); }
+.word-main { padding: var(--space-20); border-radius: var(--radius-28); display: flex; flex-direction: column; gap: var(--space-16); }
+.word-main .new-head { margin-top: 0; align-items: flex-start; }
+.new-head__text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.new-head__text .overline { margin: 0; }
+.tags--word { gap: 6px; }
+.tags--word .level-tag { height: 28px; padding: 0 12px; font-size: 14px; font-weight: 600; }
+.pill--tag { height: 28px; padding: 0 12px; background: transparent; border-color: var(--border-default); font-size: 14px; font-weight: 500; }
+.word-pair__link { position: relative; z-index: 2; align-self: center; margin: -18px 0; height: 28px; padding: 0 12px; display: inline-flex; align-items: center;
+  border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
+.syn-card { padding: var(--space-20); border-radius: var(--radius-28); }
+.syn-row { display: flex; align-items: center; gap: var(--space-12); }
+.syn-row + .syn-row { border-top: 1px solid var(--border-muted); margin-top: var(--space-12); padding-top: var(--space-12); }
+.syn-row__text { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.card--lesson { padding: var(--space-20); border-radius: var(--radius-28); }
+.card--lesson .overline { margin-bottom: var(--space-12); }
+.card--lesson .example { gap: 4px; }
+.card--def { display: flex; flex-direction: column; gap: var(--space-8); }
+.card--def .overline { margin-bottom: 0; }
+/* 07t · «Повторення готово»: кольцо и заголовок по центру экрана над кнопками */
+.screen--center { display: flex; flex-direction: column; }
+.screen--center .screen__content { flex: 1; justify-content: center; }
+.screen--center .done { padding-top: 0; }

@@ -2,11 +2,11 @@
 // Кольцо — сколько пройдено во всей группе, ниже слова этой порции и кнопки
 // «Продовжити вчити» (следующая порция), «Повторити» (эти же слова), «Повернутися» (к списку групп).
 import { html } from '../../lib/preact-htm.js';
-import { t, pn } from '../i18n/index.js';
+import { t, pn, plural } from '../i18n/index.js';
 import { Screen, Button } from '../ui/kit.js';
 
 // Кольцо прогресса: лаймовая дорожка, чёрная дуга от верха по часовой, точка на конце дуги
-function Ring({ value, total, size = 240, stroke = 10 }) {
+function Ring({ value, total, caption, size = 240, stroke = 10 }) {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, mid = size / 2;
   const f = total ? Math.min(1, value / total) : 0;
   const a = -Math.PI / 2 + 2 * Math.PI * f;
@@ -17,7 +17,7 @@ function Ring({ value, total, size = 240, stroke = 10 }) {
         stroke-dasharray=${`${c * f} ${c}`} transform=${`rotate(-90 ${mid} ${mid})`} />
       ${f > 0 && f < 1 && html`<circle class="ring__dot" cx=${mid + r * Math.cos(a)} cy=${mid + r * Math.sin(a)} r="11" />`}
     </svg>
-    <div class="ring__mid"><div class="t-number-xl">${value}</div><div class="t-label-15 muted">${t('groups.ofInGroup', { n: total })}</div></div>
+    <div class="ring__mid"><div class="t-number-xl">${value}</div><div class="t-label-15 muted">${caption || t('groups.ofInGroup', { n: total })}</div></div>
   </div>`;
 }
 
@@ -37,3 +37,14 @@ export function GroupDone({ title, seen, total, words, left, onMore, onRepeat, o
     </div>
   </${Screen}>`;
 }
+
+// 07t · «Повторення готово»: между повторением и новыми словами. Полное кольцо — сколько слов повторено.
+export const ReviewDone = ({ n, next, onNext, onHome }) => html`<${Screen} cls="screen--done screen--center" tone="none" bottom=${html`<div class="done-actions">
+    <${Button} cls="btn--circle-white" label=${t('today.learnNew')} onClick=${onNext} />
+    <button class="link-btn t-title-m" onClick=${onHome}>${t('common.home')}</button></div>`}>
+  <div class="done">
+    <${Ring} value=${n} total=${n} caption=${t('lesson.reviewDoneCap', { w: plural(n, 'words') })} />
+    <div class="done__head"><h1 class="t-heading-h1">${t('lesson.reviewDone')}</h1>
+      <p class="t-body-16 muted">${t('lesson.reviewDoneNext', { x: pn(next, 'newWords') })}</p></div>
+  </div>
+</${Screen}>`;

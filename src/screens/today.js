@@ -22,13 +22,13 @@ export function Today({ course, go }) {
   const done = plan.total === 0;
   const finished = done && plan.doneToday > 0;   // 04s · план на сьогодні виконано
   const learning = learningIds(course).length;
-  // Без лимитов: после плана — «Ще 5 нових слів»; повторить слова, которые учишь, можно всегда
-  const main = plan.noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${() => go('settings', { pick: 'levels' })} />`
-    : !done ? html`<${Button} cls="btn--circle-white" label=${t('today.learnNew')} onClick=${() => go('lesson')} />`
-    : freshLeft(course) ? html`<${Button} cls="btn--circle-white" label=${t('today.moreNew', { n: p.newPerDay })} onClick=${() => go('lesson', { extra: true })} />` : '';
-  // 04: сверху чёрная «Вчити нові слова», под ней лаймовая «Повторити слова, які вчу» (иконка повтора в белом кружке)
-  const repeat = !plan.noLevels && learning > 0 && html`<${Button} variant="accent" icon="refresh" label=${t('today.repeatLearning')} onClick=${() => go('lesson', { practice: true })} />`;
-  const cta = html`${main}${repeat}`;
+  // 04: одна кнопка «Вчити слова» — в занятии сначала повторение, потом новые слова.
+  // 04s (план выполнен): «Ще 5 нових слів». «Повторити слова, які вчу» — на итоге занятия (08);
+  // здесь она появляется, только если новых слов больше нет.
+  const cta = plan.noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${() => go('settings', { pick: 'levels' })} />`
+    : !done ? html`<${Button} label=${t('today.learnWords')} onClick=${() => go('lesson')} />`
+    : freshLeft(course) ? html`<${Button} label=${t('today.moreNew', { n: p.newPerDay })} onClick=${() => go('lesson', { extra: true })} />`
+    : learning > 0 ? html`<${Button} variant="accent" icon="refresh" label=${t('today.repeatLearning')} onClick=${() => go('lesson', { practice: true })} />` : '';
   return html`<${Screen} cls="screen--tab" tone="today">
     <div class="top-bar"><span class="t-brand-wordmark brand">Vocca</span><span class="top-bar__mid"></span>
       ${feature('streak') && html`<span class="pill pill--glass streak-pill"><${Icon} name="flame" size=${18} /><span class="t-label-15-medium">${st.days}</span></span>`}</div>

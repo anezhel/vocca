@@ -41,7 +41,7 @@ export default {
     morning: 'Доброго ранку!', day: 'Доброго дня!', evening: 'Доброго вечора!', night: 'Доброї ночі!',
     timeTo: 'Час повторити слова', allDone: 'На сьогодні все', noLevels: 'Обери рівні слів',
     wordsToday: '{w} на сьогодні', about: '≈ {n} {u}', review: '{n} повторити', fresh: '+{n} нових',
-    timeToMain: 'Час повторити', timeToAccent: 'слова', learnNew: 'Вчити нові слова', statsRepeated: 'Повторено слів', statsLearned: 'Додано у вивчені', statsSub: 'Статистика по днях',
+    timeToMain: 'Час повторити', timeToAccent: 'слова', learnNew: 'Вчити нові слова', learnWords: 'Вчити слова', statsRepeated: 'Повторено слів', statsLearned: 'Додано у вивчені', statsSub: 'Статистика по днях',
     learn: 'Вчити слова', learnMore: 'Повторити ще раз', chooseLevels: 'Обрати рівні',
     repeatLearning: 'Повторити слова, які вчу', moreNew: 'Ще {n} нових слів', planDone: 'План на сьогодні', planDoneAccent: 'виконано',
     wordsDone: '{w} сьогодні', repeated: '{n} повторено', freshDone: '{n} нових',
@@ -52,7 +52,8 @@ export default {
   },
   lesson: {
     recall: 'Згадай {lang}', sayAloud: 'Скажи вголос {lang} · {n} с', sayAloudGo: 'Скажи вголос {lang}', show: 'Показати відповідь', whatMeans: 'Що це означає?',
-    newWord: 'Нове слово · {n} / {total}', cardNew: 'Нове слово', cardReview: 'Повторення', meaning: 'Що це означає', examples: 'Приклади', synonyms: 'Синоніми',
+    newWord: 'Нове слово · {n} / {total}', cardNew: 'Нове слово', cardReview: 'Повторення', meaning: 'Пояснення слова', synonymsLink: 'синоніми', skipToNew: 'Перейти до нових слів',
+    reviewDone: 'Повторення готово', reviewDoneCap: '{w} повторено', reviewDoneNext: 'Тепер — {x}.', examples: 'Приклади', synonyms: 'Синоніми',
     english: 'По-англійськи', native: 'Українською', rememberQ: 'Пам’ятаєш це слово?', firstLetter: 'Перша буква: {x}',
     rate: { again: 'Не пам’ятаю', againShort: 'Забуто', hard: 'Важко', good: 'Знаю', easy: 'Легко', remember: 'Пам’ятаю', dontKnow: 'Не знаю', forgot: 'Забуто', known: 'Знаю це слово', knownSub: 'у вивчені' },
     exitTitle: 'Вийти із заняття?', exitText: 'Прогрес збережено. Решту слів повторимо пізніше.', exit: 'Вийти', stay: 'Залишитися',
