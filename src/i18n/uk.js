@@ -41,7 +41,7 @@ export default {
     morning: 'Доброго ранку!', day: 'Доброго дня!', evening: 'Доброго вечора!', night: 'Доброї ночі!',
     timeTo: 'Час повторити слова', allDone: 'На сьогодні все', noLevels: 'Обери рівні слів',
     wordsToday: '{w} на сьогодні', about: '≈ {n} {u}', review: '{n} повторити', fresh: '+{n} нових',
-    timeToMain: 'Час повторити', timeToAccent: 'слова', learnNew: 'Вчити нові слова', statsRepeated: 'Повторено\nслів', statsLearned: 'Додано у\nвивчені',
+    timeToMain: 'Час повторити', timeToAccent: 'слова', learnNew: 'Вчити нові слова', statsRepeated: 'Повторено слів', statsLearned: 'Додано у вивчені', statsSub: 'Статистика по днях',
     learn: 'Вчити слова', learnMore: 'Повторити ще раз', chooseLevels: 'Обрати рівні',
     repeatLearning: 'Повторити слова, які вчу', moreNew: 'Ще {n} нових слів', planDone: 'План на сьогодні', planDoneAccent: 'виконано',
     wordsDone: '{w} сьогодні', repeated: '{n} повторено', freshDone: '{n} нових',
