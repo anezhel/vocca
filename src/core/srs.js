@@ -9,8 +9,10 @@ const UNIT = { m: 60, h: 3600, d: DAY };
 const parse = (s) => (typeof s === 'number' ? s * DAY : parseFloat(s) * UNIT[s.slice(-1)]);
 const ladder = (mode) => CONFIG.modes[mode].ladder.map(parse);
 
-export const RATINGS = { smart: ['again', 'hard', 'good', 'easy'], fixed: ['again', 'remember'], daily: ['again', 'remember'] };
-export const ratingsFor = (mode) => RATINGS[mode] || RATINGS.smart;
+export const RATINGS = { smart: ['again', 'hard', 'good', 'easy'], fixed: ['again', 'remember'], daily: ['again', 'remember'], simple: ['dontKnow', 'forgot', 'known'] };
+export const ratingsFor = (mode) => (CONFIG.answerButtons === 'simple' ? RATINGS.simple : RATINGS[mode] || RATINGS.smart);
+// «Не знаю» и «Забуто» (CONFIG.answerButtons = 'simple') для интервалов — то же, что «Забуто» в шкале
+export const asRating = (r) => (r === 'dontKnow' || r === 'forgot' ? 'again' : r);
 
 // Ступень лестницы по текущему интервалу (когда режим поменяли посреди учёбы)
 function stepOf(card, mode) {
@@ -25,6 +27,7 @@ function stepOf(card, mode) {
 // Интервал в секундах после оценки. Карточка не меняется.
 export function nextInterval(card, rating, mode) {
   card = card || {};
+  rating = asRating(rating);
   if (mode === 'smart') {
     const m = CONFIG.modes.smart;
     const ivl = (card.ivl || 0) / DAY, ease = card.ease || m.startEase;
@@ -41,6 +44,7 @@ export function nextInterval(card, rating, mode) {
 
 export function schedule(card, rating, mode, now = Date.now()) {
   const c = { ...(card || {}) };
+  rating = asRating(rating);
   const ivl = nextInterval(c, rating, mode);
   if (mode === 'smart') {
     const m = CONFIG.modes.smart;
@@ -61,7 +65,7 @@ export function schedule(card, rating, mode, now = Date.now()) {
   return c;
 }
 
-// «Я знаю це» — слово сразу выучено, проверим через месяц
+// «Я знаю це» / «Знаю це слово» — слово сразу выучено. Вернётся на проверку через месяц, только если CONFIG.recheckKnown
 export const markKnown = (now = Date.now()) => ({ known: true, ivl: 30 * DAY, due: now + 30 * DAY * 1000, reps: 1, last: now, ease: CONFIG.modes.smart.startEase });
 
 export const isLearned = (card) => !!card && (card.known || (card.ivl || 0) >= CONFIG.learnedAfterDays * DAY);
