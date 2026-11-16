@@ -272,20 +272,37 @@ button.card { width: 100%; text-align: left; }
 .dots i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--bg-inverse); }
 .dots i.on { background: var(--bg-inverse); }
 
-/* 12e · тренажёр: пустые ячейки 2-й и 3-й формы, варианты ответа под активной ячейкой, ✓ / ✗ в ответе */
-.slot { width: 100%; min-height: 52px; margin-top: 2px; padding: 0 var(--space-16); border-radius: var(--radius-16); border: 1.5px dashed var(--border-radio);
-  display: flex; align-items: center; color: var(--text-tertiary); transition: background .15s, border-color .15s; }
-.slot--active { border: 2px solid var(--border-strong); background: var(--tint-lime); color: var(--text-primary); }
-.slot--picked { border: 1.5px solid var(--border-default); background: var(--bg-surface-2); color: var(--text-primary); }
-.options { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
-.option { min-height: 52px; padding: var(--space-8) var(--space-12); border-radius: var(--radius-full); background: var(--bg-canvas); text-align: center;
-  font-size: 17px; font-weight: 500; letter-spacing: -.01em; overflow-wrap: anywhere; transition: background .12s, color .12s, transform .12s; }
-.option:active { background: var(--bg-inverse); color: var(--text-on-inverse); transform: scale(.97); }
-.verdict { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; color: var(--text-on-pastel); }
-.verdict--ok { background: var(--tint-mint); }
-.verdict--bad { background: var(--tint-coral); }
-.verdict-text { color: var(--text-error); }
-.counter--wrong { background: var(--tint-coral); border-color: transparent; }
+/* 12e · тренажёр трёх форм (Drill из Vocca): V1 дана, V2 и V3 — ячейки в ряд; 6 вариантов в две колонки; итог под вариантами */
+.screen--drill .screen__content { gap: var(--space-16); }
+.pill--lavender { background: var(--tint-lavender); border-color: transparent; color: var(--text-on-pastel); }
+.pill--lime { background: var(--bg-accent); border-color: transparent; color: var(--text-on-accent); }
+.pill--coral { background: var(--tint-coral); border-color: transparent; color: var(--text-on-pastel); }
+.screen--drill .tags .pill { height: 28px; padding: 0 var(--space-12); font-size: 14px; font-weight: 600; }
+.screen--drill .tags .level-tag { height: 28px; display: inline-flex; align-items: center; }
+.drill-card { padding: var(--space-20); border-radius: var(--radius-28); display: flex; flex-direction: column; gap: var(--space-20); }
+.drill-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-12); }
+.drill-card__text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.drill-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
+.drill-slots__col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dslot { height: 52px; padding: 0 6px; border-radius: var(--radius-16); display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 17px; font-weight: 500; letter-spacing: -.01em; overflow-wrap: anywhere; line-height: 1.1; transition: background .15s, border-color .15s; }
+.dslot--given { background: var(--bg-surface-2); }
+.dslot--empty { border: 1.5px dashed var(--border-radio); }
+.dslot--active { border: 2px solid var(--border-strong); background: var(--tint-lime); }
+.dslot--filled { background: var(--bg-inverse); color: var(--text-on-inverse); }
+.dslot--correct { background: var(--tint-mint); color: var(--text-on-pastel); }
+.dslot--wrong { background: var(--tint-coral); color: var(--text-on-pastel); }
+.drill-opts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+.dopt { min-height: 56px; padding: var(--space-6) var(--space-12); border-radius: var(--radius-full); background: var(--bg-surface); border: 1px solid var(--border-default);
+  text-align: center; font-size: 17px; font-weight: 500; letter-spacing: -.01em; overflow-wrap: anywhere; transition: background .12s, color .12s, transform .12s; }
+.dopt:active { transform: scale(.97); }
+.dopt--used { background: var(--bg-surface-3); border-color: transparent; color: var(--text-secondary); }
+.dopt--correct { background: var(--tint-mint); border-color: transparent; color: var(--text-on-pastel); }
+.dopt--wrong { background: var(--tint-coral); border-color: transparent; color: var(--text-on-pastel); }
+.dopt--dim { background: var(--bg-surface-2); border-color: transparent; color: var(--text-tertiary); }
+.drill-result { padding: var(--space-16) 18px; border-radius: var(--radius-24); display: flex; flex-direction: column; gap: var(--space-8); }
+.drill-result__top { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-8) var(--space-10); }
+.drill-result .pill { padding: 4px 12px; font-size: 13px; font-weight: 600; }
 
 /* ── Первый запуск ── */
 .dropdown { position: relative; }
