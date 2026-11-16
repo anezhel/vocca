@@ -45,7 +45,7 @@ const SECTIONS = [
   ]],
 ];
 
-export function Settings({ course, route }) {
+export function Settings({ course, route, go }) {
   const s = getState(), p = progress(course.id);
   const [open, setOpen] = useState(route.pick || null);
   const row = (r) => {
@@ -82,6 +82,6 @@ export function Settings({ course, route }) {
     ${open === 'how' && html`<${Sheet} onClose=${close}><div class="sheet__head"><div class="t-heading-h2">${t('settings.howTitle')}</div></div>
       <p class="t-body-16">${t(CONFIG.answerButtons === 'simple' ? 'settings.howTextSimple' : 'settings.howText')}</p><${Button} label=${t('common.gotIt')} onClick=${close} /></${Sheet}>`}
     ${open === 'reset' && html`<${ConfirmSheet} title=${t('settings.resetTitle')} text=${t('settings.resetText')} yes=${t('settings.resetYes')} no=${t('common.cancel')} danger
-      onYes=${() => { resetCourse(course.id); update((st) => { progress(course.id).levels = p.levels; }); close(); }} onNo=${close} />`}
+      onYes=${() => { resetCourse(course.id); update((st) => { st.onboarded = false; }); close(); go('welcome', {}, true); }} onNo=${close} />`}
   </${Screen}>`;
 }
