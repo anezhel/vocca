@@ -26,7 +26,8 @@ export const ROUTES = {
 };
 
 let current = null;
-const tabs = () => ['today', feature('wordsTab') && 'words', feature('groups') && (!current || current.groupList?.length) && 'groups', 'settings'].filter(Boolean);
+// Вкладки меню. «Групи» убраны из меню 16.11.2026 — где открывать группы, ещё решаем (экраны групп в коде остались).
+const tabs = () => ['today', feature('wordsTab') && 'words', 'settings'].filter(Boolean);
 
 export function applyTheme() {
   const th = getState().theme;

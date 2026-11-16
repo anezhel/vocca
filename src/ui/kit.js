@@ -1,5 +1,5 @@
 // Компоненты Aura — по одному на компонент Figma («Aura · компоненты»). Вид задаёт CSS (src/theme/components.css), здесь только разметка.
-import { html, useEffect, useState } from '../../lib/preact-htm.js';
+import { html, useEffect, useState, useRef } from '../../lib/preact-htm.js';
 import { ICONS } from './icons.js';
 import { t, L } from '../i18n/index.js';
 import { tts } from '../core/tts.js';
@@ -147,18 +147,77 @@ export function Mark({ text, hl = [] }) {
 export const Example = ({ ex, hl }) => html`<div class="example"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${hl} /></div>
   <div class="t-label-14 muted">${L(ex)}</div></div>`;
 
-// Aura/Tab bar — белое меню во всю ширину: иконка и подпись; активная вкладка — цвет nav/active.
-// При нажатии пружинит только иконка: сжимается до 88 % и с отскоком возвращается (классы на иконке,
-// чтобы перерисовка кнопки при смене вкладки не обрывала анимацию).
-const TABS = [['today', 'bolt'], ['words', 'cards'], ['groups', 'grid'], ['settings', 'settings']];
-const iconOf = (e) => e.currentTarget.querySelector('.nav__icon');
-const press = (e) => { const i = iconOf(e); i.classList.remove('is-spring'); i.classList.add('is-press'); };
-const release = (e) => { const i = iconOf(e); if (!i.classList.contains('is-press')) return; i.classList.remove('is-press'); void i.offsetWidth; i.classList.add('is-spring'); };
-export const Nav = ({ active, onNav, tabs }) => html`<nav class="nav" aria-label="menu">${TABS.filter(([n]) => tabs.includes(n)).map(([name, icon]) => html`
-  <button key=${name} class=${cx('nav__tab', active === name && 'nav__tab--on')} aria-current=${active === name ? 'page' : null}
-    onPointerDown=${press} onPointerUp=${release} onPointerLeave=${release} onPointerCancel=${release} onClick=${() => active !== name && onNav(name)}>
-    <span class="nav__icon" onAnimationEnd=${(e) => e.currentTarget.classList.remove('is-spring')}><${Icon} name=${icon} size=${24} /></span>
-    <span class="nav__label">${t('nav.' + name)}</span></button>`)}</nav>`;
+// Aura/Tab bar — стеклянная капсула, как в Telegram. За активной вкладкой — пузырёк.
+// При нажатии и переезде пузырёк увеличивается и работает как линза: иконки и подписи под ним крупнее
+// и красно-розовые, по краям цветная кайма. Пузырёк можно тянуть пальцем; вкладка выбирается, когда палец отпущен.
+// Движение — пружина в requestAnimationFrame; стили пишутся прямо в DOM, без перерисовки на каждом кадре.
+// «Групи» в меню нет с 16.11.2026.
+const TABS = [['today', 'bolt'], ['words', 'cards'], ['settings', 'settings']];
+const PAD = 4;
+const NavItems = ({ items, cls }) => items.map(([name, icon]) => html`<span key=${name} class=${cls}><${Icon} name=${icon} size=${24} />
+  <span class="nav__label">${t('nav.' + name)}</span></span>`);
+
+export function Nav({ active, onNav, tabs }) {
+  const items = TABS.filter(([n]) => tabs.includes(n));
+  const idx = Math.max(0, items.findIndex(([n]) => n === active));
+  const barRef = useRef(null), bubRef = useRef(null), lensRef = useRef(null), st = useRef(null);
+  const latest = useRef(null); latest.current = { items, idx, active, onNav };
+
+  useEffect(() => {
+    const bar = barRef.current, bub = bubRef.current, lens = lensRef.current;
+    const s = (st.current = { x: 0, v: 0, target: 0, boost: 0, pressed: false, raf: 0, last: 0 });
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const n = () => latest.current.items.length;
+    const measure = () => { s.W = bar.clientWidth; s.H = bar.clientHeight; s.tw = (s.W - 2 * PAD) / n(); lens.style.width = s.W + 'px'; lens.style.height = s.H + 'px'; };
+    const center = (i) => PAD + s.tw * (i + 0.5);
+    const clampX = (x) => Math.min(Math.max(x, PAD + s.tw / 2), s.W - PAD - s.tw / 2);
+    const draw = () => {
+      const sp = reduce ? 0 : Math.min(1, Math.abs(s.v) / 900), b = reduce ? 0 : s.boost;
+      const z = 1 + 0.22 * b, w = s.tw * (1 + 0.2 * b + 0.18 * sp), h = (s.H - 2 * PAD) * (1 + 0.3 * b - 0.06 * sp);
+      bub.style.width = w + 'px'; bub.style.height = h + 'px';
+      bub.style.transform = `translate(${s.x - w / 2}px, ${s.H / 2 - h / 2}px)`;
+      lens.style.transform = `translate(${w / 2 - s.x * z}px, ${h / 2 - (s.H / 2) * z}px) scale(${z})`;
+      const c = 2.2 * Math.max(b, sp);
+      lens.style.filter = c > 0.05 ? `drop-shadow(${c.toFixed(2)}px 0 0 rgba(0,150,255,.35)) drop-shadow(${(-c).toFixed(2)}px 0 0 rgba(255,40,90,.35))` : 'none';
+    };
+    const step = (time) => {
+      const dt = Math.min(0.032, (time - (s.last || time)) / 1000); s.last = time;
+      const k = s.pressed ? 900 : 380, c = 2 * Math.sqrt(k) * (reduce ? 1 : s.pressed ? 0.9 : 0.5);
+      s.v += (k * (s.target - s.x) - c * s.v) * dt; s.x += s.v * dt;
+      const bt = s.pressed ? 1 : Math.min(1, Math.abs(s.v) / 500);
+      s.boost += (bt - s.boost) * Math.min(1, dt * (bt > s.boost ? 18 : 7));
+      draw();
+      if (s.pressed || Math.abs(s.v) > 2 || Math.abs(s.target - s.x) > 0.3 || s.boost > 0.01) s.raf = requestAnimationFrame(step);
+      else { s.x = s.target; s.v = 0; s.boost = 0; s.raf = 0; s.last = 0; draw(); }
+    };
+    const kick = () => { if (!s.raf) { s.last = 0; s.raf = requestAnimationFrame(step); } };
+    s.goTo = (i) => { s.target = center(i); kick(); };
+    const at = (e) => e.clientX - bar.getBoundingClientRect().left;
+    const down = (e) => { if (e.button > 0) return; s.pressed = true; bar.setPointerCapture(e.pointerId); s.target = clampX(at(e)); kick(); };
+    const move = (e) => { if (s.pressed) { s.target = clampX(at(e)); kick(); } };
+    const up = () => {
+      if (!s.pressed) return; s.pressed = false;
+      const { items: list, active: cur, onNav: nav } = latest.current;
+      const i = Math.max(0, Math.min(list.length - 1, Math.round((s.target - PAD) / s.tw - 0.5)));
+      s.goTo(i); if (list[i][0] !== cur) nav(list[i][0]);
+    };
+    const cancel = () => { if (s.pressed) { s.pressed = false; s.goTo(latest.current.idx); } };
+    bar.addEventListener('pointerdown', down); bar.addEventListener('pointermove', move);
+    bar.addEventListener('pointerup', up); bar.addEventListener('pointercancel', cancel);
+    const ro = new ResizeObserver(() => { measure(); s.x = s.target = center(latest.current.idx); draw(); });
+    ro.observe(bar); measure(); s.x = s.target = center(latest.current.idx); draw();
+    return () => { ro.disconnect(); cancelAnimationFrame(s.raf); bar.removeEventListener('pointerdown', down); bar.removeEventListener('pointermove', move);
+      bar.removeEventListener('pointerup', up); bar.removeEventListener('pointercancel', cancel); };
+  }, [items.length]);
+  // вкладку сменили не через меню (например, «На головну» на итоге) — пузырёк переезжает сам
+  useEffect(() => { const s = st.current; if (s && s.goTo && !s.pressed) s.goTo(idx); }, [idx]);
+
+  return html`<nav class="nav" ref=${barRef} aria-label="menu">
+    <div class="nav__row">${items.map(([name, icon]) => html`<button key=${name} class="nav__tab" aria-current=${active === name ? 'page' : null}
+      onClick=${(e) => { if (e.detail === 0 && name !== active) onNav(name); }}><${Icon} name=${icon} size=${24} /><span class="nav__label">${t('nav.' + name)}</span></button>`)}</div>
+    <div class="nav__bubble" ref=${bubRef} aria-hidden="true"><div class="nav__lens" ref=${lensRef}><${NavItems} items=${items} cls="nav__tab" /></div></div>
+  </nav>`;
+}
 
 // Aura/Settings row
 export const SettingsRow = ({ icon, title, sub, value, trailing = 'chevron', on, onToggle, onClick, dim }) => html`<button
