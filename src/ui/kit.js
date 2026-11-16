@@ -147,9 +147,9 @@ export function Mark({ text, hl = [] }) {
 export const Example = ({ ex, hl }) => html`<div class="example"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${hl} /></div>
   <div class="t-label-14 muted">${L(ex)}</div></div>`;
 
-// Aura/Tab bar — стеклянная капсула, как в Telegram. За активной вкладкой — пузырёк.
-// При нажатии и переезде пузырёк увеличивается и работает как линза: иконки и подписи под ним крупнее
-// и красно-розовые, по краям цветная кайма. Пузырёк можно тянуть пальцем; вкладка выбирается, когда палец отпущен.
+// Aura/Tab bar — стеклянная капсула. За активной вкладкой — светло-розовый пузырёк (nav/active-bg),
+// иконка и подпись в нём красно-розовые. При смене вкладки пузырёк переезжает с лёгкой пружинкой, не увеличиваясь;
+// его можно тянуть пальцем — вкладка выбирается, когда палец отпущен.
 // Движение — пружина в requestAnimationFrame; стили пишутся прямо в DOM, без перерисовки на каждом кадре.
 // «Групи» в меню нет с 16.11.2026.
 const TABS = [['today', 'bolt'], ['words', 'cards'], ['settings', 'settings']];
@@ -165,30 +165,26 @@ export function Nav({ active, onNav, tabs }) {
 
   useEffect(() => {
     const bar = barRef.current, bub = bubRef.current, lens = lensRef.current;
-    const s = (st.current = { x: 0, v: 0, target: 0, boost: 0, pressed: false, raf: 0, last: 0 });
+    const s = (st.current = { x: 0, v: 0, target: 0, pressed: false, raf: 0, last: 0 });
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const n = () => latest.current.items.length;
     const measure = () => { s.W = bar.clientWidth; s.H = bar.clientHeight; s.tw = (s.W - 2 * PAD) / n(); lens.style.width = s.W + 'px'; lens.style.height = s.H + 'px'; };
     const center = (i) => PAD + s.tw * (i + 0.5);
     const clampX = (x) => Math.min(Math.max(x, PAD + s.tw / 2), s.W - PAD - s.tw / 2);
+    // пузырёк всегда размером с вкладку; внутри — копия иконок и подписей в цвете nav/active, сдвинутая под пузырёк
     const draw = () => {
-      const sp = reduce ? 0 : Math.min(1, Math.abs(s.v) / 900), b = reduce ? 0 : s.boost;
-      const z = 1 + 0.22 * b, w = s.tw * (1 + 0.2 * b + 0.18 * sp), h = (s.H - 2 * PAD) * (1 + 0.3 * b - 0.06 * sp);
+      const w = s.tw, h = s.H - 2 * PAD;
       bub.style.width = w + 'px'; bub.style.height = h + 'px';
-      bub.style.transform = `translate(${s.x - w / 2}px, ${s.H / 2 - h / 2}px)`;
-      lens.style.transform = `translate(${w / 2 - s.x * z}px, ${h / 2 - (s.H / 2) * z}px) scale(${z})`;
-      const c = 2.2 * Math.max(b, sp);
-      lens.style.filter = c > 0.05 ? `drop-shadow(${c.toFixed(2)}px 0 0 rgba(0,150,255,.35)) drop-shadow(${(-c).toFixed(2)}px 0 0 rgba(255,40,90,.35))` : 'none';
+      bub.style.transform = `translate(${s.x - w / 2}px, ${PAD}px)`;
+      lens.style.transform = `translate(${w / 2 - s.x}px, ${-PAD}px)`;
     };
     const step = (time) => {
       const dt = Math.min(0.032, (time - (s.last || time)) / 1000); s.last = time;
-      const k = s.pressed ? 900 : 380, c = 2 * Math.sqrt(k) * (reduce ? 1 : s.pressed ? 0.9 : 0.5);
+      const k = s.pressed ? 900 : 420, c = 2 * Math.sqrt(k) * (reduce ? 1 : s.pressed ? 0.95 : 0.62);
       s.v += (k * (s.target - s.x) - c * s.v) * dt; s.x += s.v * dt;
-      const bt = s.pressed ? 1 : Math.min(1, Math.abs(s.v) / 500);
-      s.boost += (bt - s.boost) * Math.min(1, dt * (bt > s.boost ? 18 : 7));
       draw();
-      if (s.pressed || Math.abs(s.v) > 2 || Math.abs(s.target - s.x) > 0.3 || s.boost > 0.01) s.raf = requestAnimationFrame(step);
-      else { s.x = s.target; s.v = 0; s.boost = 0; s.raf = 0; s.last = 0; draw(); }
+      if (s.pressed || Math.abs(s.v) > 2 || Math.abs(s.target - s.x) > 0.3) s.raf = requestAnimationFrame(step);
+      else { s.x = s.target; s.v = 0; s.raf = 0; s.last = 0; draw(); }
     };
     const kick = () => { if (!s.raf) { s.last = 0; s.raf = requestAnimationFrame(step); } };
     s.goTo = (i) => { s.target = center(i); kick(); };
