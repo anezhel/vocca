@@ -26,7 +26,7 @@ export const ROUTES = {
 };
 
 let current = null;
-// Вкладки меню. «Групи» убраны из меню 16.11.2026 — где открывать группы, ещё решаем (экраны групп в коде остались).
+// Вкладки меню. «Групи» убраны из меню 16.11.2026: группы — на главной (блоки «В процесі», «Нові», «Пройдені»).
 const tabs = () => ['today', feature('wordsTab') && 'words', 'settings'].filter(Boolean);
 
 export function applyTheme() {

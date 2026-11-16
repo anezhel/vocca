@@ -24,7 +24,7 @@ export function GroupCard({ title, s, onOpen, onRepeat }) {
     <div class="group-card__head">
       <div class="group-card__text"><div class="t-title-l">${title}</div><div class="t-label-12-medium muted">${s.subtitle}</div></div>
       ${repeat ? html`<button class="repeat-btn t-label-14-strong" onClick=${(e) => { e.stopPropagation(); onRepeat(); }}><${Icon} name="refresh" size=${16} />${t('groups.repeat')}</button>`
-        : html`<span class="ib ib--lime" style="--ib:36px"><${Icon} name="arrow-up-right" size=${16} /></span>`}
+        : html`<span class="ib ib--lime" style="--ib:36px"><${Icon} name="chevron-right" size=${16} /></span>`}
     </div>
     ${(s.status === 'learning' || s.status === 'due') && html`<div class="meter"><i style=${`width:${Math.round((s.learned / s.total) * 100)}%`}></i></div>`}
   </div>`;
