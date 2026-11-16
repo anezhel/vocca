@@ -113,13 +113,19 @@ button.card { width: 100%; text-align: left; }
 .check-row { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-6) 0; }
 .note-box { display: flex; gap: var(--space-10); align-items: flex-start; padding: var(--space-14) var(--space-16); border-radius: var(--radius-20); background: var(--tint-lavender); }
 
-/* ── Aura/Nav: стеклянное меню ── */
-.nav { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 14px); width: calc(min(430px, 100%) - 40px);
-  height: 72px; padding: 6px; border-radius: var(--radius-full); display: flex; gap: var(--space-4);
-  background: rgba(255, 255, 255, .5); border: 1px solid rgba(255, 255, 255, .7); -webkit-backdrop-filter: blur(24px) saturate(1.6); backdrop-filter: blur(24px) saturate(1.6);
-  box-shadow: 0 12px 32px var(--effect-shadow-nav); }
-.nav__tab { flex: 1; border-radius: var(--radius-full); display: grid; place-items: center; color: var(--text-nav); transition: flex .25s, background .25s; }
-.nav__tab--on { flex: 2.4; background: var(--bg-nav-active); color: var(--text-nav-active); }
+/* ── Aura/Tab bar: белое меню во всю ширину, иконка + подпись; активная — nav/active ── */
+.nav { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: 0; width: min(430px, 100%); display: flex;
+  padding: 8px 8px max(8px, env(safe-area-inset-bottom)); background: var(--bg-surface); border-top: 1px solid var(--border-muted); }
+.nav__tab { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 2px 0; color: var(--text-secondary);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.nav__tab--on { color: var(--nav-active); }
+.nav__label { font-size: 12px; font-weight: 500; line-height: 14px; white-space: nowrap; }
+.nav__tab--on .nav__label { font-weight: 600; }
+.nav__icon { display: block; height: 24px; transition: transform .12s ease-out; }
+.nav__icon.is-press { transform: scale(.88); }
+.nav__icon.is-spring { animation: nav-spring .42s cubic-bezier(.3, .7, .4, 1); }
+@keyframes nav-spring { 0% { transform: scale(.88); } 45% { transform: scale(1.06); } 75% { transform: scale(.98); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .nav__icon.is-spring { animation: none; } .nav__icon.is-press { transform: scale(.95); } }
 
 /* ── Aura/Settings row ── */
 .settings-card { padding: var(--space-4) var(--space-16); }
@@ -302,7 +308,7 @@ button.card { width: 100%; text-align: left; }
 .link { margin-left: auto; text-decoration: underline; text-underline-offset: 3px; }
 
 /* ── Тост ── */
-.toast { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 110px); max-width: 360px;
+.toast { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 84px); max-width: 360px;
   background: var(--bg-inverse); color: var(--text-on-inverse); padding: var(--space-12) 18px; border-radius: var(--radius-full); font-size: 14px; font-weight: 500; text-align: center; animation: up .25s; }
 
 /* 19c · итог порции в группе (src/groups/done.js) */
