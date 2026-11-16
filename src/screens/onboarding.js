@@ -4,7 +4,7 @@ import { CONFIG, feature } from '../config.js';
 import { COURSES, PREVIEW, LEVELS } from '../content/index.js';
 import { t, L, UI_NAMES, dur, num } from '../i18n/index.js';
 import { getState, update, progress } from '../core/store.js';
-import { Screen, Title, Button, Icon, IconButton, Counter, Segmented, cx } from '../ui/kit.js';
+import { Screen, Title, Button, Icon, IconButton, Counter, Segmented, Sheet, SheetHead, ApplyButton, cx } from '../ui/kit.js';
 
 const Head = ({ n, onBack, brand }) => html`<div class="top-bar">
   ${brand ? html`<span class="t-brand-wordmark brand">Vocca</span>` : html`<${IconButton} icon="arrow-left" size=${48} onClick=${onBack} />`}
@@ -90,4 +90,24 @@ export function Mode({ go, back }) {
     <div class="row-between"><span class="t-title-m">${t('onboarding.perDay')}</span><span class="t-label-12 muted">${t('onboarding.newOf', { n: p.newPerDay })}</span></div>
     <${Segmented} cls="seg--wide" value=${perDay} onChange=${setPerDay} options=${CONFIG.perDayOptions.map((n) => ({ value: n, label: n }))} />
   </${Screen}>`;
+}
+
+// 02d / 10: «Обери рівні» — выбор применяется кнопкой «Застосувати»
+export function LevelsSheet({ value, testLevel, onApply, onClose, children }) {
+  const [draft, setDraft] = useState(value);
+  return html`<${Sheet} onClose=${onClose}>
+    <${SheetHead} title=${t('onboarding.pickLevels')} sub=${t('onboarding.many')} onClose=${onClose} />
+    <${LevelCards} value=${draft} testLevel=${testLevel} onChange=${setDraft} />
+    ${children && children(draft)}
+    <${ApplyButton} disabled=${!draft.length} onClick=${() => { onApply(draft); onClose(); }} />
+  </${Sheet}>`;
+}
+
+export function ModeSheet({ value, onApply, onClose }) {
+  const [draft, setDraft] = useState(value);
+  return html`<${Sheet} onClose=${onClose}>
+    <${SheetHead} title=${t('settings.mode')} onClose=${onClose} />
+    <${ModeCards} value=${draft} onChange=${setDraft} />
+    <${ApplyButton} onClick=${() => { onApply(draft); onClose(); }} />
+  </${Sheet}>`;
 }

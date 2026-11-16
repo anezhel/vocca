@@ -6,8 +6,8 @@ import { t, L } from '../i18n/index.js';
 import { update, progress } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
 import { newTest, question, answer, isOver, result } from '../core/level-test.js';
-import { Screen, Title, Button, IconButton, Counter, Overline, SpeakButton, Sheet, Pill, cx } from '../ui/kit.js';
-import { LevelCards } from './onboarding.js';
+import { Screen, Title, Button, IconButton, Counter, Overline, SpeakButton, Pill, cx } from '../ui/kit.js';
+import { LevelsSheet } from './onboarding.js';
 
 export function TestIntro({ course, go, back }) {
   return html`<${Screen} tone="cool" bottom=${html`<${Button} label=${t('test.start')} onClick=${() => go('test')} />`}>
@@ -57,7 +57,6 @@ export function TestResult({ go, back }) {
   const i = LEVELS.indexOf(lvl);
   const [sheet, setSheet] = useState(false);
   const [levels, setLevels] = useState(p.levels);
-  const above = levels.find((l) => LEVELS.indexOf(l) > i);
   const saveLevels = (v) => { setLevels(v); update(() => { progress().levels = LEVELS.filter((l) => v.includes(l)); }); };
   return html`<${Screen} tone="cool" bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.again')} onClick=${() => go('test', {}, true)} />
       <${Button} label=${t('common.next')} disabled=${!levels.length} onClick=${() => go('mode')} /></div>`}>
@@ -70,11 +69,9 @@ export function TestResult({ go, back }) {
     <p class="t-body-15 pad-x">${i > 0 ? t('test.startFrom', { lvl, prev: LEVELS.slice(0, i).join(', ') }) : t('test.startA1')}</p>
     <div class="card chosen"><span class="t-label-14 muted">${t('test.chosen')}</span>${levels.map((l) => html`<${Pill} cls="pill--level" key=${l}>${l}</${Pill}>`)}
       <button class="link t-label-14-strong" onClick=${() => setSheet(true)}>${t('common.change')}</button></div>
-    ${sheet && html`<${Sheet} onClose=${() => setSheet(false)}>
-      <div class="sheet__head"><div class="t-heading-h2">${t('onboarding.pickLevels')}</div><div class="t-label-14 muted">${t('onboarding.many')}</div></div>
-      <${LevelCards} value=${levels} onChange=${saveLevels} testLevel=${lvl} />
-      ${above && html`<p class="t-label-13 muted">${t('onboarding.above', { lvl: above })}</p>`}
-      <${Button} label=${t('common.done')} disabled=${!levels.length} onClick=${() => setSheet(false)} />
-    </${Sheet}>`}
+    ${sheet && html`<${LevelsSheet} value=${levels} testLevel=${lvl} onApply=${saveLevels} onClose=${() => setSheet(false)}>${(draft) => {
+      const hi = draft.find((l) => LEVELS.indexOf(l) > i);
+      return hi && html`<p class="t-label-13 muted">${t('onboarding.above', { lvl: hi })}</p>`;
+    }}</${LevelsSheet}>`}
   </${Screen}>`;
 }
