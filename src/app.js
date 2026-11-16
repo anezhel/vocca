@@ -8,7 +8,7 @@ import { refreshFreezes } from './core/stats.js';
 import { tts } from './core/tts.js';
 import { setUiLang, t } from './i18n/index.js';
 import { Nav, Toast } from './ui/kit.js';
-import { Welcome, Levels, Mode } from './screens/onboarding.js';
+import { Welcome, Levels } from './screens/onboarding.js';
 import { TestIntro, TestRun, TestResult } from './screens/level-test.js';
 import { Today } from './screens/today.js';
 import { Lesson } from './screens/lesson.js';
@@ -17,7 +17,7 @@ import { Words, Learned } from './screens/words.js';
 import { Settings } from './screens/settings.js';
 
 export const ROUTES = {
-  welcome: Welcome, levels: Levels, mode: Mode,                       // 01–03
+  welcome: Welcome, levels: Levels,                                   // 01–02 (03 «Режим повторення» убран 16.11.2026)
   'test-intro': TestIntro, test: TestRun, 'test-result': TestResult,  // 02a–02d
   today: Today, learned: Learned, lesson: Lesson,                     // 04, 04a, 05–08
   groups: Groups, group: GroupRoute, verbs: GroupRoute,               // 09, 11–12f, 19–27

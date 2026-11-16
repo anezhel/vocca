@@ -7,7 +7,7 @@ import { update, progress } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
 import { newTest, question, answer, isOver, result } from '../core/level-test.js';
 import { Screen, Title, Button, IconButton, Counter, Overline, SpeakButton, Pill, cx } from '../ui/kit.js';
-import { LevelsSheet } from './onboarding.js';
+import { LevelsSheet, finishOnboarding } from './onboarding.js';
 
 export function TestIntro({ course, go, back }) {
   return html`<${Screen} tone="cool" bottom=${html`<${Button} label=${t('test.start')} onClick=${() => go('test')} />`}>
@@ -59,7 +59,7 @@ export function TestResult({ go, back }) {
   const [levels, setLevels] = useState(p.levels);
   const saveLevels = (v) => { setLevels(v); update(() => { progress().levels = LEVELS.filter((l) => v.includes(l)); }); };
   return html`<${Screen} tone="cool" bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.again')} onClick=${() => go('test', {}, true)} />
-      <${Button} label=${t('common.next')} disabled=${!levels.length} onClick=${() => go('mode')} /></div>`}>
+      <${Button} label=${t('common.start')} disabled=${!levels.length} onClick=${() => finishOnboarding(go)} /></div>`}>
     <div class="top-bar"><${IconButton} icon="arrow-left" size=${48} onClick=${back} /><span class="top-bar__mid"></span><${Counter}>${t('onboarding.step', { n: 2 })}</${Counter}></div>
     <${Title} main=${t('test.result')} accent=${t('test.byResult')} />
     <div class="hero"><div class="t-number-hero">${lvl}</div><div><div class="t-title-l">${t('levels.' + lvl)}</div>

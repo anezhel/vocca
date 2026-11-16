@@ -312,14 +312,12 @@ button.card { width: 100%; text-align: left; }
 .course-card .t-number-l { margin-bottom: var(--space-12); }
 .course-card--on { background: linear-gradient(160deg, var(--effect-glow-strong-2), var(--tint-peach) 110%); }
 .terms { text-align: center; }
-.level-cards, .mode-cards { display: flex; flex-direction: column; gap: var(--space-10); }
+.level-cards { display: flex; flex-direction: column; gap: var(--space-10); }
 .level-card { display: flex; align-items: center; gap: var(--space-16); padding: 18px var(--space-20); border-radius: var(--radius-24); background: rgba(255, 255, 255, .6); box-shadow: none; }
 .level-card .t-number-m { width: 58px; }
 .level-card__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.level-card--on, .mode-card--on { background: var(--bg-surface); box-shadow: 0 var(--effect-card-shadow-y) var(--effect-card-shadow-radius) var(--effect-shadow-card); }
+.level-card--on { background: var(--bg-surface); box-shadow: 0 var(--effect-card-shadow-y) var(--effect-card-shadow-radius) var(--effect-shadow-card); }
 .test-card { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-16) 18px; background: var(--tint-lavender); box-shadow: none; }
-.mode-card { display: flex; align-items: flex-start; gap: var(--space-12); padding: 18px var(--space-20); background: rgba(255, 255, 255, .6); box-shadow: none; }
-.mode-card__text { flex: 1; display: flex; flex-direction: column; gap: var(--space-6); }
 .seg--wide { margin-top: calc(var(--space-4) * -1); }
 
 /* ── Тест уровня ── */
