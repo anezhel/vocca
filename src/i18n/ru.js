@@ -1,7 +1,7 @@
 // Тексты интерфейса на русском. Ключи такие же, как в uk.js.
 export default {
   common: {
-    continue: 'Продолжить', next: 'Дальше', done: 'Готово', start: 'Начать', close: 'Закрыть', back: 'Назад', gotIt: 'Понятно',
+    continue: 'Продолжить', next: 'Дальше', apply: 'Применить', done: 'Готово', start: 'Начать', close: 'Закрыть', back: 'Назад', gotIt: 'Понятно',
     again: 'Ещё раз', home: 'На главную', learn: 'Учить', added: 'Добавлено', iKnow: 'Я это знаю', train: 'Тренировать', check: 'Проверить',
     dontRemember: 'Не помню', dontKnow: 'Не знаю', soon: 'Скоро', cancel: 'Отмена', change: 'Изменить', listen: 'Прослушать',
     min: 'мин', hint: 'Подсказка', more: 'Показать ещё',

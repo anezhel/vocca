@@ -104,24 +104,30 @@ export function Modal({ onClose, children, cls }) {
   </div>`;
 }
 
-// Лист с выбором одного варианта (настройки). confirm — подпись кнопки внизу (04p: «Показати»):
-// тогда выбор применяется по кнопке, а не сразу по нажатию на строку; в шапке — крестик.
+// Шапка листа выбора: заголовок (+ подпись) и крестик — закрыть без изменений
+export const SheetHead = ({ title, sub, onClose }) => html`<div class="sheet__head sheet__head--row">
+  <div class="sheet__titles"><div class="t-heading-h2">${title}</div>${sub && html`<div class="t-label-14 muted">${sub}</div>`}</div>
+  <${IconButton} icon="close" onClick=${onClose} label=${t('common.close')} /></div>`;
+
+// Лист выбора (настройки, уровни, режим): выбор применяется только кнопкой «Застосувати» —
+// чёрная, без стрелки (Aura/Button primary). Крестик или тап мимо листа — закрыть без изменений.
 export function PickSheet({ title, sub, options, value, onPick, onClose, multi, confirm }) {
   const [sel, setSel] = useState(multi ? [...value] : value);
-  const toggle = (v) => multi ? setSel(sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v]) : confirm ? setSel(v) : (setSel(v), onPick(v), onClose());
+  const toggle = (v) => (multi ? setSel(sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v]) : setSel(v));
   return html`<${Sheet} onClose=${onClose}>
-    ${confirm ? html`<div class="sheet__head sheet__head--row"><div class="t-heading-h2">${title}</div><${IconButton} icon="close" onClick=${onClose} label=${t('common.close')} /></div>`
-      : html`<div class="sheet__head"><div class="t-heading-h2">${title}</div>${sub && html`<div class="t-label-14 muted">${sub}</div>`}</div>`}
+    <${SheetHead} title=${title} sub=${sub} onClose=${onClose} />
     <div class="pick-list">${options.map((o) => {
       const on = multi ? sel.includes(o.value) : sel === o.value;
       return html`<button key=${o.value} class=${cx('pick', on && 'pick--on')} onClick=${() => toggle(o.value)}>
         ${o.lead}<span class="pick__text"><span class="t-title-m">${o.label}</span>${o.sub && html`<span class="t-label-13 muted">${o.sub}</span>`}</span>
         <span class=${cx('radio', multi && 'radio--box', on && 'radio--on')}>${on && html`<${Icon} name="check" size=${16} />`}</span></button>`;
     })}</div>
-    ${multi && html`<${Button} label=${t('common.done')} disabled=${!sel.length} onClick=${() => { onPick(sel); onClose(); }} />`}
-    ${!multi && confirm && html`<${Button} variant="dark" label=${confirm} onClick=${() => { onPick(sel); onClose(); }} />`}
+    <${ApplyButton} label=${confirm} disabled=${multi && !sel.length} onClick=${() => { onPick(sel); onClose(); }} />
   </${Sheet}>`;
 }
+
+// Кнопка «Застосувати» внизу листа выбора — одна на все листы
+export const ApplyButton = ({ label, disabled, onClick }) => html`<${Button} variant="dark" label=${label || t('common.apply')} disabled=${disabled} onClick=${onClick} />`;
 
 // Подтверждение (выйти из занятия, сбросить прогресс)
 export const ConfirmSheet = ({ title, text, yes, no, danger, onYes, onNo }) => html`<${Sheet} onClose=${onNo}>
