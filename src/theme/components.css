@@ -60,6 +60,8 @@ button.card { width: 100%; text-align: left; }
 [data-level="A2"] { background: var(--level-a2); }
 [data-level="B1"] { background: var(--level-b1); }
 [data-level="B2"] { background: var(--level-b2); }
+[data-level="C1"] { background: var(--level-c1); }
+[data-level="C2"] { background: var(--level-c2); }
 .status-tag { flex: none; padding: 4px 10px; border-radius: var(--radius-full); font-size: 12px; font-weight: 500; border: 1px solid transparent; }
 .status-tag--learned { background: var(--bg-surface-3); color: var(--text-primary); }
 .status-tag--learning { background: var(--bg-surface); border-color: var(--border-default); }
@@ -151,7 +153,7 @@ button.card { width: 100%; text-align: left; }
 .word-row__head { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-8); row-gap: 2px; }
 .word-row__ipa { white-space: nowrap; }
 .more { width: 100%; padding: var(--space-14); border-radius: var(--radius-full); background: var(--bg-surface); }
-.level-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-8); }
+.level-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); } /* шесть уровней — два ряда по три */
 .level-tile { position: relative; border-radius: var(--radius-16); padding: var(--space-10) var(--space-8) var(--space-10) var(--space-12); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); color: var(--text-on-pastel); }
 .level-tile .t-number-xs { color: var(--text-primary); }
 .level-tile--on { box-shadow: inset 0 0 0 2px var(--bg-inverse); }
@@ -328,11 +330,13 @@ button.card { width: 100%; text-align: left; }
 .answers { display: flex; flex-direction: column; gap: var(--space-10); }
 .answer { padding: 18px var(--space-20); border-radius: var(--radius-24); border: 2px solid transparent; }
 .answer--on { border-color: var(--border-strong); }
-.level-scale { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
+.level-scale { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
 .level-scale__cell { border-radius: var(--radius-16); padding: var(--space-10) var(--space-12); display: flex; flex-direction: column; gap: 2px; min-height: 58px; background: var(--bg-surface-3) !important; }
 .level-scale__cell.is-known[data-level="A1"] { background: var(--level-a1) !important; }
 .level-scale__cell.is-known[data-level="A2"] { background: var(--level-a2) !important; }
 .level-scale__cell.is-known[data-level="B1"] { background: var(--level-b1) !important; }
+.level-scale__cell.is-known[data-level="B2"] { background: var(--level-b2) !important; }
+.level-scale__cell.is-known[data-level="C1"] { background: var(--level-c1) !important; }
 .level-scale__cell.is-yours { background: var(--bg-inverse) !important; color: var(--text-on-inverse); }
 .chosen { display: flex; align-items: center; gap: var(--space-8); padding: var(--space-12) var(--space-16); flex-wrap: wrap; }
 .pill--level { padding: 4px 10px; }
