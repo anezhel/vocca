@@ -16,7 +16,7 @@ export function TestIntro({ course, go, back }) {
     <div class="stats">
       <div class="stat card"><div class="t-stat-m">3</div><div class="t-label-12 muted">${t('test.minutes')}</div></div>
       <div class="stat card"><div class="t-stat-m">${CONFIG.testSize}</div><div class="t-label-12 muted">${t('test.words')}</div></div>
-      <div class="stat card"><div class="t-stat-m">A1–B2</div><div class="t-label-12 muted">${t('test.levels')}</div></div>
+      <div class="stat card"><div class="t-stat-m">${LEVELS[0]}–${LEVELS[LEVELS.length - 1]}</div><div class="t-label-12 muted">${t('test.levels')}</div></div>
     </div>
     <div class="card card--pad"><${Overline}>${t('test.how')}</${Overline}>
       <ol class="how">${['s1', 's2', 's3'].map((k, i) => html`<li><span class="how__n t-label-13-strong">${i + 1}</span><span class="t-body-15">${t('test.' + k)}</span></li>`)}</ol></div>
