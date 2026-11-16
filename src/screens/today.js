@@ -66,7 +66,7 @@ export function Today({ course, go }) {
 
 // 04 · Групи слів: заголовок над блоками; блоки «В процесі», «Нові», «Пройдені» идут один под другим
 // (пустой блок не показываем), группы внутри — через тонкую линию. Нажатие на строку открывает группу.
-// Кнопки: «Вчити» (лаймовая) — продолжить, «Розпочати» (лавандовая) — начать, «Повторити» (мятная) — повторить пройденную группу.
+// Кнопки: «Вчити» (лаймовая) — продолжить, «Почати» (лавандовая) — начать, «Повторити» (мятная) — повторить пройденную группу.
 const BLOCKS = [['learning', 'today.groupsLearning', 'groups.learn'], ['fresh', 'today.groupsNew', 'groups.start'], ['done', 'today.groupsDone', 'groups.repeat']];
 function GroupsHome({ course, go }) {
   if (!feature('groups') || !course.groupList?.length) return null;
