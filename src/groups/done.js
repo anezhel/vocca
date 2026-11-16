@@ -1,4 +1,4 @@
-// Экран 19c: итог порции в группе (одинаковый для всех групп и для неправильных глаголов).
+// Экран 19c: итог порции в группе (одинаковый для всех групп и для карточек неправильных глаголов). Ring — и в итоге тренажёра 12f.
 // Кольцо — сколько пройдено во всей группе, ниже слова этой порции и кнопки
 // «Продовжити вчити» (следующая порция), «Повторити» (эти же слова), «Повернутися» (к списку групп).
 import { html } from '../../lib/preact-htm.js';
@@ -6,7 +6,7 @@ import { t, pn, plural } from '../i18n/index.js';
 import { Screen, Button } from '../ui/kit.js';
 
 // Кольцо прогресса: лаймовая дорожка, чёрная дуга от верха по часовой, точка на конце дуги
-function Ring({ value, total, caption, size = 240, stroke = 10 }) {
+export function Ring({ value, total, caption, size = 240, stroke = 10 }) {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, mid = size / 2;
   const f = total ? Math.min(1, value / total) : 0;
   const a = -Math.PI / 2 + 2 * Math.PI * f;

@@ -250,30 +250,42 @@ button.card { width: 100%; text-align: left; }
 .rel__row { display: flex; align-items: flex-start; gap: var(--space-12); }
 .rel__sub { color: var(--text-on-pastel); opacity: .75; }
 
-/* ── Неправильные глаголы ── */
+/* ── 12 · «3 форми дієслів» (src/groups/irregular.js): карточки сложности как группы на 04i, внизу «Тренажер» ── */
+.screen--verbs .title { margin-bottom: 0; }
+.pill--due { background: var(--bg-accent); border-color: transparent; }
+.verbs-intro { padding: var(--space-20); border-radius: var(--radius-28); }
+.verbs-intro .overline { margin-bottom: var(--space-12); }
 .forms3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
-.forms3__cell { background: var(--bg-surface-2); border-radius: var(--radius-16); padding: var(--space-10) var(--space-12); }
-.diff-card { background: var(--tint-lavender); box-shadow: none; padding: var(--space-16) 18px; display: flex; flex-direction: column; gap: var(--space-6); }
-.diff-card__top { display: flex; align-items: center; gap: var(--space-8); }
-.diff-card__go { margin-left: auto; }
-.diff-card__forms { display: flex; gap: var(--space-6); flex-wrap: wrap; margin: var(--space-6) 0; }
+.forms3__cell { min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: var(--space-12); border-radius: var(--radius-16); background: var(--bg-surface-2); }
+.diff-card { padding: var(--space-20); border-radius: var(--radius-28); display: flex; flex-direction: column; gap: var(--space-12); cursor: pointer; }
+.diff-card__head { display: flex; align-items: center; gap: var(--space-12); }
+.diff-card__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+.diff-card__forms { display: flex; flex-wrap: wrap; gap: 6px; }
+.diff-card .meter { height: 4px; border-radius: 2px; margin-top: 0; background: var(--bg-surface-3); }
+/* Плашка сложности: Легко — мятная, Середньо — персиковая, Складно — розовая (цвета уровней A1, B1, B2) */
+.diff-tag { align-self: flex-start; display: inline-flex; align-items: center; gap: var(--space-8); height: 28px; padding: 0 var(--space-12);
+  border-radius: var(--radius-full); color: var(--text-on-pastel); white-space: nowrap; }
+.diff-tag--easy { background: var(--tint-mint); }
+.diff-tag--medium { background: var(--tint-peach); }
+.diff-tag--hard { background: var(--tint-pink); }
 .dots { display: inline-flex; gap: 3px; }
 .dots i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--bg-inverse); }
 .dots i.on { background: var(--bg-inverse); }
-.verb-head { margin: var(--space-4) 0; }
-.forms { display: flex; flex-direction: column; gap: var(--space-10); }
-.form { display: flex; align-items: center; gap: var(--space-14); padding: var(--space-12) var(--space-14) var(--space-12) 18px; border-radius: var(--radius-24); width: 100%; text-align: left; min-height: 68px; }
-.form__n { color: var(--text-tertiary); width: 22px; }
-.form__text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.form--empty { border: 1.5px dashed var(--border-radio); background: transparent; }
-.form--empty .t-word-m { color: var(--text-tertiary); }
-.form--picked .t-word-m { color: var(--text-primary); }
-.form--active { border: 2px dashed var(--border-strong); }
-.form--right { background: var(--tint-mint); }
-.form--wrong { background: var(--tint-coral); }
-.options { display: flex; flex-wrap: wrap; gap: var(--space-8); }
-.option { padding: var(--space-12) var(--space-16); border-radius: var(--radius-full); background: var(--bg-surface-3); font-size: 17px; font-weight: 500; }
-.option:active { background: var(--bg-inverse); color: var(--text-on-inverse); }
+
+/* 12e · тренажёр: пустые ячейки 2-й и 3-й формы, варианты ответа под активной ячейкой, ✓ / ✗ в ответе */
+.slot { width: 100%; min-height: 52px; margin-top: 2px; padding: 0 var(--space-16); border-radius: var(--radius-16); border: 1.5px dashed var(--border-radio);
+  display: flex; align-items: center; color: var(--text-tertiary); transition: background .15s, border-color .15s; }
+.slot--active { border: 2px solid var(--border-strong); background: var(--tint-lime); color: var(--text-primary); }
+.slot--picked { border: 1.5px solid var(--border-default); background: var(--bg-surface-2); color: var(--text-primary); }
+.options { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+.option { min-height: 52px; padding: var(--space-8) var(--space-12); border-radius: var(--radius-full); background: var(--bg-canvas); text-align: center;
+  font-size: 17px; font-weight: 500; letter-spacing: -.01em; overflow-wrap: anywhere; transition: background .12s, color .12s, transform .12s; }
+.option:active { background: var(--bg-inverse); color: var(--text-on-inverse); transform: scale(.97); }
+.verdict { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; color: var(--text-on-pastel); }
+.verdict--ok { background: var(--tint-mint); }
+.verdict--bad { background: var(--tint-coral); }
+.verdict-text { color: var(--text-error); }
+.counter--wrong { background: var(--tint-coral); border-color: transparent; }
 
 /* ── Первый запуск ── */
 .dropdown { position: relative; }

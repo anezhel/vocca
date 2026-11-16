@@ -90,6 +90,7 @@ export default {
     doneTitle: 'Тренировка завершена', inTraining: '{v} в тренировке', firstTry: 'без ошибок', withError: 'с ошибкой',
     nextReview: 'Повторение группы через {x}', nextReviewSub: 'Кнопка появится во вкладке «Группы»', repeatAtEnd: 'Повторим в конце', toGroups: 'К группам',
     examples: 'Примеры',
+    trainer: 'Тренажёр', trainMore: 'Тренироваться дальше', ringCap: 'из {n} без ошибок', nextTrain: 'Следующая тренировка — {x}.',
   },
   words: {
     title: 'Слова', inCourse: '{n} в курсе', all: 'Все', learning: 'Учу', learned: 'Выучено', fresh: 'Новые',
