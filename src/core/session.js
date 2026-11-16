@@ -8,17 +8,34 @@ import { wordById } from './words.js';
 
 export const minutesFor = (nNew, nReview) => Math.max(1, Math.round((nNew * CONFIG.secondsPerNew + nReview * CONFIG.secondsPerReview) / 60));
 
-// Новые слова по порядку: сначала добавленные из групп, потом по уровням (уровень из теста — первым).
+// Новые слова: сначала добавленные из групп, потом вперемешку с выбранных уровней.
+// Уровень для каждого следующего слова выбирается случайно, но самый простой встречается чаще:
+// 2 уровня — 65 / 35 %, 3 — 50 / 30 / 20 %, 4 — 40 / 30 / 20 / 10 %. Внутри уровня — по порядку словаря (от частых).
+// Случайность «на день»: в течение дня подбор тот же, на следующий день — другой.
+const LEVEL_WEIGHTS = { 1: [1], 2: [65, 35], 3: [50, 30, 20], 4: [40, 30, 20, 10] };
+
+function seeded(key) {   // mulberry32 от строки
+  let h = 1779033703;
+  for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 3432918353), h = (h << 13) | (h >>> 19);
+  return () => { h |= 0; h = (h + 0x6d2b79f5) | 0; let t = Math.imul(h ^ (h >>> 15), 1 | h); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+
 function pickFresh(course, p, quota) {
   const out = [];
   for (const id of p.queue) { if (out.length >= quota) return out; if (!p.cards[id] && wordById(course, id)) out.push(id); }
-  const levels = LEVELS.filter((l) => p.levels.includes(l));
-  if (p.testLevel && levels.includes(p.testLevel)) levels.sort((a, b) => (a === p.testLevel ? -1 : b === p.testLevel ? 1 : 0));
-  for (const lvl of levels) {
-    for (const w of course.words) {
-      if (out.length >= quota) return out;
-      if (w.lvl === lvl && !p.cards[w.id] && !out.includes(w.id)) out.push(w.id);
-    }
+  const levels = LEVELS.filter((l) => p.levels.includes(l));        // от простого к сложному
+  if (!levels.length) return out;
+  const pools = levels.map((l) => course.words.filter((w) => w.lvl === l && !p.cards[w.id] && !out.includes(w.id)).map((w) => w.id));
+  const weights = LEVEL_WEIGHTS[levels.length] || levels.map((_, i) => levels.length - i);
+  const rnd = seeded(course.id + dayKey());
+  const next = levels.map(() => 0);
+  while (out.length < quota) {
+    const live = weights.map((w, i) => (next[i] < pools[i].length ? w : 0));
+    const sum = live.reduce((a, b) => a + b, 0);
+    if (!sum) break;
+    let r = rnd() * sum, i = 0;
+    while (r >= live[i]) { r -= live[i]; i++; }
+    out.push(pools[i][next[i]++]);
   }
   return out;
 }
