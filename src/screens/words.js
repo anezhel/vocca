@@ -2,7 +2,7 @@
 // В строках нет меток статуса: звук и стрелка с примерами; у выученных — «Повернути у вивчення».
 import { html, useState, useMemo } from '../../lib/preact-htm.js';
 import { LEVELS } from '../content/index.js';
-import { t, L, num } from '../i18n/index.js';
+import { t, L, num, plural } from '../i18n/index.js';
 import { progress } from '../core/store.js';
 import { status, isLearned } from '../core/srs.js';
 import { shown, ipaOf, ttsLang, returnToLearning } from '../core/words.js';
@@ -46,7 +46,7 @@ export function Words({ course, toast }) {
     <${Segmented} cls="seg--wide" value=${filter} onChange=${(v) => { setFilter(v); setShownN(PAGE); }}
       options=${[['all', 'all'], ['learning', 'learning'], ['learned', 'learned'], ['fresh', 'fresh']].map(([v, k]) => ({ value: v, label: t('words.' + k) }))} />
     <div class="level-tiles">${LEVELS.map((l) => html`<button class=${cx('level-tile', levels.includes(l) && 'level-tile--on')} data-level=${l} onClick=${() => tog(l)}>
-      <span class="t-number-xs">${l}</span><span class="t-label-12">${num(counts[l])} ${t('pl.words.2')}</span>
+      <span class="t-number-xs">${l}</span><span class="t-label-12">${num(counts[l])} ${plural(counts[l], 'words')}</span>
       ${levels.includes(l) && html`<span class="level-tile__check"><${Icon} name="check" size=${14} /></span>`}</button>`)}</div>
     <div class="word-list word-list--tight">${list.length ? list.slice(0, shownN).map((w) => html`<${ExpandRow} key=${w.id} course=${course} w=${w} lang=${lang}
       open=${open === w.id} onToggle=${() => setOpen(open === w.id ? null : w.id)}
