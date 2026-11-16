@@ -149,7 +149,7 @@ export const Example = ({ ex, hl }) => html`<div class="example"><div class="t-b
 
 // Aura/Tab bar — стеклянная капсула. За активной вкладкой — светло-розовый пузырёк (nav/active-bg),
 // иконка и подпись в нём красно-розовые. При смене вкладки пузырёк переезжает с лёгкой пружинкой, не увеличиваясь;
-// его можно тянуть пальцем — вкладка выбирается, когда палец отпущен.
+// его можно тянуть пальцем — вкладка выбирается, когда палец отпущен. Нажатие на вкладку — обычный click.
 // Движение — пружина в requestAnimationFrame; стили пишутся прямо в DOM, без перерисовки на каждом кадре.
 // «Групи» в меню нет с 16.11.2026.
 const TABS = [['today', 'bolt'], ['words', 'cards'], ['settings', 'settings']];
@@ -189,15 +189,23 @@ export function Nav({ active, onNav, tabs }) {
     const kick = () => { if (!s.raf) { s.last = 0; s.raf = requestAnimationFrame(step); } };
     s.goTo = (i) => { s.target = center(i); kick(); };
     const at = (e) => e.clientX - bar.getBoundingClientRect().left;
-    const down = (e) => { if (e.button > 0) return; s.pressed = true; bar.setPointerCapture(e.pointerId); s.target = clampX(at(e)); kick(); };
-    const move = (e) => { if (s.pressed) { s.target = clampX(at(e)); kick(); } };
+    // Обычное нажатие — стандартный click кнопки (надёжно на iPhone). Свои обработчики — только для
+    // перетаскивания пузырька: оно начинается, когда палец сдвинулся больше чем на 8 px.
+    const down = (e) => { if (e.button > 0) return; s.pressed = true; s.dragging = false; s.startX = e.clientX; s.pid = e.pointerId; };
+    const move = (e) => {
+      if (!s.pressed) return;
+      if (!s.dragging && Math.abs(e.clientX - s.startX) > 8) { s.dragging = true; try { bar.setPointerCapture(s.pid); } catch (_) { /* касание уже закончилось */ } }
+      if (s.dragging) { s.target = clampX(at(e)); kick(); }
+    };
     const up = () => {
       if (!s.pressed) return; s.pressed = false;
+      if (!s.dragging) return;   // это было нажатие — вкладку переключит click
+      s.dragging = false; s.skipClick = Date.now();
       const { items: list, active: cur, onNav: nav } = latest.current;
       const i = Math.max(0, Math.min(list.length - 1, Math.round((s.target - PAD) / s.tw - 0.5)));
       s.goTo(i); if (list[i][0] !== cur) nav(list[i][0]);
     };
-    const cancel = () => { if (s.pressed) { s.pressed = false; s.goTo(latest.current.idx); } };
+    const cancel = () => { if (!s.pressed) return; s.pressed = false; if (s.dragging) { s.dragging = false; s.goTo(latest.current.idx); } };
     bar.addEventListener('pointerdown', down); bar.addEventListener('pointermove', move);
     bar.addEventListener('pointerup', up); bar.addEventListener('pointercancel', cancel);
     const ro = new ResizeObserver(() => { measure(); s.x = s.target = center(latest.current.idx); draw(); });
@@ -205,12 +213,14 @@ export function Nav({ active, onNav, tabs }) {
     return () => { ro.disconnect(); cancelAnimationFrame(s.raf); bar.removeEventListener('pointerdown', down); bar.removeEventListener('pointermove', move);
       bar.removeEventListener('pointerup', up); bar.removeEventListener('pointercancel', cancel); };
   }, [items.length]);
+  // нажатие на вкладку (и Enter / пробел с клавиатуры); сразу после перетаскивания click игнорируем
+  const tap = (name) => { const s = st.current; if (s && Date.now() - (s.skipClick || 0) < 400) return; if (name !== active) onNav(name); };
   // вкладку сменили не через меню (например, «На головну» на итоге) — пузырёк переезжает сам
   useEffect(() => { const s = st.current; if (s && s.goTo && !s.pressed) s.goTo(idx); }, [idx]);
 
   return html`<nav class="nav" ref=${barRef} aria-label="menu">
     <div class="nav__row">${items.map(([name, icon]) => html`<button key=${name} class="nav__tab" aria-current=${active === name ? 'page' : null}
-      onClick=${(e) => { if (e.detail === 0 && name !== active) onNav(name); }}><${Icon} name=${icon} size=${24} /><span class="nav__label">${t('nav.' + name)}</span></button>`)}</div>
+      onClick=${() => tap(name)}><${Icon} name=${icon} size=${24} /><span class="nav__label">${t('nav.' + name)}</span></button>`)}</div>
     <div class="nav__bubble" ref=${bubRef} aria-hidden="true"><div class="nav__lens" ref=${lensRef}><${NavItems} items=${items} cls="nav__tab" /></div></div>
   </nav>`;
 }
