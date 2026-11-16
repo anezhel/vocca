@@ -153,11 +153,11 @@ button.card { width: 100%; text-align: left; }
 .word-row__head { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-8); row-gap: 2px; }
 .word-row__ipa { white-space: nowrap; }
 .more { width: 100%; padding: var(--space-14); border-radius: var(--radius-full); background: var(--bg-surface); }
-.level-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); } /* шесть уровней — два ряда по три */
-.level-tile { position: relative; border-radius: var(--radius-16); padding: var(--space-10) var(--space-8) var(--space-10) var(--space-12); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); color: var(--text-on-pastel); }
+.level-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-6); } /* шесть уровней в ряд: на плитке уровень и число слов */
+.level-tile { position: relative; min-width: 0; border-radius: var(--radius-16); padding: var(--space-10) var(--space-4) var(--space-10) var(--space-10); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); color: var(--text-on-pastel); }
 .level-tile .t-number-xs { color: var(--text-primary); }
 .level-tile--on { box-shadow: inset 0 0 0 2px var(--bg-inverse); }
-.level-tile__check { position: absolute; top: var(--space-8); right: var(--space-8); width: 22px; height: 22px; border-radius: 50%; background: var(--bg-inverse); color: var(--text-on-inverse); display: grid; place-items: center; }
+.level-tile__check { position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; border-radius: 50%; background: var(--bg-inverse); color: var(--text-on-inverse); display: grid; place-items: center; box-shadow: 0 0 0 2px var(--bg-surface); }
 .chips { display: flex; gap: var(--space-8); overflow-x: auto; scrollbar-width: none; }
 .chip { flex: none; padding: var(--space-8) var(--space-14); border-radius: var(--radius-full); border: 1px solid var(--border-icon-button); background: var(--bg-icon-button); font-size: 15px; font-weight: 500; }
 .chip--on { background: var(--bg-chip-selected); color: var(--text-on-chip-selected); border-color: transparent; }
