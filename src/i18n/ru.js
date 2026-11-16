@@ -90,7 +90,11 @@ export default {
     doneTitle: 'Тренировка завершена', inTraining: '{v} в тренировке', firstTry: 'без ошибок', withError: 'с ошибкой',
     nextReview: 'Повторение группы через {x}', nextReviewSub: 'Кнопка появится во вкладке «Группы»', repeatAtEnd: 'Повторим в конце', toGroups: 'К группам',
     examples: 'Примеры',
+    trainer: 'Тренажёр',
   },
+  // 12e · тренажёр трёх форм (тексты из Vocca)
+  drill: { chip: 'Неправильные глаголы', task: 'Вставьте две формы глагола', right: 'Верно', wrong: 'Ошибка', nextVerb: 'Следующий глагол',
+    done: 'Готово: {n} из {total} верно', nothing: 'Все глаголы уже повторены на сегодня' },
   words: {
     title: 'Слова', inCourse: '{n} в курсе', all: 'Все', learning: 'Учу', learned: 'Выучено', fresh: 'Новые',
     status: { learning: 'учу', learned: 'выучено', fresh: 'новое', reinforcing: 'закрепляется' },

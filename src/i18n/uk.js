@@ -90,7 +90,11 @@ export default {
     doneTitle: 'Тренування завершено', inTraining: '{v} у тренуванні', firstTry: 'без помилок', withError: 'з помилкою',
     nextReview: 'Повторення групи через {x}', nextReviewSub: 'Кнопка з’явиться на вкладці «Групи»', repeatAtEnd: 'Повторимо в кінці', toGroups: 'До груп',
     examples: 'Приклади',
+    trainer: 'Тренажер',
   },
+  // 12e · тренажёр трёх форм (тексты из Vocca)
+  drill: { chip: 'Неправильні дієслова', task: 'Вставте дві форми дієслова', right: 'Правильно', wrong: 'Помилка', nextVerb: 'Наступне дієслово',
+    done: 'Готово: {n} з {total} правильно', nothing: 'Усі дієслова вже повторені на сьогодні' },
   words: {
     title: 'Слова', inCourse: '{n} у курсі', all: 'Усі', learning: 'Вчу', learned: 'Вивчено', fresh: 'Нові',
     status: { learning: 'вчу', learned: 'вивчено', fresh: 'нове', reinforcing: 'закріплюється' },
