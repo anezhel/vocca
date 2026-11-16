@@ -230,8 +230,6 @@ function Summary({ course, lesson, go }) {
       <${Stat} value=${`${min} ${t('common.min')}`} label=${t('summary.time')} /></div>
     ${mode === 'fixed' && plan.nextAt && html`<div class="card info-card"><span class="ib ib--accent" style="--ib:48px"><${Icon} name="clock" size=${22} /></span>
       <div><div class="t-label-16-strong">${t('summary.fixedBack', { time: clock(plan.nextAt) })}</div><div class="t-label-13 muted">${t('summary.fixedSub')}</div></div></div>`}
-    ${mode === 'daily' && html`<div class="card info-card"><span class="ib ib--accent" style="--ib:48px"><${Icon} name="clock" size=${22} /></span>
-      <div><div class="t-label-16-strong">${t('summary.dailyNext')}</div><div class="t-label-13 muted">${t('summary.dailySub')}</div></div></div>`}
     ${feature('streak') && html`<div class="card streak-card"><span class="ib ib--white" style="--ib:48px"><${Icon} name="flame" size=${22} /></span>
       <div class="grow"><div class="t-label-16-strong">${t('summary.streak', { x: pn(st.days, 'days') })}</div>
       <div class="t-label-13">${t('summary.freeze', { x: pn(st.freezes, 'freezes') })}</div></div>

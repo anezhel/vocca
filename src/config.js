@@ -48,8 +48,10 @@ export const CONFIG = {
   answerButtons: 'simple',
   recheckKnown: false,                    // «Знаю це слово» и «Я знаю це»: false — слово больше не показывается, true — вернётся на проверку через месяц
 
-  // ── Режимы повторения (экран 03). Интервалы — здесь, логика — src/core/srs.js ──
-  defaultMode: 'smart',
+  // ── Ритм повторения. С 16.11.2026 выбора нет (экран 03 убран): у всех «Раз на день» — daily.
+  //    Режимы smart и fixed остались в коде (src/core/srs.js), чтобы их можно было вернуть, но не используются.
+  //    Шаги daily показаны в «Як працює повторення» (settings.howTextCards в src/i18n).
+  defaultMode: 'daily',
   modes: {
     smart: { first: { hard: 1, good: 3, easy: 7 }, hardFactor: 1.2, easyBonus: 1.3, startEase: 2.5, minEase: 1.3 }, // дни
     fixed: { ladder: ['15m', '2h', '4h', '1d', '3d', '7d', '14d', '30d'] },

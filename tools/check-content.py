@@ -5,7 +5,7 @@ import os, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONTENT = os.path.join(ROOT, 'src', 'content')
-LEVELS = {'A1', 'A2', 'B1', 'B2'}
+LEVELS = {'A1', 'A2', 'B1', 'B2', 'C1', 'C2'}
 problems = 0
 
 
@@ -48,7 +48,7 @@ for lang in sorted(os.listdir(CONTENT)):
             if not r.get('word'):
                 warn(words, n, 'пустое слово (колонка word)')
             if r.get('level') not in LEVELS:
-                warn(words, n, f'уровень «{r.get("level")}» — нужен A1, A2, B1 или B2')
+                warn(words, n, f'уровень «{r.get("level")}» — нужен A1, A2, B1, B2, C1 или C2')
             if not (r.get('uk') or r.get('ru')):
                 warn(words, n, f'нет перевода: {r.get("word")}')
             key = r.get('word', '').lower()

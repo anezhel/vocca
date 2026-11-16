@@ -7,7 +7,7 @@ import { getState, update, progress, resetCourse } from '../core/store.js';
 import { tts } from '../core/tts.js';
 import { ttsLang, variantOf } from '../core/words.js';
 import { Screen, Title, SettingsRow, PickSheet, Sheet, ConfirmSheet, Button } from '../ui/kit.js';
-import { LevelsSheet, ModeSheet } from './onboarding.js';
+import { LevelsSheet } from './onboarding.js';
 
 const set = (fn) => update((s) => fn(s, progress()));
 
@@ -21,7 +21,6 @@ const SECTIONS = [
     { id: 'levels', icon: 'layers', value: (s, c, p) => p.levels.join(', ') || '—', sheet: 'levels' },
     { id: 'perDay', icon: 'grid', sub: true, value: (s, c, p) => p.perDay, pick: () => CONFIG.perDayOptions.map((n) => ({ value: n, label: String(n) })), get: (s, p) => p.perDay, put: (v) => set((s, p) => { p.perDay = v; }) },
     { id: 'newPerDay', icon: 'plus', sub: true, value: (s, c, p) => p.newPerDay, pick: () => CONFIG.newPerDayOptions.map((n) => ({ value: n, label: String(n) })), get: (s, p) => p.newPerDay, put: (v) => set((s, p) => { p.newPerDay = v; }) },
-    { id: 'mode', icon: 'refresh', value: (s, c, p) => t('modes.' + p.mode), sheet: 'mode' },
   ]],
   ['sound', [
     { id: 'autoplay', icon: 'speaker', toggle: (s) => s.autoplay, put: (v) => set((s) => { s.autoplay = v; }) },
@@ -73,9 +72,8 @@ export function Settings({ course, route, go }) {
     ${picker && html`<${PickSheet} title=${t('settings.' + picker.id)} options=${picker.pick(course)} value=${picker.get(s, p)} onPick=${picker.put} onClose=${close} />`}
     ${open === 'levels' && html`<${LevelsSheet} value=${p.levels} testLevel=${p.testLevel} onClose=${close}
       onApply=${(v) => set((st, c) => { c.levels = LEVELS.filter((l) => v.includes(l)); })} />`}
-    ${open === 'mode' && html`<${ModeSheet} value=${p.mode} onClose=${close} onApply=${(m) => set((st, c) => { c.mode = m; })} />`}
     ${open === 'how' && html`<${Sheet} onClose=${close}><div class="sheet__head"><div class="t-heading-h2">${t('settings.howTitle')}</div></div>
-      <p class="t-body-16">${t(CONFIG.answerButtons === 'simple' ? 'settings.howTextSimple' : 'settings.howText')}</p><${Button} variant="dark" label=${t('common.gotIt')} onClick=${close} /></${Sheet}>`}
+      <p class="t-body-16">${t(CONFIG.lessonStyle === 'cards' ? 'settings.howTextCards' : CONFIG.answerButtons === 'simple' ? 'settings.howTextSimple' : 'settings.howText')}</p><${Button} variant="dark" label=${t('common.gotIt')} onClick=${close} /></${Sheet}>`}
     ${open === 'reset' && html`<${ConfirmSheet} title=${t('settings.resetTitle')} text=${t('settings.resetText')} yes=${t('settings.resetYes')} no=${t('common.cancel')} danger
       onYes=${() => { resetCourse(course.id); update((st) => { st.onboarded = false; }); close(); go('welcome', {}, true); }} onNo=${close} />`}
   </${Screen}>`;

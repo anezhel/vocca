@@ -2,9 +2,9 @@
 import { html, useState } from '../../lib/preact-htm.js';
 import { CONFIG, feature } from '../config.js';
 import { COURSES, PREVIEW, LEVELS } from '../content/index.js';
-import { t, L, UI_NAMES, dur, num } from '../i18n/index.js';
+import { t, L, UI_NAMES, num } from '../i18n/index.js';
 import { getState, update, progress } from '../core/store.js';
-import { Screen, Title, Button, Icon, IconButton, Counter, Segmented, Sheet, SheetHead, ApplyButton, cx } from '../ui/kit.js';
+import { Screen, Title, Button, Icon, IconButton, Counter, Sheet, SheetHead, ApplyButton, cx } from '../ui/kit.js';
 
 const Head = ({ n, onBack, brand }) => html`<div class="top-bar">
   ${brand ? html`<span class="t-brand-wordmark brand">Vocca</span>` : html`<${IconButton} icon="arrow-left" size=${48} onClick=${onBack} />`}
@@ -56,7 +56,7 @@ export function Levels({ go, back }) {
   const p = progress();
   const [levels, setLevels] = useState(p.levels.length ? p.levels : ['A1']);
   const save = () => update(() => { progress().levels = LEVELS.filter((l) => levels.includes(l)); });
-  return html`<${Screen} tone="cool" bottom=${html`<${Button} label=${t('common.continue')} disabled=${!levels.length} onClick=${() => { save(); go('mode'); }} />`}>
+  return html`<${Screen} tone="cool" bottom=${html`<${Button} label=${t('common.start')} disabled=${!levels.length} onClick=${() => { save(); finishOnboarding(go); }} />`}>
     <${Head} n=${2} onBack=${back} />
     <${Title} main=${t('onboarding.levelTitle')} accent=${t('onboarding.levelTitle2')} />
     <${LevelCards} value=${levels} onChange=${setLevels} testLevel=${p.testLevel} />
@@ -67,30 +67,8 @@ export function Levels({ go, back }) {
   </${Screen}>`;
 }
 
-export function ModeCards({ value, onChange }) {
-  const fixed = CONFIG.modes.fixed.ladder.map((x) => dur(parseFloat(x) * { m: 60, h: 3600, d: 86400 }[x.slice(-1)])).join(' → ');
-  const simple = CONFIG.answerButtons === 'simple';
-  const first = fixed.split(' → ')[0];
-  const items = [['smart', t(simple ? 'modes.smartDescSimple' : 'modes.smartDesc')], ['fixed', simple ? t('modes.fixedDescSimple', { x: first }) : fixed], ['daily', t('modes.dailyDesc')]];
-  return html`<div class="mode-cards">${items.map(([m, desc]) => html`<button class=${cx('mode-card', 'card', value === m && 'mode-card--on')} onClick=${() => onChange(m)}>
-    <span class="mode-card__text"><span class="t-title-m">${t('modes.' + m)} ${m === 'smart' && html`<span class="badge t-label-12-medium">${t('onboarding.recommended')}</span>`}</span>
-    <span class="t-label-13 muted">${desc}</span></span>
-    <span class=${cx('radio', value === m && 'radio--on')}>${value === m && html`<${Icon} name="check" size=${16} />`}</span></button>`)}</div>`;
-}
-
-export function Mode({ go, back }) {
-  const p = progress();
-  const [mode, setMode] = useState(p.mode);
-  const [perDay, setPerDay] = useState(p.perDay);
-  const start = () => { update((s) => { const c = progress(); c.mode = mode; c.perDay = perDay; s.onboarded = true; }); go('today', {}, true); };
-  return html`<${Screen} tone="cool" bottom=${html`<${Button} label=${t('common.start')} onClick=${start} />`}>
-    <${Head} n=${3} onBack=${back} />
-    <${Title} main=${t('onboarding.modeTitle')} accent=${t('onboarding.modeTitle2')} />
-    <${ModeCards} value=${mode} onChange=${setMode} />
-    <div class="row-between"><span class="t-title-m">${t('onboarding.perDay')}</span><span class="t-label-12 muted">${t('onboarding.newOf', { n: p.newPerDay })}</span></div>
-    <${Segmented} cls="seg--wide" value=${perDay} onChange=${setPerDay} options=${CONFIG.perDayOptions.map((n) => ({ value: n, label: n }))} />
-  </${Screen}>`;
-}
+// Последний шаг настройки: сохранить и открыть главную. Ритм повторения один для всех — «Раз на день».
+export const finishOnboarding = (go) => { update((s) => { s.onboarded = true; }); go('today', {}, true); };
 
 // 02d / 10: «Обери рівні» — выбор применяется кнопкой «Застосувати»
 export function LevelsSheet({ value, testLevel, onApply, onClose, children }) {
@@ -100,14 +78,5 @@ export function LevelsSheet({ value, testLevel, onApply, onClose, children }) {
     <${LevelCards} value=${draft} testLevel=${testLevel} onChange=${setDraft} />
     ${children && children(draft)}
     <${ApplyButton} disabled=${!draft.length} onClick=${() => { onApply(draft); onClose(); }} />
-  </${Sheet}>`;
-}
-
-export function ModeSheet({ value, onApply, onClose }) {
-  const [draft, setDraft] = useState(value);
-  return html`<${Sheet} onClose=${onClose}>
-    <${SheetHead} title=${t('settings.mode')} onClose=${onClose} />
-    <${ModeCards} value=${draft} onChange=${setDraft} />
-    <${ApplyButton} onClick=${() => { onApply(draft); onClose(); }} />
   </${Sheet}>`;
 }
