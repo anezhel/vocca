@@ -1,7 +1,7 @@
 // Первый запуск: 01 язык интерфейса и что учим → 02 уровни → 03 режим повторения.
 import { html, useState } from '../../lib/preact-htm.js';
 import { CONFIG, feature } from '../config.js';
-import { COURSES, LEVELS } from '../content/index.js';
+import { COURSES, PREVIEW, LEVELS } from '../content/index.js';
 import { t, L, UI_NAMES, dur, num } from '../i18n/index.js';
 import { getState, update, progress } from '../core/store.js';
 import { Screen, Title, Button, Icon, IconButton, Counter, Segmented, cx } from '../ui/kit.js';
@@ -18,8 +18,11 @@ export function Welcome({ go }) {
   const link = (key, label) => CONFIG.links[key] ? html`<a href=${CONFIG.links[key]} target="_blank" rel="noopener">${label}</a>` : html`<u>${label}</u>`;
   const terms = t('onboarding.terms', { terms: '\u0001', privacy: '\u0002' }).split(/([\u0001\u0002])/).map((p) =>
     p === '\u0001' ? link('terms', t('onboarding.termsLink')) : p === '\u0002' ? link('privacy', t('onboarding.privacyLink')) : p);
+  // 01: английский и латышский. Латышский пока не включён — после выбора всё равно учим английский.
+  const cards = [...COURSES, ...PREVIEW.filter((x) => !COURSES.some((c) => c.id === x.id))];
+  const real = (id) => (COURSES.some((c) => c.id === id) ? id : CONFIG.defaultCourse);
   return html`<${Screen} tone="cool" bottom=${html`<p class="t-label-12 muted terms">${terms}</p>
-      <${Button} label=${t('common.continue')} onClick=${() => { update((st) => { st.course = course; }); go('levels'); }} />`}>
+      <${Button} label=${t('common.continue')} onClick=${() => { update((st) => { st.course = real(course); }); go('levels'); }} />`}>
     <${Head} n=${1} brand />
     <${Title} main=${t('onboarding.hello')} accent=${t('onboarding.setup')} />
     <div class="t-overline overline">${t('onboarding.uiLang')}</div>
@@ -30,10 +33,10 @@ export function Welcome({ go }) {
         <span class="t-label-16 grow">${UI_NAMES[code]}</span>${code === s.ui && html`<${Icon} name="check" size=${18} />`}</button>`)}</div>`}
     </div>
     <div class="t-overline overline">${t('onboarding.course')}</div>
-    <div class="course-cards">${COURSES.map((c) => html`<button class=${cx('course-card', 'card', c.id === course && 'course-card--on')} onClick=${() => setCourse(c.id)}>
+    <div class="course-cards">${cards.map((c) => html`<button class=${cx('course-card', 'card', c.id === course && 'course-card--on')} onClick=${() => setCourse(c.id)}>
       <span class=${cx('radio', c.id === course && 'radio--on')}>${c.id === course && html`<${Icon} name="check" size=${16} />`}</span>
       <span class="t-number-l">${c.code}</span><span class="t-label-16-strong">${c.name}</span>
-      ${c.words && html`<span class="t-label-13">${num(Math.floor(c.words.length / 100) * 100)}+ ${t('pl.words.2')}</span>`}</button>`)}</div>
+      ${(c.words || c.count) && html`<span class="t-label-13">${num(Math.floor((c.words ? c.words.length : c.count) / 100) * 100)}+ ${t('pl.words.2')}</span>`}</button>`)}</div>
   </${Screen}>`;
 }
 

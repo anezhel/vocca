@@ -9,7 +9,7 @@
   --bg-inverse-2: #2a2a2e;
   --bg-accent: #e4f25c;
   --bg-cta: #111113;
-  --bg-cta-circle: #e4f25c;
+  --bg-cta-circle: #ffffff;
   --bg-nav: #ffffff;
   --bg-nav-active: #111113;
   --bg-meter: #111113;
@@ -108,6 +108,7 @@
 
 [data-theme="aura-dusk"] {
   --bg-canvas: #b4bfcf;
+  --bg-cta-circle: #e4f25c;
   --bg-nav-active: #ffffff;
   --bg-meter-track: #dde3ec;
   --bg-icon-button: rgba(255,255,255,0.45);

@@ -1,8 +1,11 @@
 // Языки, которые можно учить. Новый язык = папка src/content/<код>/ (pack.js + words.tsv) и ОДНА строка в COURSES.
 import en from './en/pack.js';
-// import lv from './lv/pack.js';   ← латышский: убрать // в начале этой строки
+import lv from './lv/pack.js';   // латышский: пока только карточка на экране 01 (см. PREVIEW)
 
 export const COURSES = [en];       // ← и дописать сюда: [en, lv]
+// Языки, которые видны на экране 01, но ещё не включены: выбрать можно, учиться пока будем английскому.
+// Когда латышский будет готов — перенести lv в COURSES и убрать отсюда. count — для подписи «200+ слів».
+export const PREVIEW = [{ ...lv, count: 200 }];
 export const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 
 export const getCourse = (id) => COURSES.find((c) => c.id === id) || COURSES[0];

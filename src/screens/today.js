@@ -4,7 +4,7 @@ import { feature } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { t, pn, plural, num, interval, L } from '../i18n/index.js';
 import { progress } from '../core/store.js';
-import { planToday, learningIds, freshLeft } from '../core/session.js';
+import { planToday, learningIds, freshLeft, myLevel } from '../core/session.js';
 import { learnedStats, streak } from '../core/stats.js';
 import { clock } from '../core/dates.js';
 import { Screen, Title, Button, Icon, Pill, cx } from '../ui/kit.js';
@@ -23,6 +23,7 @@ export function Today({ course, go }) {
   const done = plan.total === 0;
   const finished = done && plan.doneToday > 0;   // 04s · план на сьогодні виконано
   const learning = learningIds(course).length;
+  const me = myLevel(p);   // «Мій рівень» справа вверху: по тесту или самый высокий из выбранных
   // 04: «Вчити слова» (в занятии сначала повторение, потом новые), под ней лаймовая «Повторити слова» —
   // повторить слова со статусом «Вчу», когда угодно. 04s (план выполнен): «Ще 5 нових слів».
   const main = plan.noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${() => go('settings', { pick: 'levels' })} />`
@@ -31,7 +32,8 @@ export function Today({ course, go }) {
   const repeat = !plan.noLevels && learning > 0 && html`<${Button} variant="accent" icon="refresh" label=${t('today.repeatWords')} onClick=${() => go('lesson', { practice: true })} />`;
   return html`<${Screen} cls="screen--tab screen--today" tone="today">
     <div class="top-bar"><span class="t-brand-wordmark brand">Vocca</span><span class="top-bar__mid"></span>
-      ${feature('streak') && html`<span class="pill pill--glass streak-pill"><${Icon} name="flame" size=${18} /><span class="t-label-15-medium">${st.days}</span></span>`}</div>
+      ${me && html`<button class="my-level t-label-14-medium" onClick=${() => go('settings', { pick: 'levels' })}>${t('today.myLevel')}
+        <span class="level-tag level-tag--white">${me}</span></button>`}</div>
     ${finished ? html`<${Title} main=${t('today.planDone')} accent=${t('today.planDoneAccent')} />`
       : plan.noLevels || done ? html`<${Title} main=${greeting()} accent=${plan.noLevels ? t('today.noLevels') : t('today.allDone')} />`
       : html`<${Title} main=${t('today.timeToMain')} accent=${t('today.timeToAccent')} />`}
@@ -64,7 +66,7 @@ export function Today({ course, go }) {
 
 // 04 · Групи слів: заголовок над блоками; блоки «В процесі», «Нові», «Пройдені» идут один под другим
 // (пустой блок не показываем), группы внутри — через тонкую линию. Нажатие на строку открывает группу.
-// Кнопки: «Вчити» — продолжить, «Розпочати» — начать, «Повторити» — повторить пройденную группу.
+// Кнопки: «Вчити» (лаймовая) — продолжить, «Розпочати» (лавандовая) — начать, «Повторити» (мятная) — повторить пройденную группу.
 const BLOCKS = [['learning', 'today.groupsLearning', 'groups.learn'], ['fresh', 'today.groupsNew', 'groups.start'], ['done', 'today.groupsDone', 'groups.repeat']];
 function GroupsHome({ course, go }) {
   if (!feature('groups') || !course.groupList?.length) return null;
@@ -78,8 +80,7 @@ function GroupsHome({ course, go }) {
         ${items.map(({ g, s }) => html`<div key=${g.id} class="group-row" role="button" tabindex="0" onClick=${() => open(g)}>
           <div class="group-row__head"><div class="group-row__text"><div class="t-title-l">${L(g.title)}</div>
             <div class="t-label-12-medium muted">${status === 'learning' ? t('groups.learnedOf', { a: s.learned, b: s.total }) : s.subtitle}</div></div>
-            <button class=${cx('pill-btn', status === 'learning' && 'pill-btn--accent')} onClick=${(e) => { e.stopPropagation(); if (status === 'done') repeat(g, s); else open(g); }}>
-              ${status === 'done' && html`<${Icon} name="refresh" size=${16} />`}${t(btn)}</button></div>
+            <button class=${cx('pill-btn', 'pill-btn--' + status)} onClick=${(e) => { e.stopPropagation(); if (status === 'done') repeat(g, s); else open(g); }}>${t(btn)}</button></div>
           ${status === 'learning' && html`<div class="meter"><i style=${`width:${Math.round((s.learned / Math.max(1, s.total)) * 100)}%`}></i></div>`}
         </div>`)}</div>`;
     })}

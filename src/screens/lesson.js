@@ -142,6 +142,7 @@ function NewWord({ course, w, lesson, bar, count, onKnow, onLearn, cards, onSkip
   const total = lesson.queue.filter((x) => x.kind === 'new').length + lesson.freshIds.length;
   const syn = (course.groupList.find((g) => g.id === 'synonyms')?.items || []).find((i) => i.w.toLowerCase() === w.w.toLowerCase());
   const targets = syn ? syn.targets.filter((s) => s.w) : [];
+  const verb = irregularOf(course, w);
   return html`<${Screen} cls="screen--lesson" tone="lesson" bottom=${html`<div class="row-2"><${Button} variant="secondary" label=${t('common.iKnow')} onClick=${onKnow} /><${Button} label=${t('common.learn')} onClick=${onLearn} /></div>`}>
     ${cards ? html`<${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${counter(lesson)} />`
       : html`<${TopBar} ...${bar} label=${t('lesson.newWord', { n: count, total })} />`}
@@ -154,8 +155,10 @@ function NewWord({ course, w, lesson, bar, count, onKnow, onLearn, cards, onSkip
         <div class="tags tags--word"><${LevelTag} lvl=${w.lvl} size="m" />${w.pos && html`<span class="pill pill--tag">${pos(w)}</span>`}</div>
         <div class="t-translation-l">${cap(L(w.tr))}</div>
       </div>
+      ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbForms} verb=${verb} lang=${lang} />`}
       ${targets.length > 0 && html`<span class="word-pair__link t-label-12-medium">≈ ${t('lesson.synonymsLink')}</span>
-        <div class="card syn-card">${targets.map((s) => html`<div class="syn-row"><div class="syn-row__text"><span class="t-label-17">${s.w}</span>
+        <div class="card syn-card">${targets.map((s) => html`<div class="syn-row"><div class="syn-row__text"><span class="syn-row__line"><span class="t-label-17">${s.w}</span>
+          ${s.ipa && html`<span class="t-label-14 muted">/${s.ipa}/</span>`}</span>
           ${s.tr && L(s.tr) && html`<span class="t-label-14 muted">${L(s.tr)}</span>`}</div><${SpeakButton} text=${s.w} lang=${lang} /></div>`)}</div>`}
     </div>
     ${onSkip && html`<${Button} variant="accent" label=${t('lesson.skipToNew')} onClick=${onSkip} />`}
@@ -164,6 +167,31 @@ function NewWord({ course, w, lesson, bar, count, onKnow, onLearn, cards, onSkip
     ${w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
       ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`}
   </${Screen}>`;
+}
+
+// 07v · Неправильне дієслово: карточка «3 форми дієслова» — у каждой формы транскрипция, озвучка и пример с переводом.
+// Глагол берётся из группы «3 форми дієслів» (groups/irregular.tsv), если слово занятия — глагол с тем же написанием.
+export function irregularOf(course, w) {
+  if (w.pos !== 'verb') return null;
+  const word = w.w.toLowerCase();
+  return (course.groupList.find((g) => g.id === 'irregular')?.items || []).find((v) => v.v1.toLowerCase() === word) || null;
+}
+
+function VerbForms({ verb, lang }) {
+  const labels = [t('verbs.present'), t('verbs.past'), t('verbs.participle')];
+  return html`<div class="card forms-card">
+    ${[1, 2, 3].map((n) => {
+      const form = verb['v' + n];
+      const ex = verb.ex[n - 1];
+      return html`<div class="forms-card__row">
+        <div class="forms-card__head"><div class="forms-card__text"><${Overline}>${n} · ${labels[n - 1]}</${Overline}>
+          <span class="syn-row__line"><span class="t-label-17">${form}</span>${verb.ipa[n - 1] && html`<span class="t-label-14 muted">/${verb.ipa[n - 1]}/</span>`}</span></div>
+          <${SpeakButton} text=${form.replace(' / ', ', ')} lang=${lang} /></div>
+        ${ex && html`<div class="forms-card__ex"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form.split(' / ')} /></div><div class="t-label-14 muted">${L(ex)}</div></div>`}
+      </div>`;
+    })}
+    ${verb.note && html`<p class="forms-card__note t-label-14 muted">${L(verb.note)}</p>`}
+  </div>`;
 }
 
 // 06e · «Що це означає?»
