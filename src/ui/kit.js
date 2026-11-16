@@ -21,7 +21,7 @@ export const Screen = ({ children, bottom, cls, tone }) => html`<main class=${cx
 </main>`;
 
 // Aura/CTA — чёрная кнопка с лаймовым кругом-стрелкой. secondary — белая. outline — контурная.
-// variant: cta — чёрная со стрелкой в кружке; accent — лаймовая с иконкой в белом кружке (04: «Повторити слова, які вчу»)
+// variant: cta — чёрная со стрелкой в кружке (шаг вперёд); dark — чёрная без стрелки (Aura/Button primary: «Застосувати», «Зрозуміло» в листах); accent — лаймовая с иконкой в белом кружке (04: «Повторити слова, які вчу»)
 export function Button({ label, onClick, variant = 'cta', disabled, icon = 'arrow-right', cls, small }) {
   const arrow = variant === 'cta' || variant === 'accent';
   return html`<button class=${cx('btn', 'btn--' + variant, small && 'btn--small', cls)} onClick=${onClick} disabled=${disabled}>

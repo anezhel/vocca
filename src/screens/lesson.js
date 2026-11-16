@@ -206,7 +206,7 @@ function ExplainSheet({ course, w, onClose }) {
     ${w.ex.length > 0 && html`<div class="card card--pad card--soft"><${Overline}>${t('lesson.examples')}</${Overline}>
       <div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div></div>`}
     ${w.note && html`<div class="note-box"><${Icon} name="info" size=${20} /><span class="t-body-14"><${Mark} text=${L(w.note)} hl=${[]} /></span></div>`}
-    <${Button} label=${t('common.gotIt')} onClick=${onClose} />
+    <${Button} variant="dark" label=${t('common.gotIt')} onClick=${onClose} />
   </${Sheet}>`;
 }
 
