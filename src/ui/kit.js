@@ -147,11 +147,18 @@ export function Mark({ text, hl = [] }) {
 export const Example = ({ ex, hl }) => html`<div class="example"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${hl} /></div>
   <div class="t-label-14 muted">${L(ex)}</div></div>`;
 
-// Aura/Nav — стеклянное нижнее меню, только иконки
-const TABS = [['today', 'home'], ['words', 'cards'], ['groups', 'grid'], ['settings', 'settings']];
+// Aura/Tab bar — белое меню во всю ширину: иконка и подпись; активная вкладка — цвет nav/active.
+// При нажатии пружинит только иконка: сжимается до 88 % и с отскоком возвращается (классы на иконке,
+// чтобы перерисовка кнопки при смене вкладки не обрывала анимацию).
+const TABS = [['today', 'bolt'], ['words', 'cards'], ['groups', 'grid'], ['settings', 'settings']];
+const iconOf = (e) => e.currentTarget.querySelector('.nav__icon');
+const press = (e) => { const i = iconOf(e); i.classList.remove('is-spring'); i.classList.add('is-press'); };
+const release = (e) => { const i = iconOf(e); if (!i.classList.contains('is-press')) return; i.classList.remove('is-press'); void i.offsetWidth; i.classList.add('is-spring'); };
 export const Nav = ({ active, onNav, tabs }) => html`<nav class="nav" aria-label="menu">${TABS.filter(([n]) => tabs.includes(n)).map(([name, icon]) => html`
-  <button key=${name} class=${cx('nav__tab', active === name && 'nav__tab--on')} aria-label=${t('nav.' + name)} aria-current=${active === name ? 'page' : null}
-    onClick=${() => active !== name && onNav(name)}><${Icon} name=${icon} size=${22} /></button>`)}</nav>`;
+  <button key=${name} class=${cx('nav__tab', active === name && 'nav__tab--on')} aria-current=${active === name ? 'page' : null}
+    onPointerDown=${press} onPointerUp=${release} onPointerLeave=${release} onPointerCancel=${release} onClick=${() => active !== name && onNav(name)}>
+    <span class="nav__icon" onAnimationEnd=${(e) => e.currentTarget.classList.remove('is-spring')}><${Icon} name=${icon} size=${24} /></span>
+    <span class="nav__label">${t('nav.' + name)}</span></button>`)}</nav>`;
 
 // Aura/Settings row
 export const SettingsRow = ({ icon, title, sub, value, trailing = 'chevron', on, onToggle, onClick, dim }) => html`<button
