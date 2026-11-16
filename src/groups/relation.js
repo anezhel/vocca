@@ -82,7 +82,7 @@ function GroupScreen({ course, group, route, go, back, toast }) {
     <div class="rel">
       <div class="rel__pair">
       <div class="card rel__base">
-        <div class="rel__text"><div class="t-word-l">${item.w}</div>
+        <div class="rel__text"><div class="rel__line"><span class="t-word-l">${item.w}</span>${item.ipa && html`<span class="t-label-15 muted">/${item.ipa}/</span>`}</div>
           <div class="t-label-14 muted">${L(item.literal) || L(item.tr)}</div></div>
         ${item.w && html`<${SpeakButton} text=${item.w} lang=${lang} kind="outline" />`}
       </div>
@@ -90,6 +90,7 @@ function GroupScreen({ course, group, route, go, back, toast }) {
       <div class="rel__targets">${item.targets.map((tg) => html`<div class="card rel__target">
           <div class="rel__row"><div class="rel__text">
             <div class=${group.meaning ? 't-word-l' : 't-word-xl'}>${group.meaning ? L(tg.tr) : tg.w}</div>
+            ${!group.meaning && tg.ipa && html`<div class="t-label-15 rel__sub">/${tg.ipa}/</div>`}
             <div class="t-label-14 rel__sub">${group.meaning ? L(item.hint) : L(tg.tr)}</div></div>
             ${!group.meaning && html`<${SpeakButton} text=${tg.w} lang=${lang} kind="outline" />`}</div>
         </div>`)}</div>

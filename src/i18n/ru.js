@@ -52,7 +52,7 @@ export default {
   },
   lesson: {
     recall: 'Вспомни {lang}', sayAloud: 'Скажи вслух {lang} · {n} с', sayAloudGo: 'Скажи вслух {lang}', show: 'Показать ответ', whatMeans: 'Что это значит?',
-    newWord: 'Новое слово · {n} / {total}', cardNew: 'Новое слово', cardReview: 'Повторение', meaning: 'Объяснение слова', synonymsLink: 'синонимы', skipToNew: 'Перейти к новым словам',
+    newWord: 'Новое слово · {n} / {total}', cardNew: 'Новое слово', cardReview: 'Повторение', meaning: 'Объяснение слова', formsLink: '3 формы глагола', synonymsLink: 'синонимы', skipToNew: 'Перейти к новым словам',
     reviewDone: 'Повторение готово', reviewDoneCap: '{w} повторено', reviewDoneNext: 'Теперь — {x}.', examples: 'Примеры', synonyms: 'Синонимы',
     english: 'По-английски', native: 'По-русски', rememberQ: 'Помнишь это слово?', firstLetter: 'Первая буква: {x}',
     rate: { again: 'Не помню', againShort: 'Забыто', hard: 'Трудно', good: 'Знаю', easy: 'Легко', remember: 'Помню', dontKnow: 'Не знаю', forgot: 'Забыто', known: 'Знаю это слово', knownSub: 'в выученные' },

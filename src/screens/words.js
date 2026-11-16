@@ -5,7 +5,7 @@ import { LEVELS } from '../content/index.js';
 import { t, L, num } from '../i18n/index.js';
 import { progress } from '../core/store.js';
 import { status, isLearned } from '../core/srs.js';
-import { shown, ttsLang, returnToLearning } from '../core/words.js';
+import { shown, ipaOf, ttsLang, returnToLearning } from '../core/words.js';
 import { Screen, Title, Segmented, WordRow, TopBar, Icon, IconButton, Button, Sheet, LevelTag, SpeakButton, Example, cx } from '../ui/kit.js';
 
 const PAGE = 60;
@@ -93,7 +93,7 @@ function ExpandRow({ course, w, lang, open, onToggle, onReturn }) {
   const word = shown(course, w);
   return html`<div class=${cx('learned-row card', open && 'learned-row--open')}>
     <div class="learned-row__top" onClick=${onToggle}>
-      <div class="word-row__text"><div class="word-row__head"><span class="t-label-17">${word}</span><${LevelTag} lvl=${w.lvl} /></div>
+      <div class="word-row__text"><div class="word-row__head"><span class="t-label-17">${word}</span>${ipaOf(course, w) && html`<span class="t-label-14 muted word-row__ipa">/${ipaOf(course, w)}/</span>`}<${LevelTag} lvl=${w.lvl} /></div>
         <div class="t-label-14 muted">${L(w.tr)}</div></div>
       <${SpeakButton} text=${word} lang=${lang} />
       <span class="ib ib--grey learned-row__chev" style="--ib:40px" role="button" aria-expanded=${open} aria-label=${t('words.examples')}><${Icon} name="chevron-down" size=${18} /></span>
