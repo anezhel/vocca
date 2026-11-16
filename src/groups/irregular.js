@@ -1,5 +1,6 @@
 // Тип группы «irregular»: неправильные глаголы. Глаголы учатся только здесь, в ежедневное занятие не попадают.
 // 12  — три карточки сложности («Усі форми однакові», «Дві форми однакові», «Усі форми різні»), внизу кнопка «Тренажер».
+//       Вид экрана — как до 16.11.2026, только карточки лаймовые (bg/accent).
 // 12b — карточки глаголов одной сложности: «Далі», по CONFIG.verbSessionSize за заход, в конце итог 19c (done.js).
 // 12e — тренажёр трёх форм из Vocca (репозиторий Slova-2, src/screens/verbs.js → Drill), в стиле Vocca2:
 //       «Вставте дві форми дієслова» — V1 дана, V2 и V3 выбираются из 6 вариантов; после второго выбора ответ проверяется сам,
@@ -11,7 +12,7 @@ import { t, L, pn } from '../i18n/index.js';
 import { update, progress, getState } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, SpeakButton, Overline, Mark, Pill, LevelTag, cx } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Pill, LevelTag, cx } from '../ui/kit.js';
 import { GroupDone } from './done.js';
 
 const DAY = 86400000;
@@ -65,44 +66,35 @@ const DiffTag = ({ kind }) => {
     <span class="t-label-13-medium">${t('verbs.' + diff)}</span></span>`;
 };
 
-// Экран 12: три карточки сложности, внизу «Тренажер»
+// Экран 12: три уровня сложности (как было до 16.11.2026, карточки — лаймовые), внизу кнопка «Тренажер»
 function Home({ course, group, go, back }) {
   const cs = cards(course);
   const sample = group.items.find((v) => v.v1 === 'go') || group.items.find((v) => v.kind === 'diff');
-  const due = group.items.filter((v) => isDue(cs[v.id])).length;
-  const train = () => go('verbs', { group: group.id, train: true });
-  return html`<${Screen} cls="screen--verbs" bottom=${html`<${Button} label=${t('verbs.trainer')} onClick=${train} />`}>
+  return html`<${Screen} bottom=${html`<${Button} label=${t('verbs.trainer')} onClick=${() => go('verbs', { group: group.id, train: true })} />`}>
     <${TopBar} onBack=${back} />
     <${Title} main=${L(group.title)} />
-    <div class="pills"><${Pill}>${pn(group.items.length, 'verbs')}</${Pill}>
-      ${due > 0 && html`<${Pill} cls="pill--due" onClick=${train}>${t('groups.due', { n: due })}</${Pill}>`}</div>
-    ${sample && html`<div class="card verbs-intro">
+    <div class="card card--pad">
       <${Overline}>${t('verbs.threeForms')}</${Overline}>
-      <div class="forms3">${['v1', 'v2', 'v3'].map((k, i) => html`<div class="forms3__cell"><div class="t-word-m">${sample[k]}</div>
-        <div class="t-label-11 muted">${t('verbs.f' + (i + 1))}</div></div>`)}</div>
-    </div>`}
-    ${KINDS.map(([kind]) => {
+      <div class="forms3">${['v1', 'v2', 'v3'].map((k, i) => html`<div class="forms3__cell"><div class="t-word-m">${sample[k]}</div><div class="t-label-11 muted">${t('verbs.f' + (i + 1))}</div></div>`)}</div>
+    </div>
+    ${KINDS.map(([kind, diff, dots]) => {
       const list = group.items.filter((v) => v.kind === kind);
+      const done = list.filter((v) => seen(cs[v.id])).length;
       const ex = list[0];
       if (!ex) return null;
-      const done = list.filter((v) => seen(cs[v.id])).length;
-      const status = !done ? 'fresh' : done >= list.length ? 'done' : 'learning';
-      const open = () => go('verbs', { group: group.id, kind });
-      return html`<div key=${kind} class="card diff-card" role="button" tabindex="0" onClick=${open}>
-        <${DiffTag} kind=${kind} />
-        <div class="diff-card__head"><div class="diff-card__text"><div class="t-title-l">${t('verbs.' + kind)}</div>
-          <div class="t-label-13 muted">${t('verbs.' + kind + 'Sub')}</div></div>
-          <button class=${cx('pill-btn', 'pill-btn--' + status)} onClick=${(e) => { e.stopPropagation(); open(); }}>
-            ${t(status === 'fresh' ? 'groups.start' : status === 'done' ? 'groups.repeat' : 'groups.learn')}</button></div>
-        <div class="diff-card__forms">${kind === 'same' ? html`<span class="pill pill--tag">${ex.v1} — ${ex.v2} — ${ex.v3}</span>`
-          : kind === 'two' ? html`<span class="pill pill--tag">${ex.v1}</span><span class="pill pill--tag">${ex.v2} — ${ex.v3}</span>`
-          : html`<span class="pill pill--tag">${ex.v1}</span><span class="pill pill--tag">${ex.v2}</span><span class="pill pill--tag">${ex.v3}</span>`}</div>
-        <div class="meter-row"><div class="meter"><i style=${`width:${(done / list.length) * 100}%`}></i></div>
-          <span class="t-label-12-medium muted">${done} / ${list.length}</span></div>
-      </div>`;
+      return html`<button class="card diff-card" onClick=${() => go('verbs', { group: group.id, kind })}>
+        <div class="diff-card__top"><span class="dots">${[1, 2, 3].map((d) => html`<i class=${d <= dots ? 'on' : ''}></i>`)}</span>
+          <span class="t-label-13">${t('verbs.' + diff)}</span><span class="ib ib--dark diff-card__go" style="--ib:36px"><${Icon} name="arrow-up-right" size=${16} /></span></div>
+        <div class="t-title-l">${t('verbs.' + kind)}</div><div class="t-label-13 muted">${t('verbs.' + kind + 'Sub')}</div>
+        <div class="diff-card__forms">${kind === 'same' ? html`<${Pill}>${ex.v1} — ${ex.v2} — ${ex.v3}</${Pill}>`
+          : kind === 'two' ? html`<${Pill}>${ex.v1}</${Pill}><${Pill}>${ex.v2} — ${ex.v3}</${Pill}>`
+          : html`<${Pill}>${ex.v1}</${Pill}><${Pill}>${ex.v2}</${Pill}><${Pill}>${ex.v3}</${Pill}>`}</div>
+        <div class="meter-row"><div class="meter"><i style=${`width:${(done / list.length) * 100}%`}></i></div><span class="t-label-12 muted">${done} / ${list.length}</span></div>
+      </button>`;
     })}
   </${Screen}>`;
 }
+
 
 // Карточка глагола: подпись сверху, глагол, транскрипция, озвучка, уровень и сложность, перевод
 const Head = ({ v, lang, over }) => html`<div class="card word-main">
