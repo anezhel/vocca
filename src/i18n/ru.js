@@ -38,11 +38,11 @@ export default {
   today: {
     morning: 'Доброе утро!', day: 'Добрый день!', evening: 'Добрый вечер!', night: 'Доброй ночи!',
     timeTo: 'Пора повторить слова', allDone: 'На сегодня всё', noLevels: 'Выбери уровни слов',
-    wordsToday: '{w} на сегодня', about: '≈ {n} {u}', review: '{n} повторить', fresh: '+{n} новых',
+    wordsToday: '{w}', about: '≈ {n} {u}', review: '{n} повторить', fresh: '+{n} новых',
     timeToMain: 'Время повторить', timeToAccent: 'слова', learnNew: 'Учить новые слова', learnWords: 'Учить слова', myLevel: 'Мой уровень', repeatWords: 'Повторить слова', groupsLearning: 'В процессе', groupsNew: 'Новые', groupsDone: 'Пройденные', statsRepeated: 'Повторено слов', statsLearned: 'Добавлено в выученные', statsSub: 'Статистика по дням',
     learn: 'Учить слова', learnMore: 'Повторить ещё раз', chooseLevels: 'Выбрать уровни',
     repeatLearning: 'Повторить слова, которые учу', moreNew: 'Ещё {n} новых слов', planDone: 'План на сегодня', planDoneAccent: 'выполнен',
-    wordsDone: '{w} сегодня', repeated: '{n} повторено', freshDone: '{n} новых',
+    wordsDone: '{w}', repeated: '{n} повторено', freshDone: '{n} новых',
     learned: 'Выучено слов', forecast: 'Прогноз повторений', forecastSub: 'Слов к повторению по дням', days: '{n} дней',
     todayShort: 'Сег.', tomorrow: 'Завтра', newNow: 'новых слов сейчас', reviewsToday: '{x} сегодня', newWords: 'Новые слова · {n}',
     nextAt: 'Следующее повторение в {time}', forecastTitle: 'Сколько дней показать', show: 'Показать', forecastPick: 'На сколько дней показать график',

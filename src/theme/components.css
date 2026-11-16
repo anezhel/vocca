@@ -152,6 +152,9 @@ button.card { width: 100%; text-align: left; }
 .word-row__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .word-row__head { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-8); row-gap: 2px; }
 .word-row__ipa { white-space: nowrap; }
+/* 18 / 04a: слово и уровень, под ними транскрипция (4 px), ниже перевод — вдвое дальше (8 px) */
+.word-row__text--ipa { gap: var(--space-8); }
+.word-row__top { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
 .more { width: 100%; padding: var(--space-14); border-radius: var(--radius-full); background: var(--bg-surface); }
 .level-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-6); } /* шесть уровней в ряд: на плитке уровень и число слов */
 .level-tile { position: relative; min-width: 0; border-radius: var(--radius-16); padding: var(--space-10) var(--space-4) var(--space-10) var(--space-10); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); color: var(--text-on-pastel); }
