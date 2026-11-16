@@ -387,7 +387,8 @@ button.card { width: 100%; text-align: left; }
 
 /* 04 · отступы по макету 04i: между блоками 20, цифра и чипсы — 12 */
 .screen--today .screen__content { gap: var(--space-20); }
-.screen--today .top-bar { min-height: 44px; }
+.screen--today .top-bar { min-height: 30px; }
+.screen--today .brand { line-height: 30px; }
 .screen--today .title { margin: 0; }
 .screen--today .pills { margin-top: calc(var(--space-8) * -1); }
 .screen--today .cta-wrap { margin-top: 0; }
@@ -404,4 +405,10 @@ button.card { width: 100%; text-align: left; }
 .group-row .meter { height: 4px; border-radius: 2px; margin-top: 0; }
 .pill-btn { flex: none; height: 36px; padding: 0 var(--space-16); border-radius: var(--radius-full); background: var(--bg-canvas); color: var(--text-primary);
   display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
-.pill-btn--accent { background: var(--bg-accent); }
+.pill-btn--learning { background: var(--bg-accent); }
+.pill-btn--fresh { background: var(--tint-lavender); }
+.pill-btn--done { background: var(--tint-mint); }
+/* «Мій рівень A2» справа от логотипа: текст и белый тег уровня; ведёт к выбору уровней */
+.my-level { display: inline-flex; align-items: center; gap: var(--space-8); color: var(--text-primary); white-space: nowrap; }
+.level-tag--white { background: var(--bg-surface) !important; }
+.my-level .level-tag { height: 20px; padding: 0 8px; font-size: 12px; font-weight: 600; }

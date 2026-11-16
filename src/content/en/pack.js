@@ -26,7 +26,7 @@ export default {
 
   groups: [
     { id: 'irregular', type: 'irregular', file: 'groups/irregular.tsv',
-      title: { uk: 'Неправильні дієслова', ru: 'Неправильные глаголы' } },
+      title: { uk: '3 форми дієслів', ru: '3 формы глаголов' } },
     { id: 'false-friends', type: 'relation', file: 'groups/false-friends.tsv',
       title: { uk: 'Хибні друзі', ru: 'Ложные друзья' }, chip: { uk: '≠ не плутай', ru: '≠ не путай' },
       examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Чому плутають', ru: 'Почему путают' } },
