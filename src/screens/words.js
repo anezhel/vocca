@@ -40,9 +40,9 @@ export function Words({ course, toast }) {
     if (toast) toast(t('words.returned', { w: shown(course, w) }));
   };
   const tog = (l) => { setLevels(levels.includes(l) ? levels.filter((x) => x !== l) : [...levels, l]); setShownN(PAGE); };
-  return html`<${Screen} cls="screen--tab">
+  return html`<${Screen} cls="screen--tab screen--words" tone="words">
     <div class="top-space"></div>
-    <${Title} main=${t('words.title')} />
+    <${Title} main=${t('words.title')} accent=${t('words.inCourse', { n: `${num(course.words.length)} ${plural(course.words.length, 'words')}` })} />
     <${Segmented} cls="seg--wide" value=${filter} onChange=${(v) => { setFilter(v); setShownN(PAGE); }}
       options=${[['all', 'all'], ['learning', 'learning'], ['learned', 'learned'], ['fresh', 'fresh']].map(([v, k]) => ({ value: v, label: t('words.' + k) }))} />
     <div class="level-tiles">${LEVELS.map((l) => html`<button class=${cx('level-tile', levels.includes(l) && 'level-tile--on')} data-level=${l} onClick=${() => tog(l)}
