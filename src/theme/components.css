@@ -485,8 +485,9 @@ button.card { width: 100%; text-align: left; }
 .choice-row__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .choice-row__text .t-label-13 { color: var(--text-on-pastel); }
 /* Карточка «Вивчено»: всего и полоски по уровням (доля выученных слов уровня) */
-.learned-levels { display: flex; flex-direction: column; gap: var(--space-16); padding: var(--space-20); border-radius: 32px; }
-.learned-levels__total b { font-weight: 700; }
+/* 18.11.2026: без тени и обводки — белая карточка на сером фоне; сверху «Вивчено» и «245 слів» справа */
+.learned-levels { display: flex; flex-direction: column; gap: var(--space-20); padding: var(--space-20); border-radius: 32px; box-shadow: none; border: 0; }
+.learned-levels__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-12); }
 .level-bars { display: flex; flex-direction: column; gap: var(--space-10); }
 .level-bars__row { display: flex; align-items: center; gap: var(--space-10); }
 .level-bars__lvl { width: 26px; flex: none; }

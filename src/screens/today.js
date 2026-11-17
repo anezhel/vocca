@@ -50,7 +50,8 @@ export function Today({ course, go }) {
       <span class="choice-row__text"><span class="t-title-l">${t('groups.title')}</span><span class="t-label-13">${t('today.groupsSub')}</span></span>
       <span class="ib ib--outline" style="--ib:40px"><${Icon} name="arrow-right" size=${20} /></span></button>`}
     <button class="card learned-levels" onClick=${() => go('learned')}>
-      <div class="t-label-13 muted learned-levels__total"><b>${t('today.learnedShort')}</b><br />${num(learned.total)} / ${num(totalWords)}</div>
+      <div class="learned-levels__top"><span class="t-label-16-strong">${t('today.learnedShort')}</span>
+        <span class="t-label-15 muted">${num(learned.total)} ${plural(learned.total, 'words')}</span></div>
       <div class="level-bars">${LEVELS.map((l) => {
         const v = pct(learned.byLevel[l], perLevel[l]);
         return html`<div key=${l} class="level-bars__row"><span class="t-label-13-strong level-bars__lvl">${l}</span>
