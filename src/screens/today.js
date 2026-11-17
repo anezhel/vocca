@@ -1,14 +1,13 @@
-// Экран 04 «Сьогодні» (макет 04i): сколько слов на сегодня, «Вчити слова» и «Повторити слова», выучено, группы слов.
+// Экран 08 «Сьогодні» (новый дизайн, 18.11.2026): сколько слов на сегодня, три плитки (сегодня · дни подряд · % курса),
+// «Вчити слова», карточка «Групи слів» (→ экран групп), карточка «Вивчено» по уровням (→ «Вивчені слова»).
 import { html } from '../../lib/preact-htm.js';
 import { feature } from '../config.js';
 import { LEVELS } from '../content/index.js';
-import { t, pn, plural, num, interval, L } from '../i18n/index.js';
+import { t, plural, num } from '../i18n/index.js';
 import { progress } from '../core/store.js';
-import { planToday, learningIds, freshLeft, myLevel } from '../core/session.js';
+import { planToday, freshLeft, myLevel } from '../core/session.js';
 import { learnedStats, streak } from '../core/stats.js';
-import { clock } from '../core/dates.js';
-import { Screen, Title, Button, Icon, Pill, cx } from '../ui/kit.js';
-import { GROUP_TYPES } from '../groups/index.js';
+import { Screen, Title, Button, Icon, Stat } from '../ui/kit.js';
 
 function greeting() {
   const h = new Date().getHours();
@@ -21,70 +20,45 @@ export function Today({ course, go }) {
   const learned = learnedStats(course);
   const st = streak();
   const done = plan.total === 0;
-  const finished = done && plan.doneToday > 0;   // 04s · план на сьогодні виконано
-  const learning = learningIds(course).length;
-  const me = myLevel(p);   // «Мій рівень» справа вверху: по тесту или самый высокий из выбранных
-  // 04: «Вчити слова» (в занятии сначала повторение, потом новые), под ней лаймовая «Повторити слова» —
-  // повторить слова со статусом «Вчу», когда угодно. 04s (план выполнен): «Ще 5 нових слів».
-  const main = plan.noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${() => go('settings', { pick: 'levels' })} />`
+  const finished = done && plan.doneToday > 0;   // план на сьогодні виконано
+  const me = myLevel(p);   // «A2 твій рівень» справа вверху: по тесту или самый высокий из выбранных
+  const levels = () => go('settings', { pick: 'levels' });
+  // одна главная кнопка: «Вчити слова» (в занятии сначала повторение, потом новые), после плана — «Ще 5 нових слів»
+  const main = plan.noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${levels} />`
     : !done ? html`<${Button} label=${t('today.learnWords')} onClick=${() => go('lesson')} />`
     : freshLeft(course) ? html`<${Button} label=${t('today.moreNew', { n: p.newPerDay })} onClick=${() => go('lesson', { extra: true })} />` : '';
-  const repeat = !plan.noLevels && learning > 0 && html`<${Button} variant="accent" icon="refresh" label=${t('today.repeatWords')} onClick=${() => go('lesson', { practice: true })} />`;
+  const totalWords = course.words.length;
+  const pct = (a, b) => (!a || !b ? 0 : Math.max(1, Math.round((a / b) * 100)));   // хоть одно слово — уже 1 %
+  const perLevel = Object.fromEntries(LEVELS.map((l) => [l, course.words.filter((w) => w.lvl === l).length]));
   return html`<${Screen} cls="screen--tab screen--today" tone="today">
     <div class="top-bar"><span class="t-brand-wordmark brand">Vocca</span><span class="top-bar__mid"></span>
-      ${me && html`<button class="my-level t-label-14-medium" onClick=${() => go('settings', { pick: 'levels' })}>${t('today.myLevel')}
-        <span class="level-tag level-tag--white">${me}</span></button>`}</div>
+      ${me && html`<button class="level-chip t-label-13" onClick=${levels}><${Icon} name="flame" size=${18} /><b>${me}</b> ${t('today.yourLevel')}</button>`}</div>
     ${finished ? html`<${Title} main=${t('today.planDone')} accent=${t('today.planDoneAccent')} />`
       : plan.noLevels || done ? html`<${Title} main=${greeting()} accent=${plan.noLevels ? t('today.noLevels') : t('today.allDone')} />`
       : html`<${Title} main=${t('today.timeToMain')} accent=${t('today.timeToAccent')} />`}
     <div class="hero hero--today"><div class="t-number-hero">${finished ? plan.doneToday : plan.total}</div>
-      <div><div class="t-label-17">${finished ? t('today.wordsDone', { w: plural(plan.doneToday, 'words') }) : t('today.wordsToday', { w: plural(plan.total, 'words') })}</div>
-        ${!done && html`<div class="t-label-14 muted">${t('today.about', { n: plan.minutes, u: plural(plan.minutes, 'minutes') })}</div>`}</div></div>
-    <div class="pills">
-      ${finished && plan.doneToday - plan.freshToday > 0 && html`<${Pill}>${t('today.repeated', { n: plan.doneToday - plan.freshToday })}</${Pill}>`}
-      ${finished && plan.freshToday > 0 && html`<${Pill}>${t('today.freshDone', { n: plan.freshToday })}</${Pill}>`}
-      ${plan.reviews.length > 0 && html`<${Pill}>${t('today.review', { n: plan.reviews.length })}</${Pill}>`}
-      ${plan.fresh.length > 0 && html`<${Pill}>${t('today.fresh', { n: plan.fresh.length })}</${Pill}>`}
-      ${p.levels.length > 0 && html`<${Pill} cls="pill--glass" onClick=${() => go('settings', { pick: 'levels' })}>${p.levels.join(' · ')}</${Pill}>`}
+      <div class="hero__label"><div class="t-label-16">${finished ? t('today.wordsDone', { w: plural(plan.doneToday, 'words') }) : t('today.wordsToday', { w: plural(plan.total, 'words') })}</div>
+        ${!done && html`<div class="t-label-15 muted">${t('today.about', { n: plan.minutes, u: plural(plan.minutes, 'minutes') })}</div>`}</div></div>
+    <div class="stats">
+      <${Stat} value=${num(plan.doneToday)} label=${t('today.statToday')} />
+      <${Stat} value=${num(st.days)} label=${t('today.statStreak', { d: plural(st.days, 'days') })} />
+      <${Stat} value=${`${pct(learned.total, totalWords)}%`} label=${t('today.statCourse')} />
     </div>
-    ${(main || repeat) && html`<div class="cta-wrap">${main}${repeat}</div>`}
-    ${plan.later > 0 && html`<div class="card info-card"><span class="ib ib--accent" style="--ib:48px"><${Icon} name="clock" size=${22} /></span>
-      <div><div class="t-label-16-strong">${t('today.nextAt', { time: clock(plan.nextAt) })}</div>
-      <div class="t-label-13 muted">${t('today.nextIn', { x: pn(plan.later, 'words'), when: interval((plan.nextAt - Date.now()) / 1000) })}</div></div></div>`}
-    <button class="card learned-card" onClick=${() => go('learned')}>
-      <div class="learned-card__head"><div><div class="t-stat-l">${num(learned.total)}</div><div class="t-label-13-medium muted">${t('today.learned')}</div></div>
-        <span class="ib ib--glass" style="--ib:44px"><${Icon} name="arrow-up-right" size=${20} /></span></div>
-      <div class="level-bar">${LEVELS.filter((l) => !learned.total || learned.byLevel[l]).map((l) => {
-        const share = learned.total ? learned.byLevel[l] / learned.total : 1;   // узкий сегмент — без подписи, капсулой
-        return html`<span class=${cx('level-bar__seg', share < 0.08 && 'level-bar__seg--thin')} data-level=${l}
-          style=${`flex:${learned.total ? learned.byLevel[l] : 1}`}>${share >= 0.08 && html`<span class="t-label-13-strong">${l}</span>`}</span>`;
+    ${main && html`<div class="cta-wrap">${main}</div>`}
+    ${feature('groups') && course.groupList?.length > 0 && html`<button class="choice-row" onClick=${() => go('groups')}>
+      <span class="ib ib--white" style="--ib:48px"><${Icon} name="grid" size=${22} /></span>
+      <span class="choice-row__text"><span class="t-title-l">${t('groups.title')}</span><span class="t-label-13">${t('today.groupsSub')}</span></span>
+      <span class="ib ib--outline" style="--ib:40px"><${Icon} name="arrow-right" size=${20} /></span></button>`}
+    <button class="card learned-levels" onClick=${() => go('learned')}>
+      <div class="t-label-13 muted learned-levels__total"><b>${t('today.learnedShort')}</b><br />${num(learned.total)} / ${num(totalWords)}</div>
+      <div class="level-bars">${LEVELS.map((l) => {
+        const v = pct(learned.byLevel[l], perLevel[l]);
+        return html`<div key=${l} class="level-bars__row"><span class="t-label-13-strong level-bars__lvl">${l}</span>
+          <span class="level-bars__track">${v > 0 && html`<i data-level=${l} style=${`width:${Math.max(v, 8)}%`}></i>`}</span>
+          <span class="t-label-13-strong level-bars__pct">${v}%</span></div>`;
       })}</div>
     </button>
-    <${GroupsHome} course=${course} go=${go} />
   </${Screen}>`;
-}
-
-// 04 · Групи слів: заголовок над блоками; блоки «В процесі», «Нові», «Пройдені» идут один под другим
-// (пустой блок не показываем), группы внутри — через тонкую линию. Нажатие на строку открывает группу.
-// Кнопки: «Вчити» (лаймовая) — продолжить, «Почати» (лавандовая) — начать, «Повторити» (мятная) — повторить пройденную группу.
-const BLOCKS = [['learning', 'today.groupsLearning', 'groups.learn'], ['fresh', 'today.groupsNew', 'groups.start'], ['done', 'today.groupsDone', 'groups.repeat']];
-function GroupsHome({ course, go }) {
-  if (!feature('groups') || !course.groupList?.length) return null;
-  const list = course.groupList.map((g) => ({ g, s: GROUP_TYPES[g.type].stats(course, g) }));
-  const open = (g) => go('group', { group: g.id });
-  const repeat = (g, s) => go(s.repeatRoute || 'group', { group: g.id, review: true });
-  return html`<section class="groups-home"><h2 class="t-heading-h2">${t('groups.title')}</h2>
-    ${BLOCKS.map(([status, title, btn]) => {
-      const items = list.filter(({ s }) => s.status === status || (status === 'learning' && s.status === 'due'));
-      return items.length > 0 && html`<div key=${status} class="card group-block"><div class="t-title-m group-block__title">${t(title)}</div>
-        ${items.map(({ g, s }) => html`<div key=${g.id} class="group-row" role="button" tabindex="0" onClick=${() => open(g)}>
-          <div class="group-row__head"><div class="group-row__text"><div class="t-title-l">${L(g.title)}</div>
-            <div class="t-label-12-medium muted">${status === 'learning' ? t('groups.learnedOf', { a: s.learned, b: s.total }) : s.subtitle}</div></div>
-            <button class=${cx('pill-btn', 'pill-btn--' + status)} onClick=${(e) => { e.stopPropagation(); if (status === 'done') repeat(g, s); else open(g); }}>${t(btn)}</button></div>
-          ${status === 'learning' && html`<div class="meter"><i style=${`width:${Math.round((s.learned / Math.max(1, s.total)) * 100)}%`}></i></div>`}
-        </div>`)}</div>`;
-    })}
-  </section>`;
 }
 
 // Линейный график с точками: прогноз на главной и неделя в итоге занятия

@@ -46,6 +46,12 @@ svg { flex: none; }
 .backdrop--lesson i:nth-child(1) { height: 360px; background: var(--tint-peach); }
 .backdrop--lesson i:nth-child(2) { height: 300px; top: -60px; background: var(--tint-pink); opacity: 1; }
 .backdrop--none i { display: none; }
+/* 09 · Слова (18.11.2026): розовое пятно слева, голубое справа, белое ниже слева — не как на «Сьогодні» */
+.backdrop--words i:nth-child(1) { width: 300px; height: 219px; left: -50px; top: -60px; background: var(--tint-pink); }
+.backdrop--words i:nth-child(2) { width: 300px; height: 161px; left: 190px; top: -60px; background: var(--tint-sky); opacity: 1; }
+.backdrop--words i:nth-child(3) { display: block; width: 295px; height: 112px; left: -27px; top: 168px; background: var(--bg-surface); }
+/* «Сьогодні» и «Слова» — на светло-сером фоне (bg/surface-2), карточки белые */
+.screen--today, .screen--words { background: var(--bg-surface-2); }
 .backdrop--cool i { filter: blur(70px); opacity: .85; }
 .backdrop--cool i:nth-child(1) { width: 300px; height: 260px; left: -90px; top: -110px; background: var(--tint-sky); }
 .backdrop--cool i:nth-child(2) { width: 320px; height: 260px; left: auto; right: -110px; top: -60px; background: var(--effect-glow-3); }

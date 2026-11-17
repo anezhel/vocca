@@ -157,15 +157,16 @@ export const Example = ({ ex, hl }) => html`<div class="example"><div class="t-b
 // иконка и подпись в нём красно-розовые. При смене вкладки пузырёк переезжает с лёгкой пружинкой, не увеличиваясь;
 // его можно тянуть пальцем — вкладка выбирается, когда палец отпущен. Нажатие на вкладку — обычный click.
 // Движение — пружина в requestAnimationFrame; стили пишутся прямо в DOM, без перерисовки на каждом кадре.
-// «Групи» в меню нет с 16.11.2026.
-const TABS = [['today', 'bolt'], ['words', 'cards'], ['settings', 'settings']];
+// «Групи» в меню нет с 16.11.2026. С 18.11.2026 (Aura/Tab bar v2): в капсуле «Сьогодні · Слова» (и «Прогрес», когда
+// появится страница), «Налаштування» — отдельный круглый кружок справа (Aura/Settings button), без подписи.
+const TABS = [['today', 'bolt'], ['words', 'cards'], ['progress', 'chart']];
 const PAD = 4;
 const NavItems = ({ items, cls }) => items.map(([name, icon]) => html`<span key=${name} class=${cls}><${Icon} name=${icon} size=${24} />
   <span class="nav__label">${t('nav.' + name)}</span></span>`);
 
 export function Nav({ active, onNav, tabs }) {
   const items = TABS.filter(([n]) => tabs.includes(n));
-  const idx = Math.max(0, items.findIndex(([n]) => n === active));
+  const idx = items.findIndex(([n]) => n === active);   // -1 — открыты «Налаштування»: пузырька в капсуле нет
   const barRef = useRef(null), bubRef = useRef(null), lensRef = useRef(null), st = useRef(null);
   const latest = useRef(null); latest.current = { items, idx, active, onNav };
 
@@ -211,24 +212,29 @@ export function Nav({ active, onNav, tabs }) {
       const i = Math.max(0, Math.min(list.length - 1, Math.round((s.target - PAD) / s.tw - 0.5)));
       s.goTo(i); if (list[i][0] !== cur) nav(list[i][0]);
     };
-    const cancel = () => { if (!s.pressed) return; s.pressed = false; if (s.dragging) { s.dragging = false; s.goTo(latest.current.idx); } };
+    const cancel = () => { if (!s.pressed) return; s.pressed = false; if (s.dragging) { s.dragging = false; s.goTo(Math.max(0, latest.current.idx)); } };
     bar.addEventListener('pointerdown', down); bar.addEventListener('pointermove', move);
     bar.addEventListener('pointerup', up); bar.addEventListener('pointercancel', cancel);
-    const ro = new ResizeObserver(() => { measure(); s.x = s.target = center(latest.current.idx); draw(); });
-    ro.observe(bar); measure(); s.x = s.target = center(latest.current.idx); draw();
+    const home = () => center(Math.max(0, latest.current.idx));
+    const ro = new ResizeObserver(() => { measure(); s.x = s.target = home(); draw(); });
+    ro.observe(bar); measure(); s.x = s.target = home(); draw();
     return () => { ro.disconnect(); cancelAnimationFrame(s.raf); bar.removeEventListener('pointerdown', down); bar.removeEventListener('pointermove', move);
       bar.removeEventListener('pointerup', up); bar.removeEventListener('pointercancel', cancel); };
   }, [items.length]);
   // нажатие на вкладку (и Enter / пробел с клавиатуры); сразу после перетаскивания click игнорируем
   const tap = (name) => { const s = st.current; if (s && Date.now() - (s.skipClick || 0) < 400) return; if (name !== active) onNav(name); };
   // вкладку сменили не через меню (например, «На головну» на итоге) — пузырёк переезжает сам
-  useEffect(() => { const s = st.current; if (s && s.goTo && !s.pressed) s.goTo(idx); }, [idx]);
+  useEffect(() => { const s = st.current; if (s && s.goTo && !s.pressed && idx >= 0) s.goTo(idx); }, [idx]);
 
-  return html`<nav class="nav" ref=${barRef} aria-label="menu">
-    <div class="nav__row">${items.map(([name, icon]) => html`<button key=${name} class="nav__tab" aria-current=${active === name ? 'page' : null}
-      onClick=${() => tap(name)}><${Icon} name=${icon} size=${24} /><span class="nav__label">${t('nav.' + name)}</span></button>`)}</div>
-    <div class="nav__bubble" ref=${bubRef} aria-hidden="true"><div class="nav__lens" ref=${lensRef}><${NavItems} items=${items} cls="nav__tab" /></div></div>
-  </nav>`;
+  return html`<div class="nav-dock">
+    <nav class=${cx('nav', idx < 0 && 'nav--none')} ref=${barRef} aria-label="menu">
+      <div class="nav__row">${items.map(([name, icon]) => html`<button key=${name} class="nav__tab" aria-current=${active === name ? 'page' : null}
+        onClick=${() => tap(name)}><${Icon} name=${icon} size=${24} /><span class="nav__label">${t('nav.' + name)}</span></button>`)}</div>
+      <div class="nav__bubble" ref=${bubRef} aria-hidden="true"><div class="nav__lens" ref=${lensRef}><${NavItems} items=${items} cls="nav__tab" /></div></div>
+    </nav>
+    ${tabs.includes('settings') && html`<button class=${cx('nav-settings', active === 'settings' && 'is-active')} aria-label=${t('nav.settings')}
+      aria-current=${active === 'settings' ? 'page' : null} onClick=${() => active !== 'settings' && onNav('settings')}><${Icon} name="settings" size=${24} /></button>`}
+  </div>`;
 }
 
 // Aura/Settings row
