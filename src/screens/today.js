@@ -1,4 +1,5 @@
-// Экран 08 «Сьогодні» (новый дизайн, 18.11.2026): сколько слов на сегодня, три плитки (сегодня · дни подряд · % курса),
+// Экран 08 «Сьогодні» (новый дизайн, 18.11.2026): сколько слов пройдено сегодня (повторено и выучено) и минут,
+// три плитки (вивчено · дні поспіль · % курсу),
 // «Вчити слова», карточка «Групи слів» (→ экран групп), карточка «Вивчено» по уровням (→ «Вивчені слова»).
 import { html } from '../../lib/preact-htm.js';
 import { feature } from '../config.js';
@@ -6,7 +7,7 @@ import { LEVELS } from '../content/index.js';
 import { t, plural, num } from '../i18n/index.js';
 import { progress } from '../core/store.js';
 import { planToday, freshLeft, myLevel } from '../core/session.js';
-import { learnedStats, streak } from '../core/stats.js';
+import { learnedStats, streak, todayStats } from '../core/stats.js';
 import { Screen, Title, Button, Icon, Stat } from '../ui/kit.js';
 
 function greeting() {
@@ -19,6 +20,7 @@ export function Today({ course, go }) {
   const plan = planToday(course);
   const learned = learnedStats(course);
   const st = streak();
+  const day = todayStats();
   const done = plan.total === 0;
   const finished = done && plan.doneToday > 0;   // план на сьогодні виконано
   const me = myLevel(p);   // «A2 твій рівень» справа вверху: по тесту или самый высокий из выбранных
@@ -28,7 +30,9 @@ export function Today({ course, go }) {
     : !done ? html`<${Button} label=${t('today.learnWords')} onClick=${() => go('lesson')} />`
     : freshLeft(course) ? html`<${Button} label=${t('today.moreNew', { n: p.newPerDay })} onClick=${() => go('lesson', { extra: true })} />` : '';
   const totalWords = course.words.length;
-  const pct = (a, b) => (!a || !b ? 0 : Math.max(1, Math.round((a / b) * 100)));   // хоть одно слово — уже 1 %
+  // доля в процентах: 245 из 3 447 → «7%»; меньше половины процента, но не ноль → «<1%»
+  const share = (a, b) => (!a || !b ? 0 : (a / b) * 100);
+  const pctText = (v) => (v > 0 && v < 0.5 ? '<1%' : `${Math.round(v)}%`);
   const perLevel = Object.fromEntries(LEVELS.map((l) => [l, course.words.filter((w) => w.lvl === l).length]));
   return html`<${Screen} cls="screen--tab screen--today" tone="today">
     <div class="top-bar"><span class="t-brand-wordmark brand">Vocca</span><span class="top-bar__mid"></span>
@@ -36,13 +40,13 @@ export function Today({ course, go }) {
     ${finished ? html`<${Title} main=${t('today.planDone')} accent=${t('today.planDoneAccent')} />`
       : plan.noLevels || done ? html`<${Title} main=${greeting()} accent=${plan.noLevels ? t('today.noLevels') : t('today.allDone')} />`
       : html`<${Title} main=${t('today.timeToMain')} accent=${t('today.timeToAccent')} />`}
-    <div class="hero hero--today"><div class="t-number-hero">${finished ? plan.doneToday : plan.total}</div>
-      <div class="hero__label"><div class="t-label-16">${finished ? t('today.wordsDone', { w: plural(plan.doneToday, 'words') }) : t('today.wordsToday', { w: plural(plan.total, 'words') })}</div>
-        ${!done && html`<div class="t-label-15 muted">${t('today.about', { n: plan.minutes, u: plural(plan.minutes, 'minutes') })}</div>`}</div></div>
+    <div class="hero hero--today"><div class="t-number-hero">${num(day.words)}</div>
+      <div class="hero__label"><div class="t-label-16 hero__text">${t('today.passed')}</div>
+        ${day.minutes > 0 && html`<div class="t-label-15 muted">${t('today.about', { n: day.minutes, u: plural(day.minutes, 'minutes') })}</div>`}</div></div>
     <div class="stats">
-      <${Stat} value=${num(plan.doneToday)} label=${t('today.statToday')} />
+      <${Stat} value=${num(learned.total)} label=${t('today.statLearned')} />
       <${Stat} value=${num(st.days)} label=${t('today.statStreak', { d: plural(st.days, 'days') })} />
-      <${Stat} value=${`${pct(learned.total, totalWords)}%`} label=${t('today.statCourse')} />
+      <${Stat} value=${pctText(share(learned.inCourse, totalWords))} label=${t('today.statCourse')} />
     </div>
     ${main && html`<div class="cta-wrap">${main}</div>`}
     ${feature('groups') && course.groupList?.length > 0 && html`<button class="choice-row" onClick=${() => go('groups')}>
@@ -53,10 +57,10 @@ export function Today({ course, go }) {
       <div class="learned-levels__top"><span class="t-label-16-strong">${t('today.learnedShort')}</span>
         <span class="t-label-15 muted">${num(learned.total)} ${plural(learned.total, 'words')}</span></div>
       <div class="level-bars">${LEVELS.map((l) => {
-        const v = pct(learned.byLevel[l], perLevel[l]);
+        const v = share(learned.byLevel[l], perLevel[l]);
         return html`<div key=${l} class="level-bars__row"><span class="t-label-13-strong level-bars__lvl">${l}</span>
           <span class="level-bars__track">${v > 0 && html`<i data-level=${l} style=${`width:${Math.max(v, 8)}%`}></i>`}</span>
-          <span class="t-label-13-strong level-bars__pct">${v}%</span></div>`;
+          <span class="t-label-13-strong level-bars__pct">${pctText(v)}</span></div>`;
       })}</div>
     </button>
   </${Screen}>`;

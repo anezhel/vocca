@@ -122,7 +122,8 @@ export const freshLeft = (course) => pickFresh(course, progress(course.id), 1).l
 // Знакомое слово дневной план не тратит: вместо него сразу приходит следующее новое.
 export function learnNew(course, lesson, id, known) {
   if (known) {
-    update(() => { progress(course.id).cards[id] = markKnown(); dropFromQueue(course, id); countLearned(); });
+    // план это слово не тратит (на его место приходит другое новое), но в «Пройдено слів сьогодні» оно входит
+    update(() => { progress(course.id).cards[id] = markKnown(); dropFromQueue(course, id); countLearned(); const d = dayLog(dayKey()); d.knownNew = (d.knownNew || 0) + 1; });
     const inLesson = new Set(lesson.queue.map((x) => x.id));
     const next = pickFresh(course, progress(course.id), 50).find((x) => !inLesson.has(x));
     if (next) lesson.queue.splice(1, 0, { kind: 'new', id: next });
@@ -195,5 +196,5 @@ export function keepLearning(course, lesson, item) {
 export function finishLesson(lesson) {
   const sec = Math.round((Date.now() - lesson.startedAt) / 1000);
   lesson.sec = sec;
-  if (!lesson.practice) update(() => { dayLog(dayKey()).sec += sec; dayLog(dayKey()).lessons = (dayLog(dayKey()).lessons || 0) + 1; });
+  update(() => { const d = dayLog(dayKey()); d.sec = (d.sec || 0) + sec; if (!lesson.practice) d.lessons = (d.lessons || 0) + 1; });
 }
