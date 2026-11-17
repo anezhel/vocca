@@ -6,16 +6,33 @@ import { isLearned } from './srs.js';
 import { CONFIG } from '../config.js';
 import { wordById } from './words.js';
 
+// total — все выученные (как в списке «Вивчені слова», вместе со словами из групп);
+// inCourse и byLevel — только слова курса (words.tsv): по ним считаются «% курсу» и полоски уровней.
+const courseIds = new WeakMap();   // id слов курса — чтобы не перебирать список на каждое слово
+const inCourseSet = (course) => { if (!courseIds.has(course)) courseIds.set(course, new Set(course.words.map((w) => w.id))); return courseIds.get(course); };
+
 export function learnedStats(course) {
   const p = progress(course.id);
   const byLevel = Object.fromEntries(LEVELS.map((l) => [l, 0]));
-  let total = 0;
+  const base = inCourseSet(course);
+  let total = 0, inCourse = 0;
   for (const [id, c] of Object.entries(p.cards)) {
     if (!isLearned(c)) continue;
     const w = wordById(course, id); if (!w) continue;
-    total++; if (byLevel[w.lvl] != null) byLevel[w.lvl]++;
+    total++;
+    if (!base.has(id)) continue;
+    inCourse++; if (byLevel[w.lvl] != null) byLevel[w.lvl]++;
   }
-  return { total, byLevel };
+  return { total, inCourse, byLevel };
+}
+
+// Сегодня (крупное число на «Сьогодні»): сколько слов пройдено — повторено и выучено в «Вчити слова»
+// (вместе с новыми, отмеченными «Я знаю це») и в «Повторити слова, які вчу», — и сколько минут ушло на занятия.
+const dayWords = (d) => (d.reviews || 0) + (d.fresh || 0) + (d.practice || 0) + (d.knownNew || 0);
+export function todayStats(now = Date.now()) {
+  const d = getState().log[dayKey(now)] || {};
+  const sec = d.sec || 0;
+  return { words: dayWords(d), minutes: sec > 0 ? Math.max(1, Math.round(sec / 60)) : 0 };
 }
 
 // Сколько слов к повторению по дням: [сегодня, завтра, …]
@@ -41,7 +58,8 @@ export function history(days, now = Date.now()) {
   });
 }
 
-const studied = (key) => { const d = getState().log[key]; return !!d && (d.reviews + d.fresh > 0); };
+// день засчитывается в серию, если в нём было занятие: «Вчити слова» или «Повторити слова, які вчу»
+const studied = (key) => { const d = getState().log[key]; return !!d && dayWords(d) > 0; };
 
 // Серия: дни подряд с занятием. Один пропущенный день закрывает заморозка (одна в неделю).
 export function streak(now = Date.now()) {
