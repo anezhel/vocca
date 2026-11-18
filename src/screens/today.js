@@ -76,7 +76,8 @@ function Collections({ course, go }) {
   const open3 = (g, k) => (GROUP_TYPES[g.type].Screen ? go('group', { group: g.id })
     : go('collection', { groups: [g.id], size, review: k === 'done' }));
   const chev = (on) => html`<${Icon} name=${on ? 'chevron-up' : 'chevron-down'} size=${20} />`;
-  return html`<button class=${cx('choice-row', open && 'is-open')} aria-expanded=${open} onClick=${() => setOpen(!open)}>
+  // «Добірки слів» и раскрытые блоки — одной группой: между ними 2 px, как в макете 2.1a (а не 20, как между блоками экрана)
+  return html`<div class="colls-wrap"><button class=${cx('choice-row', open && 'is-open')} aria-expanded=${open} onClick=${() => setOpen(!open)}>
       <span class="ib ib--white" style="--ib:48px"><${Icon} name="grid" size=${22} /></span>
       <span class="choice-row__text"><span class="t-title-l">${t('today.collections')}</span><span class="t-label-13">${t('today.groupsSub')}</span></span>
       <span class="ib ib--outline" style="--ib:40px">${chev(open)}</span></button>
@@ -95,7 +96,7 @@ function Collections({ course, go }) {
           ${k === 'learning' && html`<div class="meter"><i style=${`width:${Math.round((s.learned / s.total) * 100)}%`}></i></div>`}
         </div>`)}
       </div>`;
-    })}</div>`}`;
+    })}</div>`}</div>`;
 }
 
 // Линейный график с точками: прогноз на главной и неделя в итоге занятия
