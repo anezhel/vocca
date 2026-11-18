@@ -25,7 +25,7 @@ export function Today({ course, go }) {
   const noLevels = !p.levels.length && !p.queue.length;
   const me = myLevel(p);   // чип «🔥 B1» справа от заголовка: по тесту или самый высокий из выбранных
   const levels = () => go('settings', { pick: 'levels' });
-  // Главная кнопка ведёт на 2.2 «Що тренуємо». Цель на день выполнена — «На сьогодні план виконано!» и «Вчити ще».
+  // Главная кнопка ведёт на 2.2 «Що тренуємо». Цель на день выполнена — «Сьогодні план виконано!» и «Вчити ще».
   const main = noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${levels} />`
     : html`<${Button} label=${t(goal.done ? 'today.learnMore' : 'today.learnWords')} onClick=${() => go('practice')} />`;
   const totalWords = course.words.length;
