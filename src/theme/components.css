@@ -27,7 +27,8 @@ button.card { width: 100%; text-align: left; }
 .steps-bar--full i { border-radius: var(--radius-full); }
 .top-bar__right--auto { width: auto; }
 .steps-bar i { display: block; height: 100%; background: var(--bg-meter); transition: width .3s; }
-.counter { padding: var(--space-8) var(--space-14); border-radius: var(--radius-full); background: var(--bg-icon-button); border: 1px solid var(--border-icon-button); }
+/* счётчик «4 / 20» — белый, без контура; прозрачная рамка держит прежнюю высоту 36 */
+.counter { padding: var(--space-8) var(--space-14); border-radius: var(--radius-full); background: var(--bg-surface); border: 1px solid transparent; }
 
 /* ── Aura/CTA и другие кнопки ── */
 .btn { height: 64px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; gap: var(--space-12);
@@ -45,7 +46,8 @@ button.card { width: 100%; text-align: left; }
 /* ── Aura/Icon button: Style × Size ── */
 .ib { width: var(--ib); height: var(--ib); border-radius: 50%; display: inline-grid; place-items: center; flex: none; color: var(--text-primary); transition: transform .12s; }
 .ib:active:not(:disabled) { transform: scale(.94); }
-.ib--glass { background: var(--bg-icon-button); border: 1px solid var(--border-icon-button); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+/* Glass с 18.11.2026 — сплошной белый, без прозрачности и контура; цвет иконки прежний */
+.ib--glass { background: var(--bg-surface); }
 .ib--grey { background: var(--bg-canvas); }
 .ib--white { background: var(--bg-surface); }
 .ib--dark { background: var(--bg-inverse); color: var(--text-on-inverse); }
