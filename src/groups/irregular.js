@@ -90,7 +90,8 @@ function Home({ course, group, go, back }) {
 
 
 // 3.13 · Картка дієслова (макет 19.11.2026, устроена как 3.1 «Синоніми»): белая карточка — 1-я форма,
-// под чипом «3 форми дієслова» лаймовые — 2-я и 3-я. В каждой — форма, транскрипция, перевод и озвучка в обводке.
+// под чипом «3 форми дієслова» лаймовые — 2-я и 3-я. В каждой — форма, транскрипция и озвучка в обводке;
+// перевод — только в белой (с 19.11.2026: на лаймовых он повторялся).
 // Ниже белая карточка без тени: к каждой форме подпись («1 · теперішній час») и пример в сером блоке.
 function VerbCard({ v, lang }) {
   const tr = L(v.tr);
@@ -98,7 +99,7 @@ function VerbCard({ v, lang }) {
   const labels = [t('verbs.present'), t('verbs.past'), t('verbs.participle')];
   const text = (n, base) => html`<div class="rel__text"><div class="t-word-l">${form(n)}</div>
     ${v.ipa[n - 1] && html`<div class=${base ? 't-label-16-regular muted' : 't-label-14 rel__sub'}>/${v.ipa[n - 1]}/</div>`}
-    ${tr && html`<div class=${'t-label-15 ' + (base ? 'muted' : 'rel__sub')}>${tr}</div>`}</div>`;
+    ${base && tr && html`<div class="t-label-15 muted">${tr}</div>`}</div>`;
   const speak = (n) => html`<${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />`;
   return html`<div class="rel rel--verb">
     <div class="rel__pair">
