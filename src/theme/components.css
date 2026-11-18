@@ -454,8 +454,10 @@ button.card { width: 100%; text-align: left; }
 
 /* 04 · отступы по макету 04i: между блоками 20, цифра и чипсы — 12 */
 .screen--today .screen__content { gap: var(--space-20); }
-.screen--today .top-bar { min-height: 30px; }
-.screen--today .brand { line-height: 30px; }
+/* 2.1 · без логотипа: заголовок слева, чип уровня справа — по центру первой строки заголовка (38 − 30) / 2 */
+.today-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-12); }
+.today-head .title { flex: 1; min-width: 0; }
+.today-head .level-chip { flex: none; margin-top: 4px; }
 .screen--today .title { margin: 0; }
 .screen--today .pills { margin-top: calc(var(--space-8) * -1); }
 .screen--today .cta-wrap { margin-top: 0; }
@@ -483,7 +485,7 @@ button.card { width: 100%; text-align: left; }
 /* Лист выбора: заголовок слева, крестик справа */
 .sheet__titles { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
 
-/* ── 08 · Сьогодні (18.11.2026) ── */
+/* ── 08 · Сьогодні (18.11.2026) — чип «🔥 B1»: огонёк и уровень ── */
 .level-chip { display: inline-flex; align-items: center; gap: var(--space-4); height: 30px; padding: 0 var(--space-12) 0 var(--space-8);
   border-radius: var(--radius-full); background: var(--bg-nav); color: var(--text-primary); white-space: nowrap; }
 .level-chip b { font-weight: 700; }
