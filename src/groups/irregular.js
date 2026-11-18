@@ -13,7 +13,7 @@ import { t, L, pn } from '../i18n/index.js';
 import { update, progress, getState } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Pill, LevelTag, cx } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Pill, cx } from '../ui/kit.js';
 import { GroupDone } from './done.js';
 
 const DAY = 86400000;
@@ -231,6 +231,7 @@ function Trainer({ course, group, back, toast }) {
     if (i + 1 >= n) { toast && toast(t('drill.done', { n: D.current.right, total: n })); back(); return; }
     setI(i + 1); setSlots([null, null]); setChecked(false); scrollTo(0, 0);
   };
+  // после проверки в ячейке остаётся выбор человека: мятная — верно, коралловая — ошибка (правильные формы — в итоге ниже)
   const slotState = (k) => (checked ? (ok[k] ? 'correct' : 'wrong') : slots[k] != null ? 'filled' : k === (slots[0] == null ? 0 : 1) ? 'active' : 'empty');
   const optState = (o) => {
     if (!checked) return '';
@@ -239,19 +240,20 @@ function Trainer({ course, group, back, toast }) {
   };
   const hint = [course.verbHints && L(course.verbHints[v.hint]), v.note && L(v.note)].filter(Boolean).join(' ');
 
-  return html`<${Screen} cls="screen--drill" bottom=${html`<${Button} label=${t('drill.nextVerb')} onClick=${next} disabled=${!checked} />`}>
+  // 3.14 / 3.14a / 3.14b (макет 19.11.2026): без строки «Неправильні дієслова · A1» и подсказки «Вставте дві форми дієслова»,
+  // слово Word/XL (36), озвучка в обводке, активная ячейка лавандовая; фон серый с голубым и лавандовым пятнами, как у добірок
+  return html`<${Screen} cls="screen--drill screen--grey" tone="sky" bottom=${html`<${Button} label=${t('drill.nextVerb')} onClick=${next} disabled=${!checked} />`}>
     <${TopBar} onClose=${back} total=${n} done=${i + (checked ? 1 : 0)} count=${`${i + 1} / ${n}`} />
-    <div class="tags"><span class="pill pill--lavender">${t('drill.chip')}</span><${LevelTag} lvl=${v.lvl} size="m" /></div>
-    <div class="card drill-card">
-      <div class="drill-card__head"><div class="drill-card__text"><span class="t-label-14 muted">${t('drill.task')}</span>
+    <div class="card drill-card" aria-label=${t('drill.task')}>
+      <div class="drill-card__head"><div class="drill-card__text">
         <span class="t-word-xl">${v[FORMS[given]]}</span><span class="t-translation-m muted">${L(v.tr)}</span></div>
-        <${SpeakButton} text=${v[FORMS[given]].replace(' / ', ', ')} lang=${lang} kind="dark" size=${48} /></div>
+        <${SpeakButton} text=${v[FORMS[given]].replace(' / ', ', ')} lang=${lang} kind="outline" size=${40} /></div>
       <div class="drill-slots">${['V1', 'V2 · Past', 'V3'].map((head, f) => {
         const k = blanks.indexOf(f);
         return html`<div class="drill-slots__col" key=${head}>
         <span class="t-label-12-medium muted">${head}</span>
         ${k < 0 ? html`<span class="dslot dslot--given">${v[FORMS[f]]}</span>`
-          : html`<button class=${'dslot dslot--' + slotState(k)} onClick=${() => clear(k)}>${checked ? answer(k) : slots[k] || ''}</button>`}</div>`;
+          : html`<button class=${'dslot dslot--' + slotState(k)} onClick=${() => clear(k)}>${slots[k] || ''}</button>`}</div>`;
       })}</div>
     </div>
     <div class="drill-opts">${options.map((o) => html`<button key=${o} class=${cx('dopt', optState(o) && 'dopt--' + optState(o))} onClick=${() => pick(o)}>${o}</button>`)}</div>

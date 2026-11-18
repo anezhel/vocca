@@ -321,7 +321,7 @@ button.card { width: 100%; text-align: left; }
   font-size: 17px; font-weight: 500; letter-spacing: -.01em; overflow-wrap: anywhere; line-height: 1.1; transition: background .15s, border-color .15s; }
 .dslot--given { background: var(--bg-surface-2); }
 .dslot--empty { border: 1.5px dashed var(--border-radio); }
-.dslot--active { border: 2px solid var(--border-strong); background: var(--tint-lime); }
+.dslot--active { border: 2px solid var(--border-strong); background: var(--tint-lavender); }
 .dslot--filled { background: var(--bg-inverse); color: var(--text-on-inverse); }
 .dslot--correct { background: var(--tint-mint); color: var(--text-on-pastel); }
 .dslot--wrong { background: var(--tint-coral); color: var(--text-on-pastel); }
