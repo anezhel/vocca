@@ -22,9 +22,11 @@ export const Screen = ({ children, bottom, cls, tone }) => html`<main class=${cx
 
 // Aura/CTA — чёрная кнопка с лаймовым кругом-стрелкой. secondary — белая. outline — контурная.
 // variant: cta — чёрная со стрелкой в кружке (шаг вперёд); dark — чёрная без стрелки (Aura/Button primary: «Застосувати», «Зрозуміло» в листах); accent — лаймовая с иконкой в белом кружке (04: «Повторити слова, які вчу»)
-export function Button({ label, onClick, variant = 'cta', disabled, icon = 'arrow-right', cls, small }) {
+// spring — пружинка при нажатии, как у пузырька меню (useSpringPress ниже); переход — после отскока
+export function Button({ label, onClick, variant = 'cta', disabled, icon = 'arrow-right', cls, small, spring }) {
   const arrow = variant === 'cta' || variant === 'accent';
-  return html`<button class=${cx('btn', 'btn--' + variant, small && 'btn--small', cls)} onClick=${onClick} disabled=${disabled}>
+  const [ref, click] = useSpringPress(spring, onClick);
+  return html`<button ref=${ref} class=${cx('btn', 'btn--' + variant, small && 'btn--small', spring && 'btn--spring', cls)} onClick=${click} disabled=${disabled}>
     <span class="btn__label">${label}</span>
     ${arrow && html`<span class="btn__circle"><${Icon} name=${icon} size=${22} /></span>`}
   </button>`;
@@ -86,6 +88,49 @@ export const Title = ({ main, accent, cls }) => html`<h1 class=${cx('title t-hea
 // Переключатель-сегменты
 // Пружинка как у пузырька нижнего меню: жёсткость 420, затухание 0,62 — переезжает с лёгким перелётом.
 export const SPRING = { k: 420, zeta: 0.62 };
+
+// Пружинка при нажатии на кнопку — в духе пузырька меню: палец вниз — кнопка быстро чуть сжимается (до 0,95),
+// отпустил — возвращается на той же пружине (420 / 0,62) с лёгким перелётом (~1,02). Действие кнопки выполняется через
+// PRESS_DELAY мс — в момент отскока, иначе экран сменится раньше, чем пружинку видно. С клавиатуры — тот же отскок.
+// Если в системе «Уменьшить движение» — без анимации и без задержки.
+const PRESS_DELAY = 180;
+function useSpringPress(on, onClick) {
+  const ref = useRef(null), st = useRef(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!on || !el) return undefined;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const s = (st.current = { x: 1, v: 0, target: 1, pressed: false, raf: 0, last: 0, reduce, busy: false });
+    const draw = () => { el.style.transform = Math.abs(s.x - 1) < 0.0005 ? '' : `scale(${s.x.toFixed(4)})`; };
+    const step = (time) => {
+      const dt = Math.min(0.032, (time - (s.last || time)) / 1000); s.last = time;
+      const k = s.pressed ? 900 : SPRING.k, c = 2 * Math.sqrt(k) * (s.pressed ? 0.95 : SPRING.zeta);
+      s.v += (k * (s.target - s.x) - c * s.v) * dt; s.x += s.v * dt; draw();
+      if (s.pressed || Math.abs(s.v) > 0.002 || Math.abs(s.target - s.x) > 0.0005) s.raf = requestAnimationFrame(step);
+      else { s.x = s.target; s.v = 0; s.raf = 0; s.last = 0; draw(); }
+    };
+    s.kick = () => { if (!s.raf) { s.last = 0; s.raf = requestAnimationFrame(step); } };
+    const down = (e) => { if (reduce || e.button > 0 || el.disabled) return; s.pressed = true; s.target = 0.95; s.kick(); };
+    // отпустил — толчок наружу: кнопка на миг чуть больше обычной (~1,02) и пружинит обратно
+    const up = () => { if (!s.pressed) return; s.pressed = false; s.target = 1; s.v += 2.2; s.kick(); };
+    el.addEventListener('pointerdown', down);
+    for (const t of ['pointerup', 'pointercancel', 'pointerleave']) el.addEventListener(t, up);
+    return () => {
+      cancelAnimationFrame(s.raf); el.style.transform = '';
+      el.removeEventListener('pointerdown', down);
+      for (const t of ['pointerup', 'pointercancel', 'pointerleave']) el.removeEventListener(t, up);
+    };
+  }, [on]);
+  const click = !on || !onClick ? onClick : (e) => {
+    const s = st.current;
+    if (!s || s.reduce) { onClick(e); return; }
+    if (s.busy) return;   // второе нажатие во время отскока не повторяет действие
+    s.busy = true;
+    if (!s.pressed && s.x > 0.99) { s.v = -2.2; s.kick(); }   // нажатие с клавиатуры — короткий толчок
+    setTimeout(() => { s.busy = false; onClick(e); }, PRESS_DELAY);
+  };
+  return [ref, click];
+}
 
 // Переключатель «Усі / Вчу / Вивчено / Нові». Чёрная «таблетка» переезжает к выбранному пункту с пружинкой,
 // как пузырёк в меню; внутри неё — копия подписей белым, поэтому цвет текста меняется ровно там, где таблетка.
