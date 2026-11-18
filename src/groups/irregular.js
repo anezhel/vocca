@@ -3,7 +3,8 @@
 //       Вид экрана — как до 16.11.2026, только карточки лаймовые (bg/accent).
 // 12b — карточки глаголов одной сложности (вид — 3.13 из Figma v2, см. VerbCard): «Далі», по CONFIG.verbSessionSize за заход, в конце итог (done.js).
 // 12e — тренажёр трёх форм из Vocca (репозиторий Slova-2, src/screens/verbs.js → Drill), в стиле Vocca2:
-//       «Вставте дві форми дієслова» — V1 дана, V2 и V3 выбираются из 6 вариантов; после второго выбора ответ проверяется сам,
+//       «Вставте дві форми дієслова» — обычно дана V1 (иногда V2 или V3), две другие выбираются из 6 вариантов; глаголы вразброс
+//       по сложности; выбранный вариант остаётся активным (формы бывают одинаковые); после второго выбора ответ проверяется сам,
 //       внизу «Наступне дієслово». CONFIG.verbDrillSize глаголов за раунд, в конце — тост «Готово: 8 з 10 правильно».
 import { html, useState, useMemo, useRef, useEffect } from '../../lib/preact-htm.js';
 import { CONFIG } from '../config.js';
@@ -49,13 +50,12 @@ function stats(course, g) {
   return { total, learned: nSeen, due, status, subtitle, repeatRoute: 'group' };
 }
 
-// Очередь тренажёра (как createDrill в Vocca): сначала глаголы, которым пора на повторение, потом ещё не тренированные —
-// просмотренные в карточках и новые, от лёгких к сложным. Пусто — тренировать сегодня нечего.
+// Очередь тренажёра: сначала глаголы, которым пора на повторение, потом ещё не тренированные.
+// Внутри — вразброс, лёгкие и сложные вперемешку (с 19.11.2026), чтобы нельзя было угадать по порядку. Пусто — тренировать нечего.
 function trainList(course, group, now = Date.now()) {
   const cs = cards(course), items = group.items;
-  const order = (v) => KINDS.findIndex(([k]) => k === v.kind);
-  const due = items.filter((v) => isDue(cs[v.id], now)).sort((a, b) => cs[a.id].due - cs[b.id].due);
-  const fresh = items.filter((v) => !trained(cs[v.id])).sort((a, b) => (!!cs[b.id] - !!cs[a.id]) || (order(a) - order(b)));
+  const due = shuffle(items.filter((v) => isDue(cs[v.id], now)));
+  const fresh = shuffle(items.filter((v) => !trained(cs[v.id])));
   return [...due, ...fresh];
 }
 
@@ -163,12 +163,19 @@ function fakeForms(v) {
 }
 const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
-// 6 вариантов: V2 и V3 (одна кнопка, если они совпадают) + неверные из таблицы (колонка fakes), не хватает — из fakeForms
-function drillOptions(v) {
-  const right = [...new Set([v.v2, v.v3])];
+// Какая форма дана (0 — V1, 1 — V2, 2 — V3): обычно 1-я, иногда 2-я или 3-я — тогда выбирать надо и 1-ю форму
+const pickGiven = () => (Math.random() < CONFIG.verbDrillOtherGiven ? 1 + Math.floor(Math.random() * 2) : 0);
+const FORMS = ['v1', 'v2', 'v3'];
+
+// 6 вариантов: две нужные формы (одна кнопка, если они совпадают) + неверные из таблицы (колонка fakes), не хватает — из fakeForms.
+// Если дана не 1-я форма, данная тоже среди вариантов: её легко принять за 1-ю.
+function drillOptions(v, given) {
+  const blanks = [0, 1, 2].filter((k) => k !== given);
+  const right = [...new Set(blanks.map((k) => v[FORMS[k]]))];
   const real = new Set([v.v1, v.v2, v.v3].map(norm));
+  const decoy = given > 0 && !right.some((x) => norm(x) === norm(v[FORMS[given]])) ? [v[FORMS[given]]] : [];
   const fakes = [...new Set([...shuffle([...v.fakes]), ...fakeForms(v)])].filter((x) => !real.has(norm(x)));
-  return shuffle([...right, ...fakes.slice(0, 6 - right.length)]);
+  return shuffle([...right, ...decoy, ...fakes.slice(0, 6 - right.length - decoy.length)]);
 }
 
 // Расписание (rateVerb из Vocca, интервалы — CONFIG.verbLadder в днях): обе формы верно — ступенька вверх;
@@ -187,27 +194,34 @@ function rateVerb(course, v, ok2, ok3) {
 function Trainer({ course, group, back, toast }) {
   const lang = ttsLang(course);
   const D = useRef(null);
-  if (!D.current) D.current = { ids: trainList(course, group).slice(0, CONFIG.verbDrillSize).map((v) => v.id), right: 0 };
+  if (!D.current) {
+    const list = trainList(course, group).slice(0, CONFIG.verbDrillSize);
+    D.current = { ids: list.map((v) => v.id), given: list.map(pickGiven), right: 0 };
+  }
   const [i, setI] = useState(0);
   const [slots, setSlots] = useState([null, null]);
   const [checked, setChecked] = useState(false);
   const v = group.items.find((x) => x.id === D.current.ids[i]);
-  const options = useMemo(() => (v ? drillOptions(v) : []), [i]);
+  const given = D.current.given[i] || 0;
+  const blanks = [0, 1, 2].filter((k) => k !== given);          // какие формы заполнить, по порядку
+  const answer = (j) => v[FORMS[blanks[j]]];
+  const options = useMemo(() => (v ? drillOptions(v, given) : []), [i]);
   useEffect(() => { if (!v) { toast && toast(t('drill.nothing')); back(); } }, []);
   if (!v) return null;
   const n = D.current.ids.length;
-  const ok = [norm(slots[0] || '') === norm(v.v2), norm(slots[1] || '') === norm(v.v3)];
+  const ok = [norm(slots[0] || '') === norm(answer(0)), norm(slots[1] || '') === norm(answer(1))];
   const allOk = ok[0] && ok[1];
 
+  // выбранный вариант остаётся активным: следующая форма бывает такой же (had — had)
   const pick = (o) => {
     if (checked) return;
     const k = slots[0] == null ? 0 : 1;
     const ns = [...slots]; ns[k] = o; setSlots(ns);
     if (k === 1) {
-      const r2 = norm(ns[0]) === norm(v.v2), r3 = norm(ns[1]) === norm(v.v3);
+      const r1 = norm(ns[0]) === norm(answer(0)), r2 = norm(ns[1]) === norm(answer(1));
       setChecked(true);
-      rateVerb(course, v, r2, r3);
-      if (r2 && r3) D.current.right++;
+      rateVerb(course, v, r1, r2);
+      if (r1 && r2) D.current.right++;
       if (getState().autoplay) tts.speak(`${v.v1}, ${v.v2.replace(' / ', ', ')}, ${v.v3.replace(' / ', ', ')}`, lang);
     }
   };
@@ -219,8 +233,8 @@ function Trainer({ course, group, back, toast }) {
   };
   const slotState = (k) => (checked ? (ok[k] ? 'correct' : 'wrong') : slots[k] != null ? 'filled' : k === (slots[0] == null ? 0 : 1) ? 'active' : 'empty');
   const optState = (o) => {
-    if (!checked) return slots.includes(o) ? 'used' : '';
-    if (o === v.v2 || o === v.v3) return 'correct';
+    if (!checked) return '';
+    if (o === answer(0) || o === answer(1)) return 'correct';
     return slots.includes(o) ? 'wrong' : 'dim';
   };
   const hint = [course.verbHints && L(course.verbHints[v.hint]), v.note && L(v.note)].filter(Boolean).join(' ');
@@ -230,12 +244,15 @@ function Trainer({ course, group, back, toast }) {
     <div class="tags"><span class="pill pill--lavender">${t('drill.chip')}</span><${LevelTag} lvl=${v.lvl} size="m" /></div>
     <div class="card drill-card">
       <div class="drill-card__head"><div class="drill-card__text"><span class="t-label-14 muted">${t('drill.task')}</span>
-        <span class="t-word-xl">${v.v1}</span><span class="t-translation-m muted">${L(v.tr)}</span></div>
-        <${SpeakButton} text=${v.v1} lang=${lang} kind="dark" size=${48} /></div>
-      <div class="drill-slots">${[['V1', null], ['V2 · Past', 0], ['V3', 1]].map(([head, k]) => html`<div class="drill-slots__col" key=${head}>
+        <span class="t-word-xl">${v[FORMS[given]]}</span><span class="t-translation-m muted">${L(v.tr)}</span></div>
+        <${SpeakButton} text=${v[FORMS[given]].replace(' / ', ', ')} lang=${lang} kind="dark" size=${48} /></div>
+      <div class="drill-slots">${['V1', 'V2 · Past', 'V3'].map((head, f) => {
+        const k = blanks.indexOf(f);
+        return html`<div class="drill-slots__col" key=${head}>
         <span class="t-label-12-medium muted">${head}</span>
-        ${k === null ? html`<span class="dslot dslot--given">${v.v1}</span>`
-          : html`<button class=${'dslot dslot--' + slotState(k)} onClick=${() => clear(k)}>${checked ? [v.v2, v.v3][k] : slots[k] || ''}</button>`}</div>`)}</div>
+        ${k < 0 ? html`<span class="dslot dslot--given">${v[FORMS[f]]}</span>`
+          : html`<button class=${'dslot dslot--' + slotState(k)} onClick=${() => clear(k)}>${checked ? answer(k) : slots[k] || ''}</button>`}</div>`;
+      })}</div>
     </div>
     <div class="drill-opts">${options.map((o) => html`<button key=${o} class=${cx('dopt', optState(o) && 'dopt--' + optState(o))} onClick=${() => pick(o)}>${o}</button>`)}</div>
     ${checked && html`<div class="card drill-result">
