@@ -14,7 +14,7 @@ import { Today } from './screens/today.js';
 import { Lesson } from './screens/lesson.js';
 import { Groups } from './screens/groups.js';
 import { Practice } from './screens/practice.js';
-import { Collection } from './screens/collection.js';
+import { Collection, GroupRoute } from './screens/collection.js';
 import { Words } from './screens/words.js';
 import { Settings } from './screens/settings.js';
 
@@ -23,7 +23,8 @@ export const ROUTES = {
   'goal-new': Goal, 'goal-repeat': Goal, reminder: Reminder, paywall: Paywall, // 1.4–1.7
   'test-intro': TestIntro, test: TestRun, 'test-result': TestResult,  // 02a–02d
   today: Today, practice: Practice, lesson: Lesson,                   // 2.1 «Практика», 2.2 «Що тренуємо», 2.3–2.5 занятие
-  collection: Collection, group: Collection, verbs: Collection,       // 3.1–3.11 добірки (старые адреса group / verbs ведут туда же)
+  collection: Collection,                                             // 3.1–3.11 занятие по добіркам
+  group: GroupRoute, verbs: GroupRoute,                               // 3.12–3.14 «3 форми дієслів»: групи, картки, тренажер
   groups: Groups,                                                     // прежний список групп (из меню не открывается)
   words: Words,                                                       // 18
   settings: Settings,                                                 // 10
