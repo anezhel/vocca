@@ -63,7 +63,7 @@ export default {
     about: '≈ {n} {u}', review: '{n} повторить', fresh: '+{n} новых',
     timeToMain: 'Время повторить', timeToAccent: 'слова', learnNew: 'Учить новые слова', learnWords: 'Учить слова', myLevel: 'Мой уровень', repeatWords: 'Повторить слова', groupsLearning: 'В процессе', groupsNew: 'Новые', groupsDone: 'Пройденные', statsRepeated: 'Повторено слов', statsLearned: 'Добавлено в выученные', statsSub: 'Статистика по дням',
     learn: 'Учить слова', learnMore: 'Учить ещё', chooseLevels: 'Выбрать уровни',
-    repeatLearning: 'Повторить слова, которые учу', moreNew: 'Ещё {n} новых слов', planDone: 'Сегодня план', planDoneAccent: 'выполнен!', collections: 'Подборки слов', stats: 'Статистика',
+    repeatLearning: 'Повторить слова, которые учу', moreNew: 'Ещё {n} новых слов', planDone: 'Сегодня план', planDoneAccent: 'выполнен!', grammar: 'Грамматика', grammarSub: 'Правила и упражнения', grammarSoon: 'Грамматика появится скоро', collections: 'Подборки слов', stats: 'Статистика',
     repeated: '{n} повторено', freshDone: '{n} новых',
     learned: 'Выучено слов', forecast: 'Прогноз повторений', forecastSub: 'Слов к повторению по дням', days: '{n} дней',
     todayShort: 'Сег.', tomorrow: 'Завтра', newNow: 'новых слов сейчас', reviewsToday: '{x} сегодня', newWords: 'Новые слова · {n}',

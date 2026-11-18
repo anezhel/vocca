@@ -16,7 +16,7 @@ function greeting() {
   return t(h < 5 ? 'today.night' : h < 12 ? 'today.morning' : h < 18 ? 'today.day' : 'today.evening');
 }
 
-export function Today({ course, go }) {
+export function Today({ course, go, toast }) {
   const p = progress(course.id);
   const goal = dayGoal(course);
   const learned = learnedStats(course);
@@ -49,7 +49,10 @@ export function Today({ course, go }) {
       <${Stat} value=${pctText(share(learned.inCourse, totalWords))} label=${t('today.statCourse')} />
     </div>
     <div class="cta-wrap">${main}</div>
-    ${feature('groups') && course.groupList?.length > 0 && html`<${Collections} course=${course} go=${go} />`}
+    <div class="practice-rows">
+      ${feature('groups') && course.groupList?.length > 0 && html`<${Collections} course=${course} go=${go} />`}
+      <${Grammar} toast=${toast} />
+    </div>
     <div class="card learned-levels">
       <div class="learned-levels__top"><span class="t-label-16-strong">${t('today.stats')}</span></div>
       <div class="level-bars">${LEVELS.map((l) => {
@@ -66,6 +69,15 @@ export function Today({ course, go }) {
 // каждый блок тоже свёрнут, пока не нажать. Свёрнуто — шеврон вниз, развёрнуто — вверх.
 // Кнопка у добірки: «Вчити» (в процесі), «Почати» (нова), «Повторити» (пройдена) — занятие по этой добірці.
 const BLOCKS = [['learning', 'groupsLearning', 'learn'], ['fresh', 'groupsNew', 'start'], ['done', 'groupsDone', 'repeat']];
+// «Граматика» (19.11.2026) — такая же строка, как «Добірки слів», мятная (цвет A1). Разделов пока нет:
+// нажатие показывает «Граматика з’явиться незабаром».
+function Grammar({ toast }) {
+  return html`<button class="choice-row choice-row--mint" onClick=${() => toast && toast(t('today.grammarSoon'))}>
+    <span class="ib ib--white" style="--ib:48px"><${Icon} name="doc" size=${22} /></span>
+    <span class="choice-row__text"><span class="t-title-l">${t('today.grammar')}</span><span class="t-label-13">${t('today.grammarSub')}</span></span>
+    <span class="ib ib--outline" style="--ib:40px"><${Icon} name="chevron-down" size=${20} /></span></button>`;
+}
+
 function Collections({ course, go }) {
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState({});
