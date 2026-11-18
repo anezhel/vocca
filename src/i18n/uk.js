@@ -98,7 +98,7 @@ export default {
   words: {
     title: 'Слова', inCourse: '{n} у курсі', all: 'Усі', learning: 'Вчу', learned: 'Вивчено', fresh: 'Нові',
     status: { learning: 'вчу', learned: 'вивчено', fresh: 'нове', reinforcing: 'закріплюється' },
-    empty: 'Тут поки порожньо', learnedTitle: 'Вивчено', returnToLearning: 'Повернути у вивчення', returned: '{w} — знову у вивченні', examples: 'Приклади',
+    empty: 'Тут поки порожньо', search: 'Пошук слова', clearSearch: 'Очистити пошук', notFound: 'Нічого не знайдено за «{q}»', learnedTitle: 'Вивчено', returnToLearning: 'Повернути у вивчення', returned: '{w} — знову у вивченні', examples: 'Приклади',
     returnText: 'Слово у вивчених і більше не показується. Повернути його у вивчення? Воно знову з’явиться в заняттях зі статусом «вчу».', learnedOf: '{a} з {b}', allN: 'Усі {n}',
   },
   settings: {

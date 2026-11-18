@@ -1,5 +1,5 @@
 // Компоненты Aura — по одному на компонент Figma («Aura · компоненты»). Вид задаёт CSS (src/theme/components.css), здесь только разметка.
-import { html, useEffect, useState, useRef } from '../../lib/preact-htm.js';
+import { html, useEffect, useLayoutEffect, useState, useRef } from '../../lib/preact-htm.js';
 import { ICONS } from './icons.js';
 import { t, L } from '../i18n/index.js';
 import { tts } from '../core/tts.js';
@@ -83,9 +83,59 @@ export const Counter = ({ children }) => html`<span class="counter t-label-13-me
 export const Title = ({ main, accent, cls }) => html`<h1 class=${cx('title', cls)}><span class="t-heading-h1">${main}</span>${accent && html`<br /><span class="t-heading-h1-accent">${accent}</span>`}</h1>`;
 
 // Переключатель-сегменты
+// Пружинка как у пузырька нижнего меню: жёсткость 420, затухание 0,62 — переезжает с лёгким перелётом.
+export const SPRING = { k: 420, zeta: 0.62 };
+
+// Переключатель «Усі / Вчу / Вивчено / Нові». Чёрная «таблетка» переезжает к выбранному пункту с пружинкой,
+// как пузырёк в меню; внутри неё — копия подписей белым, поэтому цвет текста меняется ровно там, где таблетка.
 export function Segmented({ options, value, onChange, cls }) {
-  return html`<div class=${cx('seg', cls)} role="tablist">${options.map((o) => html`<button key=${o.value} role="tab" aria-selected=${o.value === value}
-    class=${cx('seg__item', o.value === value && 'seg__item--on')} onClick=${() => onChange(o.value)}>${o.label}</button>`)}</div>`;
+  const ref = useRef(null), pillRef = useRef(null), lensRef = useRef(null), st = useRef(null);
+  const idx = Math.max(0, options.findIndex((o) => o.value === value));
+  const latest = useRef(idx); latest.current = idx;
+  useLayoutEffect(() => {
+    const el = ref.current, pill = pillRef.current, lens = lensRef.current, PADS = 4;
+    const s = (st.current = { x: 0, v: 0, target: 0, raf: 0, last: 0 });
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const measure = () => { s.W = el.clientWidth; s.H = el.clientHeight; s.tw = (s.W - 2 * PADS) / options.length; lens.style.width = s.W + 'px'; lens.style.height = s.H + 'px'; };
+    const center = (i) => PADS + s.tw * (i + 0.5);
+    const draw = () => {
+      const w = s.tw, h = s.H - 2 * PADS;
+      pill.style.width = w + 'px'; pill.style.height = h + 'px';
+      pill.style.transform = `translate(${s.x - w / 2}px, ${PADS}px)`;
+      lens.style.transform = `translate(${w / 2 - s.x}px, ${-PADS}px)`;
+    };
+    const step = (time) => {
+      const dt = Math.min(0.032, (time - (s.last || time)) / 1000); s.last = time;
+      const c = 2 * Math.sqrt(SPRING.k) * (reduce ? 1 : SPRING.zeta);
+      s.v += (SPRING.k * (s.target - s.x) - c * s.v) * dt; s.x += s.v * dt;
+      draw();
+      if (Math.abs(s.v) > 2 || Math.abs(s.target - s.x) > 0.3) s.raf = requestAnimationFrame(step);
+      else { s.x = s.target; s.v = 0; s.raf = 0; s.last = 0; draw(); }
+    };
+    s.goTo = (i) => { s.target = center(i); if (!s.raf) { s.last = 0; s.raf = requestAnimationFrame(step); } };
+    const ro = new ResizeObserver(() => { measure(); cancelAnimationFrame(s.raf); s.raf = 0; s.x = s.target = center(latest.current); s.v = 0; draw(); });
+    ro.observe(el); measure(); s.x = s.target = center(latest.current); draw();
+    return () => { ro.disconnect(); cancelAnimationFrame(s.raf); };
+  }, [options.length]);
+  useEffect(() => { const s = st.current; if (s && s.goTo) s.goTo(idx); }, [idx]);
+  return html`<div class=${cx('seg', cls)} ref=${ref} role="tablist">${options.map((o) => html`<button key=${o.value} role="tab" aria-selected=${o.value === value}
+    class=${cx('seg__item', o.value === value && 'seg__item--on')} onClick=${() => onChange(o.value)}>${o.label}</button>`)}
+    <div class="seg__pill" ref=${pillRef} aria-hidden="true"><div class="seg__lens" ref=${lensRef}>${options.map((o) => html`<span key=${o.value} class="seg__item">${o.label}</span>`)}</div></div>
+  </div>`;
+}
+
+// Поле поиска (Aura/Search field): иконка лупы, текст, круглая кнопка очистки, когда что-то введено
+export function SearchField({ value, onInput, placeholder, clearLabel }) {
+  const ref = useRef(null);
+  return html`<label class="search">
+    <${Icon} name="search" size=${20} />
+    <input ref=${ref} class="search__input" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" placeholder=${placeholder} aria-label=${placeholder} value=${value}
+      onInput=${(e) => onInput(e.currentTarget.value)}
+      onKeyDown=${(e) => { if (e.key === 'Enter') e.currentTarget.blur(); if (e.key === 'Escape') onInput(''); }} />
+    ${value && html`<button type="button" class="search__clear" aria-label=${clearLabel} onClick=${(e) => { e.preventDefault(); onInput(''); ref.current && ref.current.focus(); }}>
+      <${Icon} name="close" size=${16} /></button>`}
+  </label>`;
 }
 
 // Нижний лист (bottom sheet)
@@ -187,7 +237,7 @@ export function Nav({ active, onNav, tabs }) {
     };
     const step = (time) => {
       const dt = Math.min(0.032, (time - (s.last || time)) / 1000); s.last = time;
-      const k = s.pressed ? 900 : 420, c = 2 * Math.sqrt(k) * (reduce ? 1 : s.pressed ? 0.95 : 0.62);
+      const k = s.pressed ? 900 : SPRING.k, c = 2 * Math.sqrt(k) * (reduce ? 1 : s.pressed ? 0.95 : SPRING.zeta);
       s.v += (k * (s.target - s.x) - c * s.v) * dt; s.x += s.v * dt;
       draw();
       if (s.pressed || Math.abs(s.v) > 2 || Math.abs(s.target - s.x) > 0.3) s.raf = requestAnimationFrame(step);

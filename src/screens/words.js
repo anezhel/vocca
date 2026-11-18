@@ -6,10 +6,29 @@ import { t, L, num, plural } from '../i18n/index.js';
 import { progress } from '../core/store.js';
 import { status, isLearned } from '../core/srs.js';
 import { shown, ipaOf, ttsLang, returnToLearning } from '../core/words.js';
-import { Screen, Title, Segmented, WordRow, TopBar, Icon, IconButton, Button, Sheet, LevelTag, SpeakButton, Example, cx } from '../ui/kit.js';
+import { Screen, Title, Segmented, SearchField, WordRow, TopBar, Icon, IconButton, Button, Sheet, LevelTag, SpeakButton, Example, cx } from '../ui/kit.js';
 
 const PAGE = 60;
 const DAY = 86400;
+
+// Поиск: по английскому слову (и британскому написанию) и по переводу. Сначала точное совпадение,
+// потом слова, которые начинаются с введённого, потом — где введённое в начале второго слова, потом — где угодно;
+// переводы — после английских совпадений. Внутри одной группы — порядок курса (от частых слов).
+const norm = (s) => (s || '').toLowerCase().replace(/ё/g, 'е').replace(/[’ʼ`]/g, "'").trim();
+function rank(q, w, tr) {
+  for (const raw of [w.w, w.wUk]) {
+    const s = norm(raw); if (!s) continue;
+    if (s === q) return 0;
+    if (s.startsWith(q)) return 1;
+    if (s.split(/[\s\-\/(]+/).some((part) => part.startsWith(q))) return 2;
+    if (s.includes(q)) return 3;
+  }
+  const parts = norm(tr).split(/[,;/()]\s*/).map((x) => x.trim());
+  if (parts.some((x) => x === q)) return 4;
+  if (parts.some((x) => x.startsWith(q) || x.split(/\s+/).some((y) => y.startsWith(q)))) return 5;
+  if (norm(tr).includes(q)) return 6;
+  return -1;
+}
 
 function allWords(course) {
   const p = progress(course.id);
@@ -24,15 +43,21 @@ export function Words({ course, toast }) {
   const [, redraw] = useState(0);
   const [levels, setLevels] = useState([]);
   const [shownN, setShownN] = useState(PAGE);
+  const [query, setQuery] = useState('');
   const words = allWords(course);
   const counts = useMemo(() => Object.fromEntries(LEVELS.map((l) => [l, course.words.filter((w) => w.lvl === l).length])), [course.id]);
-  const list = words.filter((w) => {
+  const byStatus = words.filter((w) => {
     const s = status(p.cards[w.id]);
     if (filter === 'learning' && s !== 'learning' && !p.queue.includes(w.id)) return false;
     if (filter === 'learned' && s !== 'learned') return false;
     if (filter === 'fresh' && (s !== 'fresh' || p.queue.includes(w.id))) return false;
     return !levels.length || levels.includes(w.lvl);
   });
+  const q = norm(query);
+  // с запросом — только подходящие слова, лучшие совпадения сверху; без запроса — весь список как раньше
+  const list = !q ? byStatus : byStatus.map((w, i) => [w, rank(q, w, L(w.tr)), i]).filter((x) => x[1] >= 0)
+    .sort((a, b) => a[1] - b[1] || a[2] - b[2]).map((x) => x[0]);
+  const search = (v) => { setQuery(v); setShownN(PAGE); setOpen(null); };
   const lang = ttsLang(course);
   const giveBack = (w) => {
     returnToLearning(course, w.id);
@@ -43,6 +68,7 @@ export function Words({ course, toast }) {
   return html`<${Screen} cls="screen--tab screen--words" tone="words">
     <div class="top-space"></div>
     <${Title} main=${t('words.title')} accent=${t('words.inCourse', { n: `${num(course.words.length)} ${plural(course.words.length, 'words')}` })} />
+    <${SearchField} value=${query} onInput=${search} placeholder=${t('words.search')} clearLabel=${t('words.clearSearch')} />
     <${Segmented} cls="seg--wide" value=${filter} onChange=${(v) => { setFilter(v); setShownN(PAGE); }}
       options=${[['all', 'all'], ['learning', 'learning'], ['learned', 'learned'], ['fresh', 'fresh']].map(([v, k]) => ({ value: v, label: t('words.' + k) }))} />
     <div class="level-tiles">${LEVELS.map((l) => html`<button class=${cx('level-tile', levels.includes(l) && 'level-tile--on')} data-level=${l} onClick=${() => tog(l)}
@@ -52,7 +78,7 @@ export function Words({ course, toast }) {
     <div class="word-list word-list--tight">${list.length ? list.slice(0, shownN).map((w) => html`<${ExpandRow} key=${w.id} course=${course} w=${w} lang=${lang}
       open=${open === w.id} onToggle=${() => setOpen(open === w.id ? null : w.id)}
       onReturn=${status(p.cards[w.id]) === 'learned' ? () => setAsk(w) : null} />`)
-      : html`<p class="t-body-15 muted center">${t('words.empty')}</p>`}</div>
+      : html`<p class="t-body-15 muted center">${q ? t('words.notFound', { q: query.trim() }) : t('words.empty')}</p>`}</div>
     ${list.length > shownN && html`<button class="more t-label-15-medium" onClick=${() => setShownN(shownN + PAGE)}>${t('common.more')}</button>`}
     ${ask && html`<${ReturnSheet} course=${course} w=${ask} onClose=${() => setAsk(null)} onYes=${() => giveBack(ask)} />`}
   </${Screen}>`;

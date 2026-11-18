@@ -90,9 +90,22 @@ button.card { width: 100%; text-align: left; }
 .stat { padding: var(--space-14) var(--space-16); min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 
 /* ── Переключатель-сегменты ── */
-.seg { display: flex; padding: var(--space-4); border-radius: var(--radius-full); background: var(--bg-surface); box-shadow: 0 var(--effect-card-shadow-y) var(--effect-card-shadow-radius) var(--effect-shadow-card); }
-.seg__item { flex: 1; text-align: center; height: 44px; border-radius: var(--radius-full); font-size: 15px; font-weight: 500; }
-.seg__item--on { background: var(--bg-chip-selected); color: var(--text-on-chip-selected); }
+.seg { position: relative; display: flex; padding: var(--space-4); border-radius: var(--radius-full); background: var(--bg-surface); box-shadow: 0 var(--effect-card-shadow-y) var(--effect-card-shadow-radius) var(--effect-shadow-card); }
+.seg__item { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; height: 44px; border-radius: var(--radius-full); font-size: 15px; font-weight: 500; color: var(--text-primary); }
+/* чёрная таблетка выбранного пункта (едет с пружинкой, см. Segmented в kit.js); в ней подписи белым */
+.seg__pill { position: absolute; left: 0; top: 0; border-radius: var(--radius-full); overflow: hidden; pointer-events: none;
+  background: var(--bg-chip-selected); will-change: transform; }
+.seg__lens { position: absolute; left: 0; top: 0; display: flex; padding: var(--space-4); will-change: transform; }
+.seg__lens .seg__item { color: var(--text-on-chip-selected); }
+/* Aura/Search field — поле поиска на «Слова»: белая капсула 44 px, как переключатель под ним */
+.search { display: flex; align-items: center; gap: var(--space-10); height: 44px; padding: 0 6px 0 var(--space-16); border-radius: var(--radius-full);
+  background: var(--bg-surface); color: var(--text-secondary); box-shadow: 0 var(--effect-card-shadow-y) var(--effect-card-shadow-radius) var(--effect-shadow-card); cursor: text; }
+.search svg { flex: none; }
+/* 16 px — иначе Safari на iPhone увеличивает страницу при вводе */
+.search__input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; padding: 0; font: inherit; font-size: 16px; font-weight: 400; color: var(--text-primary); -webkit-appearance: none; appearance: none; }
+.search__input::placeholder { color: var(--text-secondary); opacity: 1; }
+.search__input::-webkit-search-cancel-button, .search__input::-webkit-search-decoration { -webkit-appearance: none; display: none; }
+.search__clear { flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--bg-surface-3); color: var(--text-secondary); }
 
 /* ── Нижний лист ── */
 .sheet-wrap { position: fixed; z-index: 50; inset: 0; background: var(--bg-dim); display: flex; align-items: flex-end; justify-content: center; animation: fade .2s; }
@@ -332,6 +345,7 @@ button.card { width: 100%; text-align: left; }
 .level-card--on { background: var(--bg-surface); box-shadow: 0 var(--effect-card-shadow-y) var(--effect-card-shadow-radius) var(--effect-shadow-card); }
 .test-card { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-16) 18px; background: var(--tint-lavender); box-shadow: none; }
 .seg--wide { margin-top: calc(var(--space-4) * -1); }
+.search + .seg--wide { margin-top: 2px; } /* под поиском — 16 px, как в 09 */
 /* 09 · Слова: фильтр статуса ниже — пункты 36 px (вся капсула 44) */
 .screen--words .seg__item { height: 36px; }
 
