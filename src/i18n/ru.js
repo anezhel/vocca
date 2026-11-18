@@ -58,7 +58,7 @@ export default {
   today: {
     morning: 'Доброе утро!', day: 'Добрый день!', evening: 'Добрый вечер!', night: 'Доброй ночи!',
     timeTo: 'Пора повторить слова', allDone: 'На сегодня всё', noLevels: 'Выбери уровни слов',
-    yourLevel: 'твой уровень', statLearned: 'выучено слов', passed: 'Пройдено\nслов сегодня', statStreak: '{d} подряд', statCourse: 'курса',
+    yourLevel: 'твой уровень', statLearned: 'выучено слов', passed: 'Слов\nпройдено', statStreak: '{d} подряд', statCourse: 'курса',
     groupsSub: 'Подборки слов и тренажёры', learnedShort: 'Выучено',
     about: '≈ {n} {u}', review: '{n} повторить', fresh: '+{n} новых',
     timeToMain: 'Время повторить', timeToAccent: 'слова', learnNew: 'Учить новые слова', learnWords: 'Учить слова', myLevel: 'Мой уровень', repeatWords: 'Повторить слова', groupsLearning: 'В процессе', groupsNew: 'Новые', groupsDone: 'Пройденные', statsRepeated: 'Повторено слов', statsLearned: 'Добавлено в выученные', statsSub: 'Статистика по дням',

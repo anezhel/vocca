@@ -456,10 +456,10 @@ button.card { width: 100%; text-align: left; }
 
 /* 04 · отступы по макету 04i: между блоками 20, цифра и чипсы — 12 */
 .screen--today .screen__content { gap: var(--space-20); }
-/* 2.1 · без логотипа: заголовок слева, чип уровня справа — по центру первой строки заголовка (38 − 30) / 2 */
+/* 2.1 · без логотипа: заголовок слева, чип уровня справа — по центру первой строки заголовка (34 − 30) / 2 */
 .today-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-12); }
 .today-head .title { flex: 1; min-width: 0; }
-.today-head .level-chip { flex: none; margin-top: 4px; }
+.today-head .level-chip { flex: none; margin-top: 2px; }
 .screen--today .title { margin: 0; }
 .screen--today .pills { margin-top: calc(var(--space-8) * -1); }
 .screen--today .cta-wrap { margin-top: 0; }
@@ -494,7 +494,7 @@ button.card { width: 100%; text-align: left; }
 .level-chip svg { color: #ff7758; } /* огонёк заливкой, как в 08 */
 .level-chip svg path { fill: currentColor; }
 .hero__label { display: flex; flex-direction: column; gap: var(--space-8); padding-bottom: var(--space-8); }
-.hero__text { white-space: pre-line; } /* «Пройдено» / «слів сьогодні» — в две строки, как в 08 */
+.hero__text { white-space: pre-line; } /* «Слів» / «пройдено» — в две строки, как в 2.1 */
 .screen--today .stats .stat { border-radius: var(--radius-24); }
 /* Aura/Choice row — «Групи слів»: лавандовая карточка, иконка в белом кружке, стрелка в обводке */
 .choice-row { width: 100%; min-height: 86px; display: flex; align-items: center; gap: var(--space-14); padding: 0 var(--space-16);

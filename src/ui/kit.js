@@ -80,7 +80,8 @@ export const TopBar = ({ onClose, onBack, label, total, done, right, count }) =>
 export const Counter = ({ children }) => html`<span class="counter t-label-13-medium">${children}</span>`;
 
 // Заголовок экрана: строка + курсивная вторая строка (Heading H1 + H1 Accent)
-export const Title = ({ main, accent, cls }) => html`<h1 class=${cx('title', cls)}><span class="t-heading-h1">${main}</span>${accent && html`<br /><span class="t-heading-h1-accent">${accent}</span>`}</h1>`;
+// у самого h1 тот же стиль, что у строк: иначе высота строки браузера по умолчанию раздвигает их (Figma: 34 / 34)
+export const Title = ({ main, accent, cls }) => html`<h1 class=${cx('title t-heading-h1', cls)}><span class="t-heading-h1">${main}</span>${accent && html`<br /><span class="t-heading-h1-accent">${accent}</span>`}</h1>`;
 
 // Переключатель-сегменты
 // Пружинка как у пузырька нижнего меню: жёсткость 420, затухание 0,62 — переезжает с лёгким перелётом.
