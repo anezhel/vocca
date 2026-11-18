@@ -46,7 +46,7 @@ export function Collection({ course, route, go, back }) {
     if (pos + 1 < list.length) { setPos(pos + 1); scrollTo(0, 0); } else setDone(true);
   };
   const Item = T(cur.g).Item;
-  return html`<${Screen} bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
+  return html`<${Screen} cls="screen--grey" tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
     <${Title} main=${L(cur.g.title)} cls="title--group" />
     <${Item} key=${cur.g.id + ':' + cur.item.id} course=${course} group=${cur.g} item=${cur.item} />
