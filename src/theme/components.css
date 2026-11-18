@@ -562,16 +562,20 @@ button.card { width: 100%; text-align: left; }
 .plan__tag { position: absolute; top: var(--space-14); left: var(--space-14); padding: 4px 10px; border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
 .paywall__free { height: auto; padding: var(--space-8) 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 
-/* 2.2 «Що тренуємо»: Aura/Chip */
-.practice-sec { display: flex; flex-direction: column; gap: var(--space-12); margin-bottom: var(--space-8); transition: opacity .2s; }
+/* 2.2 «Що тренуємо» (макет 19.11.2026): секции через 28, заголовок секции → чипы 12; Aura/Chip 40 px,
+   выбранный — чёрный без галочки; уровни и количество — поля 14, остальные — 16; между чипами 4 */
+.screen--practice .screen__content { gap: var(--space-16); }
+.practice-secs { display: flex; flex-direction: column; gap: var(--space-28); margin-top: var(--space-16); }
+.practice-sec { display: flex; flex-direction: column; gap: var(--space-12); transition: opacity .2s; }
 .practice-sec.is-dim { opacity: .4; }
 .practice-sec__head { display: flex; align-items: baseline; gap: var(--space-8); }
-.choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-8); }
-.choice-row6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-8); }
+.choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-4); }
+.choice-wrap--tight { gap: var(--space-4); }
+.choice-row6 { display: flex; gap: var(--space-4); }
 .choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 var(--space-16); border-radius: var(--radius-full);
   background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }
-.choice-chip.is-on { background: var(--bg-chip-selected); border-color: var(--bg-chip-selected); color: var(--text-on-chip-selected); padding-left: var(--space-12); }
-.choice-row6 .choice-chip { padding: 0; }
+.choice-chip.is-on { background: var(--bg-chip-selected); border-color: var(--bg-chip-selected); color: var(--text-on-chip-selected); }
+.choice-row6 .choice-chip, .choice-wrap--short .choice-chip { padding: 0 var(--space-14); }
 
 /* 2.4: «Важко · Легко · Вивчено» */
 .rate3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }

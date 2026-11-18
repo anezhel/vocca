@@ -23,7 +23,15 @@ export function Collection({ course, route, go, back }) {
   const ids = route.groups || (route.group ? [route.group] : []);
   const groups = ids.map((id) => course.groupList.find((g) => g.id === id)).filter(Boolean);
   const size = route.size === 'all' ? Infinity : route.size || CONFIG.groupSessionSize;
-  const build = (review) => groups.flatMap((g) => T(g).queue(course, g, review).map((item) => ({ g, item })));
+  // с «Що тренуємо» приходят и уровни: берём слова добірки только этих уровней. Если непройденные такого уровня
+  // кончились, а в добірці ещё есть непройденные других уровней — повторяем слова выбранных уровней.
+  const lv = route.levels && route.levels.length ? route.levels : null;
+  const ofLevel = (items) => (lv ? items.filter((item) => lv.includes(item.lvl)) : items);
+  const build = (review) => groups.flatMap((g) => {
+    let q = ofLevel(T(g).queue(course, g, review));
+    if (!q.length && !review) q = ofLevel(T(g).queue(course, g, true));
+    return q.map((item) => ({ g, item }));
+  });
   const [queue] = useState(() => build(!!route.review));
   const [start, setStart] = useState(0);
   const [pos, setPos] = useState(0);
@@ -35,7 +43,9 @@ export function Collection({ course, route, go, back }) {
 
   if (done || !cur) {
     const pr = groups.reduce((a, g) => { const x = T(g).progressOf(course, g); return { seen: a.seen + x.seen, total: a.total + x.total }; }, { seen: 0, total: 0 });
-    return html`<${GroupDone} title=${groups.map((g) => L(g.title)).join('», «')} many=${groups.length > 1} seen=${pr.seen} total=${pr.total}
+    // с выбранными уровнями итог говорит о них: «Усі слова групи «Синоніми · A1» пройдено» (если выбраны не все уровни добірки)
+    const lvPart = (g) => (lv && g.items.some((x) => !lv.includes(x.lvl)) ? ' · ' + lv.join(', ') : '');
+    return html`<${GroupDone} title=${groups.map((g) => L(g.title) + lvPart(g)).join('», «')} many=${groups.length > 1} seen=${pr.seen} total=${pr.total}
       left=${left} next=${Math.min(size, left)} unit=${groups.every((g) => g.type === 'irregular') ? 'verbs' : 'words'}
       onMore=${() => { setStart(start + list.length); setPos(0); setDone(false); scrollTo(0, 0); }}
       onRepeat=${() => { setPos(0); setDone(false); scrollTo(0, 0); }}
