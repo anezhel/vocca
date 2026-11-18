@@ -27,7 +27,7 @@ export function Today({ course, go }) {
   const levels = () => go('settings', { pick: 'levels' });
   // Главная кнопка ведёт на 2.2 «Що тренуємо». Цель на день выполнена — «Сьогодні план виконано!» и «Вчити ще».
   const main = noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${levels} />`
-    : html`<${Button} label=${t(goal.done ? 'today.learnMore' : 'today.learnWords')} onClick=${() => go('practice')} />`;
+    : html`<${Button} spring label=${t(goal.done ? 'today.learnMore' : 'today.learnWords')} onClick=${() => go('practice')} />`;
   const totalWords = course.words.length;
   // доля в процентах: 245 из 3 447 → «7%»; меньше половины процента, но не ноль → «<1%»
   const share = (a, b) => (!a || !b ? 0 : (a / b) * 100);
