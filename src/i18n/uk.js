@@ -63,7 +63,7 @@ export default {
     about: '≈ {n} {u}', review: '{n} повторити', fresh: '+{n} нових',
     timeToMain: 'Час повторити', timeToAccent: 'слова', learnNew: 'Вчити нові слова', learnWords: 'Вчити слова', myLevel: 'Мій рівень', repeatWords: 'Повторити слова', groupsLearning: 'В процесі', groupsNew: 'Нові', groupsDone: 'Пройдені', statsRepeated: 'Повторено слів', statsLearned: 'Додано у вивчені', statsSub: 'Статистика по днях',
     learn: 'Вчити слова', learnMore: 'Вчити ще', chooseLevels: 'Обрати рівні',
-    repeatLearning: 'Повторити слова, які вчу', moreNew: 'Ще {n} нових слів', planDone: 'Сьогодні план', planDoneAccent: 'виконано!', collections: 'Добірки слів', stats: 'Статистика',
+    repeatLearning: 'Повторити слова, які вчу', moreNew: 'Ще {n} нових слів', planDone: 'Сьогодні план', planDoneAccent: 'виконано!', grammar: 'Граматика', grammarSub: 'Правила та вправи', grammarSoon: 'Граматика з’явиться незабаром', collections: 'Добірки слів', stats: 'Статистика',
     repeated: '{n} повторено', freshDone: '{n} нових',
     learned: 'Вивчено слів', forecast: 'Прогноз повторень', forecastSub: 'Слів до повторення по днях', days: '{n} днів',
     todayShort: 'Сьог.', tomorrow: 'Завтра', newNow: 'нових слів зараз', reviewsToday: '{x} сьогодні', newWords: 'Нові слова · {n}',

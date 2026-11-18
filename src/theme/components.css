@@ -510,6 +510,9 @@ button.card { width: 100%; text-align: left; }
 .choice-row { width: 100%; min-height: 86px; display: flex; align-items: center; gap: var(--space-14); padding: 0 var(--space-16);
   border-radius: var(--radius-24); background: var(--tint-lavender); color: var(--text-primary); text-align: left; }
 .choice-row__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.choice-row--mint { background: var(--level-a1); } /* «Граматика» — зелёная, как A1 */
+/* «Добірки слів» и «Граматика» — через 12 px */
+.practice-rows { display: flex; flex-direction: column; gap: var(--space-12); }
 .choice-row__text .t-label-13 { color: var(--text-on-pastel); }
 /* Карточка «Вивчено»: всего и полоски по уровням (доля выученных слов уровня) */
 /* 18.11.2026: без тени и обводки — белая карточка на сером фоне; сверху «Вивчено» и «245 слів» справа */
