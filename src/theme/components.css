@@ -321,7 +321,7 @@ button.card { width: 100%; text-align: left; }
   font-size: 17px; font-weight: 500; letter-spacing: -.01em; overflow-wrap: anywhere; line-height: 1.1; transition: background .15s, border-color .15s; }
 .dslot--given { background: var(--bg-surface-2); }
 .dslot--empty { border: 1.5px dashed var(--border-radio); }
-.dslot--active { border: 2px solid var(--border-strong); background: var(--tint-lime); }
+.dslot--active { border: 2px solid var(--border-strong); background: var(--tint-lavender); }
 .dslot--filled { background: var(--bg-inverse); color: var(--text-on-inverse); }
 .dslot--correct { background: var(--tint-mint); color: var(--text-on-pastel); }
 .dslot--wrong { background: var(--tint-coral); color: var(--text-on-pastel); }
@@ -329,7 +329,6 @@ button.card { width: 100%; text-align: left; }
 .dopt { min-height: 56px; padding: var(--space-6) var(--space-12); border-radius: var(--radius-full); background: var(--bg-surface); border: 1px solid var(--border-default);
   text-align: center; font-size: 17px; font-weight: 500; letter-spacing: -.01em; overflow-wrap: anywhere; transition: background .12s, color .12s, transform .12s; }
 .dopt:active { transform: scale(.97); }
-.dopt--used { background: var(--bg-surface-3); border-color: transparent; color: var(--text-secondary); }
 .dopt--correct { background: var(--tint-mint); border-color: transparent; color: var(--text-on-pastel); }
 .dopt--wrong { background: var(--tint-coral); border-color: transparent; color: var(--text-on-pastel); }
 .dopt--dim { background: var(--bg-surface-2); border-color: transparent; color: var(--text-tertiary); }
