@@ -207,7 +207,7 @@ export const Example = ({ ex, hl }) => html`<div class="example"><div class="t-b
 // иконка и подпись в нём красно-розовые. При смене вкладки пузырёк переезжает с лёгкой пружинкой, не увеличиваясь;
 // его можно тянуть пальцем — вкладка выбирается, когда палец отпущен. Нажатие на вкладку — обычный click.
 // Движение — пружина в requestAnimationFrame; стили пишутся прямо в DOM, без перерисовки на каждом кадре.
-// «Групи» в меню нет с 16.11.2026. С 18.11.2026 (Aura/Tab bar v2): в капсуле «Сьогодні · Слова» (и «Прогрес», когда
+// «Групи» в меню нет с 16.11.2026. С 18.11.2026 (Aura/Tab bar v2): в капсуле «Практика · Слова» (до 18.11.2026 — «Сьогодні») (и «Прогрес», когда
 // появится страница), «Налаштування» — отдельный круглый кружок справа (Aura/Settings button), без подписи.
 const TABS = [['today', 'bolt'], ['words', 'cards'], ['progress', 'chart']];
 const PAD = 4;
@@ -290,7 +290,7 @@ export function Nav({ active, onNav, tabs }) {
 // Aura/Settings row
 export const SettingsRow = ({ icon, title, sub, value, trailing = 'chevron', on, onToggle, onClick, dim }) => html`<button
   class=${cx('srow', dim && 'srow--dim')} onClick=${trailing === 'toggle' ? () => onToggle(!on) : onClick} disabled=${dim}>
-  <span class="ib ib--glass srow__icon" style="--ib:40px"><${Icon} name=${icon} size=${20} /></span>
+  <span class="ib ib--grey srow__icon" style="--ib:40px"><${Icon} name=${icon} size=${20} /></span>
   <span class="srow__text"><span class="t-label-16-strong">${title}</span>${sub && html`<span class="t-label-12 muted">${sub}</span>`}</span>
   ${value != null && html`<span class="t-label-14 muted srow__value">${value}</span>`}
   ${trailing === 'chevron' && html`<span class="srow__chev"><${Icon} name="chevron-right" size=${18} /></span>`}

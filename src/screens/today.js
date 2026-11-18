@@ -1,14 +1,15 @@
-// Экран 08 «Сьогодні» (новый дизайн, 18.11.2026): сколько слов пройдено сегодня (повторено и выучено) и минут,
-// три плитки (вивчено · дні поспіль · % курсу),
-// «Вчити слова», карточка «Групи слів» (→ экран групп), карточка «Вивчено» по уровням (→ «Вивчені слова»).
-import { html } from '../../lib/preact-htm.js';
+// Экран 2.1 «Практика» (вкладка; до 18.11.2026 — «Сьогодні»): сколько слов пройдено сегодня и минут, цель на день,
+// три плитки (дні поспіль · вивчено слів · % курсу), «Вчити слова» → 2.2 «Що тренуємо», «Добірки слів» раскрываются на месте,
+// карточка «Статистика» — доля выученных слов по уровням.
+import { html, useState } from '../../lib/preact-htm.js';
 import { feature } from '../config.js';
 import { LEVELS } from '../content/index.js';
-import { t, plural, num } from '../i18n/index.js';
+import { t, L, plural, num } from '../i18n/index.js';
 import { progress } from '../core/store.js';
-import { planToday, freshLeft, myLevel } from '../core/session.js';
+import { dayGoal, myLevel, practicePrefs } from '../core/session.js';
+import { GROUP_TYPES } from '../groups/index.js';
 import { learnedStats, streak, todayStats } from '../core/stats.js';
-import { Screen, Title, Button, Icon, Stat } from '../ui/kit.js';
+import { Screen, Title, Button, Icon, Stat, cx } from '../ui/kit.js';
 
 function greeting() {
   const h = new Date().getHours();
@@ -17,18 +18,16 @@ function greeting() {
 
 export function Today({ course, go }) {
   const p = progress(course.id);
-  const plan = planToday(course);
+  const goal = dayGoal(course);
   const learned = learnedStats(course);
   const st = streak();
   const day = todayStats();
-  const done = plan.total === 0;
-  const finished = done && plan.doneToday > 0;   // план на сьогодні виконано
+  const noLevels = !p.levels.length && !p.queue.length;
   const me = myLevel(p);   // «A2 твій рівень» справа вверху: по тесту или самый высокий из выбранных
   const levels = () => go('settings', { pick: 'levels' });
-  // одна главная кнопка: «Вчити слова» (в занятии сначала повторение, потом новые), после плана — «Ще 5 нових слів»
-  const main = plan.noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${levels} />`
-    : !done ? html`<${Button} label=${t('today.learnWords')} onClick=${() => go('lesson')} />`
-    : freshLeft(course) ? html`<${Button} label=${t('today.moreNew', { n: p.newPerDay })} onClick=${() => go('lesson', { extra: true })} />` : '';
+  // Главная кнопка ведёт на 2.2 «Що тренуємо». Цель на день выполнена — «План виконано!» и «Вчити ще».
+  const main = noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${levels} />`
+    : html`<${Button} label=${t(goal.done ? 'today.learnMore' : 'today.learnWords')} onClick=${() => go('practice')} />`;
   const totalWords = course.words.length;
   // доля в процентах: 245 из 3 447 → «7%»; меньше половины процента, но не ноль → «<1%»
   const share = (a, b) => (!a || !b ? 0 : (a / b) * 100);
@@ -37,33 +36,62 @@ export function Today({ course, go }) {
   return html`<${Screen} cls="screen--tab screen--today" tone="today">
     <div class="top-bar"><span class="t-brand-wordmark brand">Vocca</span><span class="top-bar__mid"></span>
       ${me && html`<button class="level-chip t-label-13" onClick=${levels}><${Icon} name="flame" size=${18} /><b>${me}</b> ${t('today.yourLevel')}</button>`}</div>
-    ${finished ? html`<${Title} main=${t('today.planDone')} accent=${t('today.planDoneAccent')} />`
-      : plan.noLevels || done ? html`<${Title} main=${greeting()} accent=${plan.noLevels ? t('today.noLevels') : t('today.allDone')} />`
+    ${noLevels ? html`<${Title} main=${greeting()} accent=${t('today.noLevels')} />`
+      : goal.done ? html`<${Title} main=${t('today.planDone')} accent=${t('today.planDoneAccent')} />`
       : html`<${Title} main=${t('today.timeToMain')} accent=${t('today.timeToAccent')} />`}
     <div class="hero hero--today"><div class="t-number-hero">${num(day.words)}</div>
       <div class="hero__label"><div class="t-label-16 hero__text">${t('today.passed')}</div>
-        ${day.minutes > 0 && html`<div class="t-label-15 muted">${t('today.about', { n: day.minutes, u: plural(day.minutes, 'minutes') })}</div>`}</div></div>
+        <div class="t-label-15 muted">${t('today.about', { n: day.minutes, u: plural(day.minutes, 'minutes') })}</div></div></div>
     <div class="stats">
-      <${Stat} value=${num(learned.total)} label=${t('today.statLearned')} />
       <${Stat} value=${num(st.days)} label=${t('today.statStreak', { d: plural(st.days, 'days') })} />
+      <${Stat} value=${num(learned.total)} label=${t('today.statLearned')} />
       <${Stat} value=${pctText(share(learned.inCourse, totalWords))} label=${t('today.statCourse')} />
     </div>
-    ${main && html`<div class="cta-wrap">${main}</div>`}
-    ${feature('groups') && course.groupList?.length > 0 && html`<button class="choice-row" onClick=${() => go('groups')}>
-      <span class="ib ib--white" style="--ib:48px"><${Icon} name="grid" size=${22} /></span>
-      <span class="choice-row__text"><span class="t-title-l">${t('groups.title')}</span><span class="t-label-13">${t('today.groupsSub')}</span></span>
-      <span class="ib ib--outline" style="--ib:40px"><${Icon} name="arrow-right" size=${20} /></span></button>`}
-    <button class="card learned-levels" onClick=${() => go('learned')}>
-      <div class="learned-levels__top"><span class="t-label-16-strong">${t('today.learnedShort')}</span>
-        <span class="t-label-15 muted">${num(learned.total)} ${plural(learned.total, 'words')}</span></div>
+    <div class="cta-wrap">${main}</div>
+    ${feature('groups') && course.groupList?.length > 0 && html`<${Collections} course=${course} go=${go} />`}
+    <div class="card learned-levels">
+      <div class="learned-levels__top"><span class="t-label-16-strong">${t('today.stats')}</span></div>
       <div class="level-bars">${LEVELS.map((l) => {
         const v = share(learned.byLevel[l], perLevel[l]);
         return html`<div key=${l} class="level-bars__row"><span class="t-label-13-strong level-bars__lvl">${l}</span>
           <span class="level-bars__track">${v > 0 && html`<i data-level=${l} style=${`width:${Math.max(v, 8)}%`}></i>`}</span>
           <span class="t-label-13-strong level-bars__pct">${pctText(v)}</span></div>`;
       })}</div>
-    </button>
+    </div>
   </${Screen}>`;
+}
+
+// «Добірки слів» (2.1–2.1b): карточка раскрывается на месте; внутри «В процесі», «Нові», «Пройдені» —
+// каждый блок тоже свёрнут, пока не нажать. Свёрнуто — шеврон вниз, развёрнуто — вверх.
+// Кнопка у добірки: «Вчити» (в процесі), «Почати» (нова), «Повторити» (пройдена) — занятие по этой добірці.
+const BLOCKS = [['learning', 'groupsLearning', 'learn'], ['fresh', 'groupsNew', 'start'], ['done', 'groupsDone', 'repeat']];
+function Collections({ course, go }) {
+  const [open, setOpen] = useState(false);
+  const [shown, setShown] = useState({});
+  const list = course.groupList.map((g) => ({ g, s: GROUP_TYPES[g.type].stats(course, g) }));
+  const of = (k) => list.filter(({ s }) => (k === 'learning' ? s.status === 'learning' || s.status === 'due' : s.status === k));
+  const size = practicePrefs(course).size;
+  const chev = (on) => html`<${Icon} name=${on ? 'chevron-up' : 'chevron-down'} size=${20} />`;
+  return html`<button class=${cx('choice-row', open && 'is-open')} aria-expanded=${open} onClick=${() => setOpen(!open)}>
+      <span class="ib ib--white" style="--ib:48px"><${Icon} name="grid" size=${22} /></span>
+      <span class="choice-row__text"><span class="t-title-l">${t('today.collections')}</span><span class="t-label-13">${t('today.groupsSub')}</span></span>
+      <span class="ib ib--outline" style="--ib:40px">${chev(open)}</span></button>
+    ${open && html`<div class="colls">${BLOCKS.map(([k, title, btn]) => {
+      const items = of(k);
+      if (!items.length) return null;
+      const on = !!shown[k];
+      return html`<div key=${k} class="card coll-block">
+        <button class="coll-block__head" aria-expanded=${on} onClick=${() => setShown({ ...shown, [k]: !on })}>
+          <span class="t-title-m">${t('today.' + title)}</span><span class="count-pill t-label-13-medium">${items.length}</span><span class="grow"></span>
+          <span class="ib ib--grey" style="--ib:40px">${chev(on)}</span></button>
+        ${on && items.map(({ g, s }) => html`<div key=${g.id} class="coll-row">
+          <div class="coll-row__head"><div class="coll-row__text"><span class="t-title-m">${L(g.title)}</span><span class="t-label-13 muted">${s.subtitle}</span></div>
+            <button class=${'pill-btn pill-btn--' + k + ' t-label-15-medium'} onClick=${() => go('collection', { groups: [g.id], size, review: k === 'done' })}>
+              ${k === 'done' && html`<${Icon} name="refresh" size=${16} />`}${t('groups.' + btn)}</button></div>
+          ${k === 'learning' && html`<div class="meter"><i style=${`width:${Math.round((s.learned / s.total) * 100)}%`}></i></div>`}
+        </div>`)}
+      </div>`;
+    })}</div>`}`;
 }
 
 // Линейный график с точками: прогноз на главной и неделя в итоге занятия

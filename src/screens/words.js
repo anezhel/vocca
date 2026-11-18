@@ -1,12 +1,13 @@
-// Экран 18 «Слова» (все слова курса с фильтрами) и 04a «Вивчено» (выученные, можно вернуть в изучение).
+// Экран 18 «Слова»: все слова курса с поиском и фильтрами; выученные можно вернуть в изучение.
+// Отдельный экран 04a «Вивчені слова» убран 18.11.2026 — выученные показывает фильтр «Вивчено».
 // В строках нет меток статуса: звук и стрелка с примерами; у выученных — «Повернути у вивчення».
 import { html, useState, useMemo } from '../../lib/preact-htm.js';
 import { LEVELS } from '../content/index.js';
 import { t, L, num, plural } from '../i18n/index.js';
 import { progress } from '../core/store.js';
-import { status, isLearned } from '../core/srs.js';
+import { status } from '../core/srs.js';
 import { shown, ipaOf, ttsLang, returnToLearning } from '../core/words.js';
-import { Screen, Title, Segmented, SearchField, WordRow, TopBar, Icon, IconButton, Button, Sheet, LevelTag, SpeakButton, Example, cx } from '../ui/kit.js';
+import { Screen, Title, Segmented, SearchField, WordRow, Icon, IconButton, Button, Sheet, LevelTag, SpeakButton, Example, cx } from '../ui/kit.js';
 
 const PAGE = 60;
 const DAY = 86400;
@@ -84,37 +85,7 @@ export function Words({ course, toast }) {
   </${Screen}>`;
 }
 
-// 04a «Вивчено»: только выученные слова. Строка раскрывается (стрелка или нажатие на строку):
-// примеры и «Повернути у вивчення» → лист 04b с подтверждением.
-export function Learned({ course, back, toast }) {
-  const p = progress(course.id);
-  const [lvl, setLvl] = useState('all');
-  const [open, setOpen] = useState(null);
-  const [ask, setAsk] = useState(null);
-  const [shownN, setShownN] = useState(PAGE);
-  const [, redraw] = useState(0);
-  const words = allWords(course).filter((w) => isLearned(p.cards[w.id]));
-  const list = words.filter((w) => lvl === 'all' || w.lvl === lvl);
-  const lang = ttsLang(course);
-  const giveBack = (w) => {
-    returnToLearning(course, w.id);
-    setAsk(null); setOpen(null); redraw((n) => n + 1);
-    if (toast) toast(t('words.returned', { w: shown(course, w) }));
-  };
-  return html`<${Screen}>
-    <${TopBar} onBack=${back} />
-    <${Title} main=${t('words.learnedTitle')} />
-    <div class="chips chips--learned">${['all', ...LEVELS].map((l) => html`<button class=${cx('chip', lvl === l && 'chip--on')} onClick=${() => { setLvl(l); setShownN(PAGE); }}>
-      ${l === 'all' ? t('words.allN', { n: words.length }) : l}</button>`)}</div>
-    <div class="word-list word-list--tight">${list.length ? list.slice(0, shownN).map((w) => html`<${ExpandRow} key=${w.id} course=${course} w=${w} lang=${lang}
-      open=${open === w.id} onToggle=${() => setOpen(open === w.id ? null : w.id)} onReturn=${() => setAsk(w)} />`)
-      : html`<p class="t-body-15 muted center">${t('words.empty')}</p>`}</div>
-    ${list.length > shownN && html`<button class="more t-label-15-medium" onClick=${() => setShownN(shownN + PAGE)}>${t('common.more')}</button>`}
-    ${ask && html`<${ReturnSheet} course=${course} w=${ask} onClose=${() => setAsk(null)} onYes=${() => giveBack(ask)} />`}
-  </${Screen}>`;
-}
-
-// Строка слова с примерами (компонент Aura/Word row expand: Collapsed / Expanded) — экраны 18 и 04a.
+// Строка слова с примерами (компонент Aura/Word row expand: Collapsed / Expanded) — экран 18.
 // onReturn — только у выученных слов: кнопка «Повернути у вивчення».
 function ExpandRow({ course, w, lang, open, onToggle, onReturn }) {
   const word = shown(course, w);

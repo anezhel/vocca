@@ -9,6 +9,7 @@ export const ICONS = {
   chart: S('M6 20V14|M12 20V5|M18 20V10'),
   settings: S('M4 7H13M17 7H20M4 17H7M11 17H20|M15 9C16.1 9 17 8.1 17 7C17 5.9 16.1 5 15 5C13.9 5 13 5.9 13 7C13 8.1 13.9 9 15 9Z|M9 19C10.1 19 11 18.1 11 17C11 15.9 10.1 15 9 15C7.9 15 7 15.9 7 17C7 18.1 7.9 19 9 19Z'),
   'chevron-down': S('M6 9.5L12 15.5L18 9.5'),
+  'chevron-up': S('M6 15.5L12 9.5L18 15.5'),
   'chevron-right': S('M9.5 6L15.5 12L9.5 18'),
   'arrow-up-right': S('M7 17L17 7M17 15V7H9'),
   'arrow-right': S('M5 12H19M13 18L19 12L13 6'),

@@ -46,6 +46,9 @@ svg { flex: none; }
 .backdrop--lesson i:nth-child(1) { height: 360px; background: var(--tint-peach); }
 .backdrop--lesson i:nth-child(2) { height: 300px; top: -60px; background: var(--tint-pink); opacity: 1; }
 .backdrop--none i { display: none; }
+/* 1.7 · Підписка: голубое пятно слева, розовое справа */
+.backdrop--paywall i:nth-child(1) { background: var(--tint-sky); }
+.backdrop--paywall i:nth-child(2) { background: var(--tint-pink); opacity: 1; }
 /* 09 · Слова (18.11.2026): розовое пятно слева, голубое справа, белое ниже слева — не как на «Сьогодні» */
 .backdrop--words i:nth-child(1) { width: 300px; height: 219px; left: -50px; top: -60px; background: var(--tint-pink); }
 .backdrop--words i:nth-child(2) { width: 300px; height: 161px; left: 190px; top: -60px; background: var(--tint-sky); opacity: 1; }

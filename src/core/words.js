@@ -1,4 +1,5 @@
 // Слово для показа: учитывает вариант английского (США / Британия) и язык интерфейса.
+import { mark } from './srs.js';
 import { getState, progress, update } from './store.js';
 import { L } from '../i18n/index.js';
 import { dayKey as dayKeyOf } from './dates.js';
@@ -36,13 +37,13 @@ export function isAdded(course, text) {
 export const tipSeen = (key) => !!getState().tips[key];
 export const setTipSeen = (key) => update((s) => { s.tips[key] = true; });
 
-// 04b «Повернути у вивчення»: выученное слово снова в «Вчу» и придёт уже в ближайшем занятии
+// «Повернути у вивчення»: выученное слово снова в «Важкі» и попадёт в занятие, если выбрать «Важкі»
 export function returnToLearning(course, id, now = Date.now()) {
   update(() => {
     const p = progress(course.id), c = p.cards[id] || {};
     const today = new Date(now).toDateString();
     const learnedAt = c.learnedAt || (c.known ? c.last : null);
     if (learnedAt && new Date(learnedAt).toDateString() === today) { const d = getState().log[dayKeyOf(now)]; if (d && d.learned) d.learned--; }
-    p.cards[id] = { reps: Math.max(1, c.reps || 0), ivl: 0, due: now, last: c.last || now, ease: c.ease || 2.5, mode: p.mode, step: 0, lapses: c.lapses || 0 };
+    p.cards[id] = mark(c, 'hard', now);
   });
 }

@@ -29,11 +29,3 @@ export function GroupCard({ title, s, onOpen, onRepeat }) {
     ${(s.status === 'learning' || s.status === 'due') && html`<div class="meter"><i style=${`width:${Math.round((s.learned / s.total) * 100)}%`}></i></div>`}
   </div>`;
 }
-
-// Экран конкретной группы: какой именно — решает её тип (src/groups)
-export function GroupRoute(props) {
-  const g = props.course.groupList.find((x) => x.id === props.route.group);
-  if (!g) return null;
-  const Screen = GROUP_TYPES[g.type].Screen;
-  return html`<${Screen} ...${props} group=${g} />`;
-}
