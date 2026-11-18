@@ -16,7 +16,7 @@
     "title-l": ["600", 18, 22, -1], "title-m": ["600", 17, "auto", -1],
     "body-16": ["400", 16, 22, 0], "body-16-medium": ["500", 16, 22, 0], "body-15": ["400", 15, 21, 0], "body-15-medium": ["500", 15, 21, 0],
     "body-14": ["400", 14, 20, 0], "body-13": ["400", 13, 18, 0], "body-12": ["400", 12, 17, 0],
-    "label-17": ["500", 17, "auto", -1], "label-16": ["500", 16, "auto", 0], "label-16-strong": ["600", 16, "auto", 0],
+    "label-17": ["500", 17, "auto", -1], "label-16": ["500", 16, "auto", 0], "label-16-regular": ["400", 16, "auto", 0], "label-16-strong": ["600", 16, "auto", 0],
     "label-15": ["400", 15, "auto", 0], "label-15-medium": ["500", 15, "auto", 0], "label-14": ["400", 14, "auto", 0], "label-14-medium": ["500", 14, "auto", 0],
     "label-14-strong": ["600", 14, "auto", 0], "label-13": ["400", 13, "auto", 0], "label-13-medium": ["500", 13, "auto", 0], "label-13-strong": ["600", 13, "auto", 0],
     "label-12": ["400", 12, "auto", 0], "label-12-medium": ["500", 12, "auto", 0], "label-12-strong": ["600", 12, "auto", 0], "label-11": ["500", 11, "auto", 0],

@@ -1,7 +1,7 @@
 // Тип группы «irregular»: неправильные глаголы. Глаголы учатся только здесь, в ежедневное занятие не попадают.
 // 12  — три карточки сложности («Усі форми однакові», «Дві форми однакові», «Усі форми різні»), внизу кнопка «Тренажер».
 //       Вид экрана — как до 16.11.2026, только карточки лаймовые (bg/accent).
-// 12b — карточки глаголов одной сложности: «Далі», по CONFIG.verbSessionSize за заход, в конце итог 19c (done.js).
+// 12b — карточки глаголов одной сложности (вид — 3.13 из Figma v2, см. VerbCard): «Далі», по CONFIG.verbSessionSize за заход, в конце итог (done.js).
 // 12e — тренажёр трёх форм из Vocca (репозиторий Slova-2, src/screens/verbs.js → Drill), в стиле Vocca2:
 //       «Вставте дві форми дієслова» — V1 дана, V2 и V3 выбираются из 6 вариантов; после второго выбора ответ проверяется сам,
 //       внизу «Наступне дієслово». CONFIG.verbDrillSize глаголов за раунд, в конце — тост «Готово: 8 з 10 правильно».
@@ -59,13 +59,6 @@ function trainList(course, group, now = Date.now()) {
   return [...due, ...fresh];
 }
 
-// Плашка сложности: точки и «Легко / Середньо / Складно»
-const DiffTag = ({ kind }) => {
-  const [, diff, dots] = KINDS.find(([k]) => k === kind);
-  return html`<span class=${cx('diff-tag', 'diff-tag--' + diff)}><span class="dots">${[1, 2, 3].map((d) => html`<i class=${d <= dots ? 'on' : ''}></i>`)}</span>
-    <span class="t-label-13-medium">${t('verbs.' + diff)}</span></span>`;
-};
-
 // Экран 12: три уровня сложности (как было до 16.11.2026, карточки — лаймовые), внизу кнопка «Тренажер»
 function Home({ course, group, go, back }) {
   const cs = cards(course);
@@ -96,29 +89,30 @@ function Home({ course, group, go, back }) {
 }
 
 
-// Карточка глагола: подпись сверху, глагол, транскрипция, озвучка, уровень и сложность, перевод
-const Head = ({ v, lang, over }) => html`<div class="card word-main">
-  <div class="new-head"><div class="new-head__text"><${Overline}>${over}</${Overline}>
-    <div class="t-word-xl">${v.v1}</div>${v.ipa[0] && html`<div class="t-label-16 muted">/${v.ipa[0]}/</div>`}</div>
-    <${SpeakButton} text=${v.v1.replace(' / ', ', ')} lang=${lang} kind="dark" size=${40} /></div>
-  <div class="tags tags--word"><${LevelTag} lvl=${v.lvl} size="m" /><${DiffTag} kind=${v.kind} /></div>
-  <div class="t-translation-l">${L(v.tr)}</div>
-</div>`;
-
-// Три формы (как 07v в занятии): у каждой подпись, транскрипция, озвучка и пример
-function Forms({ v, lang }) {
+// 3.13 · Картка дієслова (макет 19.11.2026, устроена как 3.1 «Синоніми»): белая карточка — 1-я форма,
+// под чипом «3 форми дієслова» лаймовые — 2-я и 3-я. В каждой — форма, транскрипция, перевод и озвучка в обводке.
+// Ниже белая карточка без тени: к каждой форме подпись («1 · теперішній час») и пример в сером блоке.
+function VerbCard({ v, lang }) {
+  const tr = L(v.tr);
+  const form = (n) => v['v' + n];
   const labels = [t('verbs.present'), t('verbs.past'), t('verbs.participle')];
-  return html`<div class="card forms-card">${[1, 2, 3].map((n) => {
-    const form = v['v' + n], ex = v.ex[n - 1];
-    return html`<div class="forms-card__row">
-      <div class="forms-card__head"><div class="forms-card__text"><${Overline}>${n} · ${labels[n - 1]}</${Overline}>
-        <span class="syn-row__line"><span class="t-label-17">${form}</span>${v.ipa[n - 1] && html`<span class="t-label-14 muted">/${v.ipa[n - 1]}/</span>`}</span></div>
-        <${SpeakButton} text=${form.replace(' / ', ', ')} lang=${lang} /></div>
-      ${ex && html`<div class="forms-card__ex"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form.split(' / ')} /></div>
-        <div class="t-label-14 muted">${L(ex)}</div></div>`}
-    </div>`;
-  })}
-  ${v.note && html`<p class="forms-card__note t-label-14 muted">${L(v.note)}</p>`}
+  const text = (n, base) => html`<div class="rel__text"><div class="t-word-l">${form(n)}</div>
+    ${v.ipa[n - 1] && html`<div class=${base ? 't-label-16-regular muted' : 't-label-14 rel__sub'}>/${v.ipa[n - 1]}/</div>`}
+    ${tr && html`<div class=${'t-label-15 ' + (base ? 'muted' : 'rel__sub')}>${tr}</div>`}</div>`;
+  const speak = (n) => html`<${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />`;
+  return html`<div class="rel rel--verb">
+    <div class="rel__pair">
+      <div class="card rel__base">${text(1, true)}${speak(1)}</div>
+      <div class="rel__chip t-label-12-medium">${t('lesson.formsLink')}</div>
+      <div class="rel__targets">${[2, 3].map((n) => html`<div key=${n} class="card rel__target"><div class="rel__row">${text(n)}${speak(n)}</div></div>`)}</div>
+    </div>
+    <div class="card verb-ex">${[1, 2, 3].map((n) => {
+      const ex = v.ex[n - 1];
+      return ex && html`<div key=${n} class="verb-ex__row"><${Overline}>${n} · ${labels[n - 1]}</${Overline}>
+        <div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>
+          <div class="t-label-14 muted">${L(ex)}</div></div></div>`;
+    })}
+      ${v.note && html`<p class="t-label-14 muted">${L(v.note)}</p>`}</div>
   </div>`;
 }
 
@@ -148,10 +142,9 @@ function VerbCards({ course, group, route, back }) {
     update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; });
     if (pos + 1 < list.length) { setPos(pos + 1); scrollTo(0, 0); } else setDone(true);
   };
-  return html`<${Screen} cls="screen--lesson" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
+  return html`<${Screen} cls="screen--lesson screen--grey" tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
-    <div class="word-pair"><${Head} v=${v} lang=${lang} over=${kindTitle} />
-      <span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${Forms} v=${v} lang=${lang} /></div>
+    <${VerbCard} v=${v} lang=${lang} />
   </${Screen}>`;
 }
 
@@ -264,9 +257,7 @@ function queue(course, g, review) {
 function markSeen(course, g, v) { update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; }); }
 function progressOf(course, g) { const cs = cards(course); return { seen: g.items.filter((v) => seen(cs[v.id])).length, total: g.items.length }; }
 function Item({ course, item }) {
-  const lang = ttsLang(course);
-  return html`<div class="word-pair"><${Head} v=${item} lang=${lang} over=${t('verbs.' + item.kind)} />
-    <span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${Forms} v=${item} lang=${lang} /></div>`;
+  return html`<${VerbCard} v=${item} lang=${ttsLang(course)} />`;
 }
 
 function GroupScreen(props) {
