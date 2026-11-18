@@ -11,6 +11,7 @@ const fresh = () => ({
   onboarded: false,
   autoplay: true,      // «Озвучувати слова»
   aloud: true,         // «Відповідати вголос»: пауза перед ответом
+  reminder: { on: true, time: CONFIG.reminderDefault },   // 1.6 «Нагадування» (уведомлений пока нет)
   tips: {},            // подсказки, которые больше не показывать
   courses: {},         // по языкам: настройки и прогресс
   log: {},             // по дням: сколько повторено, новых, секунд
@@ -44,6 +45,9 @@ export function progress(id = state.course) {
   c.levels = c.levels || [];
   c.perDay = c.perDay || CONFIG.perDayDefault;
   c.newPerDay = c.newPerDay || CONFIG.newPerDayDefault;
+  c.newGoal = c.newGoal || CONFIG.newGoalDefault;        // цель на день: новых слов (1.4)
+  c.repeatGoal = c.repeatGoal || CONFIG.repeatGoalDefault; // цель на день: повторений (1.5)
+  c.practice = c.practice || null;                        // выбор на «Що тренуємо» (2.2); null — ещё не меняли
   c.mode = CONFIG.defaultMode; // один ритм для всех; уже выученные слова переходят на него при следующем повторении
   c.variant = c.variant || 'us';
   c.cards = c.cards || {};     // слово → карточка повторения

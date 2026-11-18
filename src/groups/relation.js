@@ -1,13 +1,11 @@
 // Тип группы «relation»: слово и связанные слова (синонимы, антонимы, ложные друзья, идиомы, фразовые глаголы…).
-// Экраны 11, 19–27. Одна строка таблицы = один экран. Колонки описаны в начале каждой таблицы.
-import { html, useState } from '../../lib/preact-htm.js';
-import { CONFIG } from '../config.js';
+// Экраны 3.1–3.10 (раньше 11, 19–27). Одна строка таблицы = один экран. Колонки описаны в начале каждой таблицы.
+import { html } from '../../lib/preact-htm.js';
 import { tri } from '../content/index.js';
 import { t, L, pn } from '../i18n/index.js';
 import { update, progress } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
-import { Screen, TopBar, Title, Button, SpeakButton, Overline, Example } from '../ui/kit.js';
-import { GroupDone } from './done.js';
+import { SpeakButton, Overline, Example } from '../ui/kit.js';
 
 function load(rows) {
   const ids = new Set();
@@ -40,56 +38,36 @@ function stats(course, g) {
   return { total, learned, due: 0, status, subtitle };
 }
 
-// Экран группы: по одному экрану, внизу «Далі». За заход — CONFIG.groupSessionSize экранов,
-// потом экран итога 19c (done.js): «Продовжити вчити» / «Повторити» / «Повернутися».
-function GroupScreen({ course, group, route, go, back, toast }) {
-  const seen = state(course, group).seen;
-  const N = CONFIG.groupSessionSize;
-  // Очередь на этот заход: сначала непросмотренные; если всё просмотрено или «Повторити» — вся группа
-  const [queue, setQueue] = useState(() => {
-    const unseen = group.items.filter((i) => !seen[i.id]);
-    return route.review || !unseen.length ? group.items : unseen;
-  });
-  const [start, setStart] = useState(0);
-  const [done, setDone] = useState(false);
-  const list = queue.slice(start, start + N);
-  const left = Math.max(0, queue.length - start - list.length);
-  const [pos, setPos] = useState(0);
-  const item = list[pos];
+// Очередь на заход: сначала непросмотренные; если всё просмотрено или «Повторити» — вся добірка
+function queue(course, g, review) {
+  const seen = state(course, g).seen;
+  const unseen = g.items.filter((i) => !seen[i.id]);
+  return review || !unseen.length ? g.items : unseen;
+}
+function markSeen(course, g, item) {
+  update(() => { const p = progress(course.id); p.groups[g.id] = p.groups[g.id] || { seen: {} }; p.groups[g.id].seen[item.id] = Date.now(); });
+}
+// Для кольца на 3.11: сколько экранов добірки уже пройдено
+function progressOf(course, g) { const seen = state(course, g).seen; return { seen: g.items.filter((i) => seen[i.id]).length, total: g.items.length }; }
+
+// Экран добірки (3.1–3.10): исходное слово, плашка-связка, связанные слова, «Порівняй» / «Приклади», пояснение.
+// Транскрипция — строкой под словом (у ідіом её нет).
+function Item({ course, group, item }) {
   const lang = ttsLang(course);
-  const title = L(group.title);
-
-  const next = () => {
-    update(() => { const p = progress(course.id); p.groups[group.id] = p.groups[group.id] || { seen: {} }; p.groups[group.id].seen[item.id] = Date.now(); });
-    if (pos + 1 < list.length) { setPos(pos + 1); scrollTo(0, 0); } else setDone(true);
-  };
-  const restart = (q, s) => { setQueue(q); setStart(s); setPos(0); setDone(false); scrollTo(0, 0);
-  };
-
-
-  if (done) {
-    const seenNow = state(course, group).seen;
-    return html`<${GroupDone} title=${title} seen=${group.items.filter((i) => seenNow[i.id]).length} total=${group.items.length}
-      words=${list.map((i) => i.w)} left=${left} onBack=${back}
-      onMore=${() => restart(queue, start + N)} onRepeat=${() => restart(queue, start)} />`;
-  }
-
   const hl = [item.w, ...item.targets.map((x) => x.w)];
   const chip = L(group.chip, { link: item.link });
-  return html`<${Screen} bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
-    <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
-    <${Title} main=${title} cls="title--group" />
-    <div class="rel">
+  return html`<div class="rel">
       <div class="rel__pair">
       <div class="card rel__base">
-        <div class="rel__text"><div class="rel__line"><span class="t-word-l">${item.w}</span>${item.ipa && html`<span class="t-label-15 muted">/${item.ipa}/</span>`}</div>
+        <div class="rel__text"><div class="t-word-l">${item.w}</div>
+          ${!group.meaning && item.ipa && html`<div class="t-label-15 muted">/${item.ipa}/</div>`}
           <div class="t-label-14 muted">${L(item.literal) || L(item.tr)}</div></div>
         ${item.w && html`<${SpeakButton} text=${item.w} lang=${lang} kind="outline" />`}
       </div>
       ${chip && html`<div class="rel__chip t-label-12-strong">${chip}</div>`}
       <div class="rel__targets">${item.targets.map((tg) => html`<div class="card rel__target">
           <div class="rel__row"><div class="rel__text">
-            <div class=${group.meaning ? 't-word-l' : 't-word-xl'}>${group.meaning ? L(tg.tr) : tg.w}</div>
+            <div class="t-word-l">${group.meaning ? L(tg.tr) : tg.w}</div>
             ${!group.meaning && tg.ipa && html`<div class="t-label-15 rel__sub">/${tg.ipa}/</div>`}
             <div class="t-label-14 rel__sub">${group.meaning ? L(item.hint) : L(tg.tr)}</div></div>
             ${!group.meaning && html`<${SpeakButton} text=${tg.w} lang=${lang} kind="outline" />`}</div>
@@ -98,10 +76,7 @@ function GroupScreen({ course, group, route, go, back, toast }) {
       ${item.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${L(group.examples)}</${Overline}>
         <div class="examples">${item.ex.map((ex) => html`<${Example} ex=${ex} hl=${hl} />`)}</div></div>`}
       ${item.note && html`<div class="card card--pad"><${Overline}>${L(group.note, { link: item.link })}</${Overline}><p class="t-body-15">${L(item.note)}</p></div>`}
-    </div>
-  </${Screen}>`;
+    </div>`;
 }
 
-
-
-export default { load, stats, Screen: GroupScreen };
+export default { load, stats, queue, markSeen, progressOf, Item };

@@ -142,7 +142,7 @@ function VerbCards({ course, group, route, back }) {
   if (done || !v) {
     const cs = cards(course);
     return html`<${GroupDone} title=${kindTitle} seen=${of.filter((x) => seen(cs[x.id])).length} total=${of.length}
-      words=${list.map((x) => x.v1)} left=${left} unit="verbs" onBack=${back} onMore=${() => restart(start + N)} onRepeat=${() => restart(start)} />`;
+      left=${left} next=${Math.min(N, left)} unit="verbs" onFinish=${back} onMore=${() => restart(start + N)} onRepeat=${() => restart(start)} />`;
   }
   const next = () => {
     update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; });
@@ -252,9 +252,26 @@ function Trainer({ course, group, back, toast }) {
   </${Screen}>`;
 }
 
+// Для занятия по добіркам (src/screens/collection.js): глаголы по одному с «Далі» — сначала непросмотренные,
+// от простых (все формы одинаковые) к сложным; если просмотрены все или «Повторити» — все заново.
+const KIND_ORDER = { same: 0, two: 1, diff: 2 };
+function queue(course, g, review) {
+  const cs = cards(course);
+  const sorted = [...g.items].sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind]);
+  const unseen = sorted.filter((v) => !seen(cs[v.id]));
+  return review || !unseen.length ? sorted : unseen;
+}
+function markSeen(course, g, v) { update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; }); }
+function progressOf(course, g) { const cs = cards(course); return { seen: g.items.filter((v) => seen(cs[v.id])).length, total: g.items.length }; }
+function Item({ course, item }) {
+  const lang = ttsLang(course);
+  return html`<div class="word-pair"><${Head} v=${item} lang=${lang} over=${t('verbs.' + item.kind)} />
+    <span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${Forms} v=${item} lang=${lang} /></div>`;
+}
+
 function GroupScreen(props) {
   if (props.route.name !== 'verbs') return html`<${Home} ...${props} />`;
   return props.route.train ? html`<${Trainer} ...${props} />` : html`<${VerbCards} ...${props} />`;
 }
 
-export default { load, stats, Screen: GroupScreen, routes: ['verbs'] };
+export default { load, stats, queue, markSeen, progressOf, Item, Screen: GroupScreen, routes: ['verbs'] };

@@ -290,7 +290,7 @@ export function Nav({ active, onNav, tabs }) {
 // Aura/Settings row
 export const SettingsRow = ({ icon, title, sub, value, trailing = 'chevron', on, onToggle, onClick, dim }) => html`<button
   class=${cx('srow', dim && 'srow--dim')} onClick=${trailing === 'toggle' ? () => onToggle(!on) : onClick} disabled=${dim}>
-  <span class="ib ib--glass srow__icon" style="--ib:40px"><${Icon} name=${icon} size=${20} /></span>
+  <span class="ib ib--grey srow__icon" style="--ib:40px"><${Icon} name=${icon} size=${20} /></span>
   <span class="srow__text"><span class="t-label-16-strong">${title}</span>${sub && html`<span class="t-label-12 muted">${sub}</span>`}</span>
   ${value != null && html`<span class="t-label-14 muted srow__value">${value}</span>`}
   ${trailing === 'chevron' && html`<span class="srow__chev"><${Icon} name="chevron-right" size=${18} /></span>`}

@@ -8,19 +8,23 @@ import { refreshFreezes } from './core/stats.js';
 import { tts } from './core/tts.js';
 import { setUiLang, t } from './i18n/index.js';
 import { Nav, Toast } from './ui/kit.js';
-import { Welcome, Levels } from './screens/onboarding.js';
+import { Welcome, Course, Levels, Goal, Reminder, Paywall } from './screens/onboarding.js';
 import { TestIntro, TestRun, TestResult } from './screens/level-test.js';
 import { Today } from './screens/today.js';
 import { Lesson } from './screens/lesson.js';
-import { Groups, GroupRoute } from './screens/groups.js';
+import { Groups } from './screens/groups.js';
+import { Practice } from './screens/practice.js';
+import { Collection } from './screens/collection.js';
 import { Words } from './screens/words.js';
 import { Settings } from './screens/settings.js';
 
 export const ROUTES = {
-  welcome: Welcome, levels: Levels,                                   // 01–02 (03 «Режим повторення» убран 16.11.2026)
+  welcome: Welcome, course: Course, levels: Levels,                   // 1.1–1.3 первый запуск (дизайн v2, 18.11.2026)
+  'goal-new': Goal, 'goal-repeat': Goal, reminder: Reminder, paywall: Paywall, // 1.4–1.7
   'test-intro': TestIntro, test: TestRun, 'test-result': TestResult,  // 02a–02d
-  today: Today, lesson: Lesson,                                       // 04, 05–08 (04a «Вивчені слова» убран 18.11.2026 — есть фильтр «Вивчено» на «Слова»)
-  groups: Groups, group: GroupRoute, verbs: GroupRoute,               // 09, 11–12f, 19–27
+  today: Today, practice: Practice, lesson: Lesson,                   // 2.1 «Практика», 2.2 «Що тренуємо», 2.3–2.5 занятие
+  collection: Collection, group: Collection, verbs: Collection,       // 3.1–3.11 добірки (старые адреса group / verbs ведут туда же)
+  groups: Groups,                                                     // прежний список групп (из меню не открывается)
   words: Words,                                                       // 18
   settings: Settings,                                                 // 10
 };

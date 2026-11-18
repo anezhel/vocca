@@ -1,19 +1,14 @@
-// План на сегодня и ход занятия: сначала повторение, потом новые слова.
+// Занятие «Вчити слова» и цель на день. С 18.11.2026 без интервального повторения:
+// человек сам выбирает на 2.2 «Що тренуємо», какие слова тренировать (уровни, «Нові / Важкі / Майже вивчені», количество),
+// а кнопками на карточке ставит слову статус (src/core/srs.js).
 import { CONFIG } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { getState, update, progress, dayLog } from './store.js';
-import { dayKey, endOfDay, startOfDay } from './dates.js';
-import { schedule, markKnown, asRating, status, isLearned } from './srs.js';
+import { dayKey } from './dates.js';
+import { bucket, mark } from './srs.js';
 import { wordById } from './words.js';
 
 export const minutesFor = (nNew, nReview) => Math.max(1, Math.round((nNew * CONFIG.secondsPerNew + nReview * CONFIG.secondsPerReview) / 60));
-
-// Новые слова: сначала добавленные из групп, потом вперемешку с выбранных уровней.
-// Больше всего — с «моего уровня», меньше — с соседних, ещё меньше — с уровня через один:
-// вес по расстоянию от моего уровня 4 · 2 · 1 · 0,5. Например, мой A2 и выбраны A1–B1 → A2 50 %, A1 25 %, B1 25 %;
-// выбраны A1–B2 → A2 44 %, A1 и B1 по 22 %, B2 11 %. Внутри уровня — по порядку словаря (от частых).
-// Случайность «на день»: в течение дня подбор тот же, на следующий день — другой.
-const DIST_WEIGHT = [4, 2, 1, 0.5];
 
 // «Мій рівень»: уровень по тесту, если он среди выбранных, иначе самый высокий из выбранных
 export function myLevel(p) {
@@ -22,19 +17,36 @@ export function myLevel(p) {
   return p.testLevel && levels.includes(p.testLevel) ? p.testLevel : levels[levels.length - 1];
 }
 
+// ── 2.2 «Що тренуємо»: выбор человека запоминается; по умолчанию — «твій рівень», «Нові» + «Важкі», 20 слів ──
+export function practicePrefs(course) {
+  const p = progress(course.id);
+  const base = { ...CONFIG.practiceDefault, levels: [myLevel(p) || p.levels[0] || LEVELS[0]] };
+  const saved = p.practice || {};
+  return {
+    levels: (saved.levels || base.levels).filter((l) => LEVELS.includes(l)),
+    kinds: saved.kinds || base.kinds,
+    groups: (saved.groups || base.groups).filter((id) => course.groupList.some((g) => g.id === id)),
+    size: CONFIG.practiceSizes.includes(saved.size) ? saved.size : base.size,
+  };
+}
+export const savePractice = (course, prefs) => update(() => { progress(course.id).practice = { ...prefs }; });
+
+// Новые слова выбранных уровней: сначала добавленные из групп, потом вперемешку по уровням.
+// Больше всего — с «моего уровня», меньше — с соседних (вес по расстоянию 4 · 2 · 1 · 0,5). Внутри уровня — от частых слов.
+// Случайность «на день»: в течение дня подбор тот же.
+const DIST_WEIGHT = [4, 2, 1, 0.5];
 function seeded(key) {   // mulberry32 от строки
   let h = 1779033703;
   for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 3432918353), h = (h << 13) | (h >>> 19);
   return () => { h |= 0; h = (h + 0x6d2b79f5) | 0; let t = Math.imul(h ^ (h >>> 15), 1 | h); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
-
-function pickFresh(course, p, quota) {
+function pickFresh(course, p, quota, chosen) {
   const out = [];
   for (const id of p.queue) { if (out.length >= quota) return out; if (!p.cards[id] && wordById(course, id)) out.push(id); }
-  const levels = LEVELS.filter((l) => p.levels.includes(l));
+  const levels = LEVELS.filter((l) => chosen.includes(l));
   if (!levels.length) return out;
   const pools = levels.map((l) => course.words.filter((w) => w.lvl === l && !p.cards[w.id] && !out.includes(w.id)).map((w) => w.id));
-  const me = LEVELS.indexOf(myLevel(p));
+  const me = LEVELS.indexOf(myLevel(p) || levels[0]);
   const weights = levels.map((l) => DIST_WEIGHT[Math.min(3, Math.abs(LEVELS.indexOf(l) - me))]);
   const rnd = seeded(course.id + dayKey());
   const next = levels.map(() => 0);
@@ -49,152 +61,75 @@ function pickFresh(course, p, quota) {
   return out;
 }
 
-export function planToday(course, now = Date.now()) {
+// Слова со статусом b (hard / almost) выбранных уровней: сначала те, что дольше всего не тренировали
+function known(course, p, b, levels) {
+  const lv = new Set(levels);
+  return Object.entries(p.cards)
+    .filter(([id, c]) => { if (bucket(c) !== b) return false; const w = wordById(course, id); return w && (w.custom || lv.has(w.lvl)); })
+    .sort((a, z) => (a[1].at || a[1].last || 0) - (z[1].at || z[1].last || 0))
+    .map(([id]) => id);
+}
+
+// Сколько слов найдётся под выбор — для подписи и пустого состояния
+export function countFor(course, prefs) {
   const p = progress(course.id);
-  const log = getState().log[dayKey(now)] || { reviews: 0, fresh: 0 };
-  const until = p.mode === 'fixed' ? now : endOfDay(now);
-  const due = [];
-  const later = [];
-  for (const [id, c] of Object.entries(p.cards)) {
-    if (!wordById(course, id)) continue;
-    if (c.known && !CONFIG.recheckKnown) continue;
-    if (c.due <= until) due.push([id, c]);
-    else if (c.due <= endOfDay(now)) later.push(c.due);
-  }
-  due.sort((a, b) => a[1].due - b[1].due);
-  const doneToday = log.reviews + log.fresh;
-  const cap = Math.max(0, p.perDay - doneToday);
-  const reviews = due.slice(0, p.mode === 'fixed' ? due.length : cap).map((r) => r[0]);
-  const quota = Math.max(0, Math.min(p.newPerDay - log.fresh, cap - reviews.length));
-  const fresh = pickFresh(course, p, quota);
-  later.sort((a, b) => a - b);
-  return {
-    reviews, fresh, total: reviews.length + fresh.length, doneToday, freshToday: log.fresh,
-    minutes: minutesFor(fresh.length, reviews.length),
-    later: later.length, nextAt: later[0] || null,
-    noLevels: !p.levels.length && !p.queue.length,
-  };
+  return { new: pickFresh(course, p, 1, prefs.levels).length, hard: known(course, p, 'hard', prefs.levels).length, almost: known(course, p, 'almost', prefs.levels).length };
 }
 
-// Очередь занятия: сначала все слова на повторение, потом новые (между ними — экран «Повторення готово»).
-// practice = «Повторити слова, які вчу»: слова со статусом «Вчу», без изменения расписания.
-export function startLesson(course, plan, practice = false) {
-  let queue;
-  if (practice) {
-    const ids = learningIds(course);
-    queue = ids.sort(() => Math.random() - 0.5).slice(0, CONFIG.repeatSize).map((id) => ({ kind: 'recall', id }));
-  } else {
-    queue = [...plan.reviews.map((id) => ({ kind: 'recall', id })), ...plan.fresh.map((id) => ({ kind: 'new', id }))];
-  }
-  return { queue, total: queue.length, done: 0, practice, reviewTotal: practice ? 0 : plan.reviews.length,
-    startedAt: Date.now(), stats: { reviews: 0, fresh: 0 }, freshIds: [] };
-}
-
-// Повторение ещё идёт и после него есть новые слова — тогда видна кнопка «Перейти до нових слів»
-export const canSkipReviews = (lesson, item) => !lesson.practice && item.kind === 'recall' && !item.fresh && lesson.queue.some((x) => x.kind === 'new');
-
-// «Перейти до нових слів»: оставшиеся повторения убираем из занятия. Расписание не меняется —
-// эти слова остаются в «повторити» на главной и придут в следующем занятии.
-export function skipReviews(lesson) {
-  const rest = lesson.queue.filter((x) => x.kind === 'recall' && !x.fresh);
-  lesson.queue = lesson.queue.filter((x) => !rest.includes(x));
-  lesson.total -= rest.length;
-  lesson.skipped = rest.length;
-}
-
-// Экран «Повторення готово» перед первым новым словом — если в занятии было повторение и его не пропустили
-export const reviewBreak = (lesson, item) => item.kind === 'new' && lesson.reviewTotal > 0 && !lesson.skipped && !lesson.breakSeen && lesson.stats.reviews > 0;
-
-// Слова со статусом «Вчу» — для «Повторити слова, які вчу»
-export function learningIds(course) {
-  return Object.entries(progress(course.id).cards).filter(([id, c]) => wordById(course, id) && status(c) === 'learning').map(([id]) => id);
-}
-
-// «Ще 5 нових слів» после плана: новые слова сверх дневного лимита
-export function extraPlan(course) {
+// Очередь занятия: выбранные группы слов поровну (по одному по кругу), потом по порядку — «Важкі», «Майже вивчені», «Нові»
+export function buildQueue(course, prefs) {
   const p = progress(course.id);
-  const fresh = pickFresh(course, p, p.newPerDay);
-  return { reviews: [], fresh, total: fresh.length };
-}
-export const freshLeft = (course) => pickFresh(course, progress(course.id), 1).length > 0;
-
-// Новое слово: «Вчити» → вспомним его через пару карточек (в карточках — по расписанию); «Я знаю це» → сразу выучено.
-// Знакомое слово дневной план не тратит: вместо него сразу приходит следующее новое.
-export function learnNew(course, lesson, id, known) {
-  if (known) {
-    // план это слово не тратит (на его место приходит другое новое), но в «Пройдено слів сьогодні» оно входит
-    update(() => { progress(course.id).cards[id] = markKnown(); dropFromQueue(course, id); countLearned(); const d = dayLog(dayKey()); d.knownNew = (d.knownNew || 0) + 1; });
-    const inLesson = new Set(lesson.queue.map((x) => x.id));
-    const next = pickFresh(course, progress(course.id), 50).find((x) => !inLesson.has(x));
-    if (next) lesson.queue.splice(1, 0, { kind: 'new', id: next });
-    else lesson.done++;
-  } else {
-    lesson.queue.splice(Math.min(CONFIG.repeatGap - 1, lesson.queue.length), 0, { kind: 'recall', id, fresh: true });
-    lesson.freshIds.push(id);
+  const N = prefs.size === 'all' ? CONFIG.practiceAllCap : prefs.size;
+  const order = ['hard', 'almost', 'new'].filter((k) => prefs.kinds.includes(k));
+  const pools = Object.fromEntries(order.map((k) => [k, k === 'new' ? pickFresh(course, p, N, prefs.levels) : known(course, p, k, prefs.levels)]));
+  const take = Object.fromEntries(order.map((k) => [k, 0]));
+  let total = 0;
+  while (total < N && order.some((k) => take[k] < pools[k].length)) {
+    for (const k of order) if (total < N && take[k] < pools[k].length) { take[k]++; total++; }
   }
+  return order.flatMap((k) => pools[k].slice(0, take[k]).map((id) => ({ kind: k === 'new' ? 'new' : 'review', id })));
 }
 
-// «Додано у вивчені» на главной: +1 к сегодняшнему дню (вызывать внутри update)
+export function startLesson(course, prefs) {
+  const queue = buildQueue(course, prefs);
+  return { queue, total: queue.length, done: 0, prefs, startedAt: Date.now(), stats: { reviews: 0, fresh: 0, learned: 0 } };
+}
+
+// «Додано у вивчені» за день (вызывать внутри update)
 export function countLearned(delta = 1) { const d = dayLog(dayKey()); d.learned = Math.max(0, (d.learned || 0) + delta); }
-
 function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.queue.filter((x) => x !== id); }
 
-// Оценка после ответа. «Забуто» в умном режиме — слово вернётся в этом же занятии
-// (с кнопками 'simple' — один раз, чтобы занятие не шло по кругу).
-// «Знаю це слово» — слово сразу выучено.
-export function rate(course, lesson, item, rating) {
-  const p = progress(course.id);
-  if (rating === 'known') {
-    update(() => {
-      p.cards[item.id] = markKnown(); dropFromQueue(course, item.id); countLearned();
-      const d = dayLog(dayKey()); if (lesson.practice) d.practice = (d.practice || 0) + 1; else if (item.fresh) d.fresh++; else d.reviews++;
-    });
-    lesson.done++;
-    if (item.fresh) lesson.stats.fresh++; else lesson.stats.reviews++;
-    return;
-  }
-  const simple = CONFIG.answerButtons === 'simple';
-  rating = asRating(rating);
-  const again = rating === 'again' && p.mode === 'smart' && !(simple && item.retry);
-  if (!lesson.practice) {
-    update(() => {
-      const was = isLearned(p.cards[item.id]);
-      p.cards[item.id] = schedule(p.cards[item.id], rating, p.mode);
-      if (!was && isLearned(p.cards[item.id])) { p.cards[item.id].learnedAt = Date.now(); countLearned(); }
-      dropFromQueue(course, item.id);
-      if (!again) { const d = dayLog(dayKey()); if (item.fresh) d.fresh++; else d.reviews++; }
-    });
-  }
-  if (again) {
-    lesson.queue.splice(Math.min(CONFIG.repeatGap, lesson.queue.length), 0, { ...item, retry: true });
-  } else {
-    lesson.done++;
-    if (item.fresh) lesson.stats.fresh++; else lesson.stats.reviews++;
-  }
-}
-
-// «Вчити» на карточке (lessonStyle: 'cards'): слово остаётся в «Вчу» и вернётся по расписанию режима.
-// В «Повторити слова, які вчу» расписание не меняется.
-export function keepLearning(course, lesson, item) {
-  const p = progress(course.id);
-  const isNew = item.kind === 'new' || item.fresh;
-  if (lesson.practice) update(() => { const d = dayLog(dayKey()); d.practice = (d.practice || 0) + 1; });
-  if (!lesson.practice) {
-    update(() => {
-      const was = isLearned(p.cards[item.id]);
-      p.cards[item.id] = schedule(p.cards[item.id], 'learn', p.mode);
-      if (!was && isLearned(p.cards[item.id])) { p.cards[item.id].learnedAt = Date.now(); countLearned(); }
-      dropFromQueue(course, item.id);
-      const d = dayLog(dayKey()); if (isNew) d.fresh++; else d.reviews++;
-    });
-  }
-  if (item.kind === 'new') lesson.freshIds.push(item.id);
+// Кнопка на карточке: новое слово — «Я знаю це» (learned) / «Вчити» (hard);
+// повторение — «Важко» (hard) / «Легко» (almost) / «Вивчено» (learned)
+export function answer(course, lesson, item, st) {
+  update(() => {
+    const p = progress(course.id);
+    const was = bucket(p.cards[item.id]);
+    p.cards[item.id] = mark(p.cards[item.id], st);
+    if (st === 'learned' && was !== 'learned') countLearned();
+    dropFromQueue(course, item.id);
+    const d = dayLog(dayKey()); if (item.kind === 'new') d.fresh++; else d.reviews++;
+  });
   lesson.done++;
-  if (isNew) lesson.stats.fresh++; else lesson.stats.reviews++;
+  if (item.kind === 'new') lesson.stats.fresh++; else lesson.stats.reviews++;
+  if (st === 'learned') lesson.stats.learned++;
 }
 
 export function finishLesson(lesson) {
   const sec = Math.round((Date.now() - lesson.startedAt) / 1000);
   lesson.sec = sec;
-  update(() => { const d = dayLog(dayKey()); d.sec = (d.sec || 0) + sec; if (!lesson.practice) d.lessons = (d.lessons || 0) + 1; });
+  update(() => { const d = dayLog(dayKey()); d.sec = (d.sec || 0) + sec; d.lessons = (d.lessons || 0) + 1; });
+}
+
+// ── Цель на день (1.4, 1.5): новых слов и повторений. Пока цель не выполнена — «Час повторити слова» и «Вчити слова»,
+// после — «План виконано!» и «Вчити ще». Если повторять пока почти нечего, цель по повторениям — сколько есть.
+export function dayGoal(course, now = Date.now()) {
+  const p = progress(course.id);
+  const d = getState().log[dayKey(now)] || {};
+  const fresh = (d.fresh || 0) + (d.knownNew || 0);
+  const reviews = (d.reviews || 0) + (d.practice || 0);
+  let toRepeat = 0;
+  for (const [id, c] of Object.entries(p.cards)) { const b = bucket(c); if ((b === 'hard' || b === 'almost') && wordById(course, id)) toRepeat++; }
+  const repeatNeed = Math.min(p.repeatGoal, reviews + toRepeat);
+  return { fresh, reviews, newGoal: p.newGoal, repeatGoal: p.repeatGoal, done: fresh >= p.newGoal && reviews >= repeatNeed };
 }

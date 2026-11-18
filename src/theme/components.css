@@ -124,7 +124,7 @@ button.card { width: 100%; text-align: left; }
 .pick { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-14) var(--space-16); border-radius: var(--radius-20); background: var(--bg-surface); width: 100%; }
 .pick__num { width: 44px; color: var(--text-primary); }
 .pick__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.radio { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border-radio); display: grid; place-items: center; flex: none; }
+.radio { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-radio); background: var(--bg-surface); display: grid; place-items: center; flex: none; }
 .radio--box { border-radius: var(--radius-8); }
 .radio--on { background: var(--bg-inverse); border-color: var(--bg-inverse); color: var(--text-on-inverse); }
 .check-row { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-6) 0; }
@@ -339,7 +339,7 @@ button.card { width: 100%; text-align: left; }
 .course-card--on { background: linear-gradient(160deg, var(--effect-glow-strong-2), var(--tint-peach) 110%); }
 .terms { text-align: center; }
 .level-cards { display: flex; flex-direction: column; gap: var(--space-10); }
-.level-card { display: flex; align-items: center; gap: var(--space-16); padding: 18px var(--space-20); border-radius: var(--radius-24); background: rgba(255, 255, 255, .6); box-shadow: none; }
+.level-card { display: flex; align-items: center; gap: var(--space-16); padding: 14px var(--space-16) 14px var(--space-20); border-radius: var(--radius-24); } /* v2: все карточки белые, выбор — чекбокс */
 .level-card .t-number-m { width: 58px; }
 .level-card__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .level-card--on { background: var(--bg-surface); box-shadow: 0 var(--effect-card-shadow-y) var(--effect-card-shadow-radius) var(--effect-shadow-card); }
@@ -507,3 +507,84 @@ button.card { width: 100%; text-align: left; }
 .level-bars__track { flex: 1; height: 22px; border-radius: var(--radius-full); background: var(--bg-canvas); overflow: hidden; }
 .level-bars__track i { display: block; height: 100%; border-radius: var(--radius-full); }
 .level-bars__pct { width: 38px; flex: none; text-align: right; }
+
+/* ── Дизайн v2 (18.11.2026) ── */
+.pre-line { white-space: pre-line; }
+/* Aura/Checkbox — несколько вариантов (уровни): квадрат 32 со скруглением 8 */
+.checkbox { width: 32px; height: 32px; border-radius: var(--radius-8, 8px); border: 1px solid var(--border-radio); background: var(--bg-surface); display: grid; place-items: center; flex: none; }
+.checkbox--on { background: var(--bg-inverse); border-color: var(--bg-inverse); color: var(--text-on-inverse); }
+
+/* Первый запуск: строки выбора (1.1 язык, 1.4–1.5 цель, 1.6 время) */
+.opt-list { display: flex; flex-direction: column; gap: var(--space-10); }
+.opt-list.is-dim { opacity: .45; }
+.opt-row { width: 100%; min-height: 72px; display: flex; align-items: center; gap: var(--space-14); padding: var(--space-12) var(--space-16) var(--space-12) var(--space-20); border-radius: var(--radius-24); text-align: left; }
+.opt-row:disabled { cursor: default; }
+.opt-row__big { width: 96px; flex: none; display: flex; flex-direction: column; }
+.opt-row__big .t-number-m { line-height: 1; }
+.opt-row__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.opt-toggle { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-16) var(--space-16) var(--space-16) var(--space-20); border-radius: var(--radius-24); margin-bottom: var(--space-10); }
+.ob-hint { margin-top: var(--space-4); }
+/* 1.6: превью уведомления */
+.notif { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-14) var(--space-16); border-radius: var(--radius-24); margin-top: var(--space-14); }
+.notif__icon { width: 48px; height: 48px; flex: none; border-radius: 12px; background: var(--bg-inverse); color: var(--text-on-inverse); display: grid; place-items: center; font-weight: 800; font-size: 26px; }
+.notif__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.notif__top { display: flex; justify-content: space-between; }
+/* 1.6a: колесо часов и минут */
+.wheel { position: relative; height: 200px; display: flex; justify-content: center; align-items: center; gap: var(--space-8); margin: var(--space-8) 0 var(--space-16); }
+.wheel__band { position: absolute; left: 0; right: 0; top: 80px; height: 40px; border-radius: 12px; background: var(--bg-surface-3); }
+.wheel__col { position: relative; height: 200px; width: 80px; overflow-y: auto; scroll-snap-type: y mandatory; padding: 80px 0; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 35%, #000 65%, transparent); mask-image: linear-gradient(transparent, #000 35%, #000 65%, transparent); }
+.wheel__col::-webkit-scrollbar { display: none; }
+.wheel__item { height: 40px; line-height: 40px; text-align: center; scroll-snap-align: center; font-size: 17px; color: var(--text-secondary); cursor: pointer; }
+.wheel__item.is-on { font-size: 22px; font-weight: 500; color: var(--text-primary); }
+.wheel__colon { position: relative; }
+/* 1.7: подписка */
+.benefits { list-style: none; padding: 0; margin: 0 0 var(--space-8); display: flex; flex-direction: column; gap: var(--space-10); }
+.benefits li { display: flex; align-items: center; gap: var(--space-10); }
+.benefits__check { width: 24px; height: 24px; flex: none; border-radius: 50%; background: var(--bg-inverse); color: var(--text-on-inverse); display: grid; place-items: center; }
+.plans { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-10); }
+.plan { position: relative; min-height: 180px; padding: var(--space-16); border-radius: var(--radius-28); display: flex; flex-direction: column; justify-content: flex-end; text-align: left; background: var(--bg-surface); }
+.plan .radio { position: absolute; top: var(--space-14); right: var(--space-14); }
+.plan .t-number-l { margin-bottom: var(--space-8); }
+.plan--year { background: linear-gradient(160deg, var(--effect-glow-strong-2), var(--tint-peach) 110%); }
+.plan__tag { position: absolute; top: var(--space-14); left: var(--space-14); padding: 4px 10px; border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
+.paywall__free { height: auto; padding: var(--space-8) 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+
+/* 2.2 «Що тренуємо»: Aura/Chip */
+.practice-sec { display: flex; flex-direction: column; gap: var(--space-12); margin-bottom: var(--space-8); transition: opacity .2s; }
+.practice-sec.is-dim { opacity: .4; }
+.practice-sec__head { display: flex; align-items: baseline; gap: var(--space-8); }
+.choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.choice-row6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-8); }
+.choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 var(--space-16); border-radius: var(--radius-full);
+  background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }
+.choice-chip.is-on { background: var(--bg-chip-selected); border-color: var(--bg-chip-selected); color: var(--text-on-chip-selected); padding-left: var(--space-12); }
+.choice-row6 .choice-chip { padding: 0; }
+
+/* 2.4: «Важко · Легко · Вивчено» */
+.rate3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
+.rate3__btn { height: 64px; border-radius: var(--radius-24); color: var(--text-primary); text-align: center; transition: transform .12s; }
+/* 2.5: полное лаймовое кольцо */
+.ring--lime .ring__bar { stroke: var(--bg-accent); }
+.rate3__btn:active { transform: scale(.97); }
+.rate3__btn--hard { background: var(--tint-coral); }
+.rate3__btn--almost { background: var(--tint-mint); }
+.rate3__btn--learned { background: var(--bg-cta); color: var(--text-on-cta); }
+
+/* 2.1: «Добірки слів» раскрываются на месте */
+.choice-row .ib--outline svg { display: block; }
+.colls { display: flex; flex-direction: column; gap: var(--space-12); padding: var(--space-16); border-radius: var(--radius-24); background: var(--tint-lavender); }
+.coll-block { padding: 0; border-radius: var(--radius-24); overflow: hidden; }
+.coll-block__head { width: 100%; min-height: 64px; display: flex; align-items: center; gap: var(--space-8); padding: var(--space-12) var(--space-12) var(--space-12) var(--space-20); text-align: left; }
+.count-pill { padding: 2px 8px; border-radius: var(--radius-full); background: var(--bg-surface-3); color: var(--text-secondary); }
+.coll-row { padding: var(--space-16) var(--space-20); border-top: 1px solid var(--border-muted); }
+.coll-row__head { display: flex; align-items: center; gap: var(--space-12); }
+.coll-row__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.coll-row .meter { height: 4px; border-radius: 2px; }
+.pill-btn { height: 36px; flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 0 var(--space-16); border-radius: var(--radius-full); color: var(--text-primary); }
+.pill-btn--learning { background: var(--bg-accent); }
+.pill-btn--fresh { background: var(--tint-lavender); }
+.pill-btn--done { background: var(--tint-mint); }
+
+/* 4.2: «Скинути прогрес» — розовая карточка с белым кружком */
+.danger-btn { display: flex; align-items: center; gap: var(--space-12); text-align: left; padding: var(--space-12) var(--space-16); }
