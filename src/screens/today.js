@@ -1,6 +1,6 @@
 // Экран 08 «Сьогодні» (новый дизайн, 18.11.2026): сколько слов пройдено сегодня (повторено и выучено) и минут,
 // три плитки (вивчено · дні поспіль · % курсу),
-// «Вчити слова», карточка «Групи слів» (→ экран групп), карточка «Вивчено» по уровням (→ «Вивчені слова»).
+// «Вчити слова», карточка «Групи слів» (→ экран групп), карточка «Вивчено» по уровням (без перехода: экран «Вивчені слова» убран 18.11.2026).
 import { html } from '../../lib/preact-htm.js';
 import { feature } from '../config.js';
 import { LEVELS } from '../content/index.js';
@@ -53,7 +53,7 @@ export function Today({ course, go }) {
       <span class="ib ib--white" style="--ib:48px"><${Icon} name="grid" size=${22} /></span>
       <span class="choice-row__text"><span class="t-title-l">${t('groups.title')}</span><span class="t-label-13">${t('today.groupsSub')}</span></span>
       <span class="ib ib--outline" style="--ib:40px"><${Icon} name="arrow-right" size=${20} /></span></button>`}
-    <button class="card learned-levels" onClick=${() => go('learned')}>
+    <div class="card learned-levels">
       <div class="learned-levels__top"><span class="t-label-16-strong">${t('today.learnedShort')}</span>
         <span class="t-label-15 muted">${num(learned.total)} ${plural(learned.total, 'words')}</span></div>
       <div class="level-bars">${LEVELS.map((l) => {
@@ -62,7 +62,7 @@ export function Today({ course, go }) {
           <span class="level-bars__track">${v > 0 && html`<i data-level=${l} style=${`width:${Math.max(v, 8)}%`}></i>`}</span>
           <span class="t-label-13-strong level-bars__pct">${pctText(v)}</span></div>`;
       })}</div>
-    </button>
+    </div>
   </${Screen}>`;
 }
 
