@@ -10,6 +10,15 @@ import { GroupDone } from '../groups/done.js';
 
 const T = (g) => GROUP_TYPES[g.type];
 
+// Адреса group / verbs: у добірки «3 форми дієслів» свои экраны — групи з «Тренажер» (3.12), картки дієслова (3.13)
+// и тренажёр (3.14), их показывает src/groups/irregular.js. Остальные добірки — обычное занятие ниже.
+export function GroupRoute(props) {
+  const id = props.route.group || (props.route.groups || [])[0];
+  const g = props.course.groupList.find((x) => x.id === id);
+  const Own = g && T(g).Screen;
+  return Own ? html`<${Own} ...${props} group=${g} />` : html`<${Collection} ...${props} />`;
+}
+
 export function Collection({ course, route, go, back }) {
   const ids = route.groups || (route.group ? [route.group] : []);
   const groups = ids.map((id) => course.groupList.find((g) => g.id === id)).filter(Boolean);

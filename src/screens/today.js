@@ -72,6 +72,9 @@ function Collections({ course, go }) {
   const list = course.groupList.map((g) => ({ g, s: GROUP_TYPES[g.type].stats(course, g) }));
   const of = (k) => list.filter(({ s }) => (k === 'learning' ? s.status === 'learning' || s.status === 'due' : s.status === k));
   const size = practicePrefs(course).size;
+  // «3 форми дієслів» открывает свой экран с группами и «Тренажер», остальные добірки — сразу занятие
+  const open3 = (g, k) => (GROUP_TYPES[g.type].Screen ? go('group', { group: g.id })
+    : go('collection', { groups: [g.id], size, review: k === 'done' }));
   const chev = (on) => html`<${Icon} name=${on ? 'chevron-up' : 'chevron-down'} size=${20} />`;
   return html`<button class=${cx('choice-row', open && 'is-open')} aria-expanded=${open} onClick=${() => setOpen(!open)}>
       <span class="ib ib--white" style="--ib:48px"><${Icon} name="grid" size=${22} /></span>
@@ -87,7 +90,7 @@ function Collections({ course, go }) {
           <span class="ib ib--grey" style="--ib:40px">${chev(on)}</span></button>
         ${on && items.map(({ g, s }) => html`<div key=${g.id} class="coll-row">
           <div class="coll-row__head"><div class="coll-row__text"><span class="t-title-m">${L(g.title)}</span><span class="t-label-13 muted">${s.subtitle}</span></div>
-            <button class=${'pill-btn pill-btn--' + k + ' t-label-15-medium'} onClick=${() => go('collection', { groups: [g.id], size, review: k === 'done' })}>
+            <button class=${'pill-btn pill-btn--' + k + ' t-label-15-medium'} onClick=${() => open3(g, k)}>
               ${k === 'done' && html`<${Icon} name="refresh" size=${16} />`}${t('groups.' + btn)}</button></div>
           ${k === 'learning' && html`<div class="meter"><i style=${`width:${Math.round((s.learned / s.total) * 100)}%`}></i></div>`}
         </div>`)}

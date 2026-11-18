@@ -132,8 +132,8 @@
 .t-number-xs { font-weight: 100; font-size: 26px; line-height: 30px; letter-spacing: -0.02em; }
 .t-stat-l { font-weight: 300; font-size: 44px; line-height: 50px; letter-spacing: -0.04em; }
 .t-stat-m { font-weight: 300; font-size: 28px; line-height: 34px; letter-spacing: -0.02em; }
-.t-heading-h1 { font-weight: 400; font-size: 34px; line-height: 38px; letter-spacing: -0.02em; }
-.t-heading-h1-accent { font-weight: 300; font-size: 34px; line-height: 38px; letter-spacing: -0.02em; font-style: italic; }
+.t-heading-h1 { font-weight: 400; font-size: 34px; line-height: 34px; letter-spacing: -0.02em; }
+.t-heading-h1-accent { font-weight: 300; font-size: 34px; line-height: 34px; letter-spacing: -0.02em; font-style: italic; }
 .t-heading-h2 { font-weight: 400; font-size: 24px; line-height: 30px; letter-spacing: -0.02em; }
 .t-heading-h3 { font-weight: 400; font-size: 20px; line-height: 24px; letter-spacing: -0.01em; }
 .t-word-xl { font-weight: 500; font-size: 46px; line-height: 52px; letter-spacing: -0.04em; }
