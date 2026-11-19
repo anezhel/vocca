@@ -70,6 +70,20 @@ function known(course, p, b, levels) {
     .map(([id]) => id);
 }
 
+// 2.2: сколько слов каждого уровня есть под выбранные типы (новые — ещё без карточки; важкі / майже вивчені — по статусу).
+// Уровень без слов на 2.2 неактивен. Свои слова (без уровня) не считаем — они попадают в занятие при любом уровне.
+export function levelCounts(course, kinds) {
+  const p = progress(course.id);
+  const out = Object.fromEntries(LEVELS.map((l) => [l, 0]));
+  if (kinds.includes('new')) for (const w of course.words) if (!p.cards[w.id] && w.lvl in out) out[w.lvl]++;
+  for (const [id, c] of Object.entries(p.cards)) {
+    if (!kinds.includes(bucket(c))) continue;
+    const w = wordById(course, id);
+    if (w && !w.custom && w.lvl in out) out[w.lvl]++;
+  }
+  return out;
+}
+
 // Сколько слов найдётся под выбор — для подписи и пустого состояния
 export function countFor(course, prefs) {
   const p = progress(course.id);
