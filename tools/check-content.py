@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Проверка таблиц слов и групп после правок.  Запуск:  python3 tools/check-content.py
 Находит: пустые обязательные колонки, неверный уровень, повторы слов, незакрытые [скобки] в примерах, сдвинутые колонки,
-экраны добірок, где примеров меньше, чем слов (у каждого слова на экране — свой пример, по порядку слов)."""
+экраны добірок, где примеров меньше, чем слов (у каждого слова на экране — свой пример, по порядку слов),
+пояснения («У чому різниця» и др.), где названы не все слова экрана, и экраны без пояснения там, где оно нужно."""
+import re
 import os, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -10,6 +12,8 @@ LEVELS = {'A1', 'A2', 'B1', 'B2', 'C1', 'C2'}
 # Добірки, где примеры нужны только к связанным словам (give up, make a decision), а не к самому слову (give, decision)
 TARGETS_ONLY = {'phrasal.tsv', 'collocations.tsv'}
 MAX_EX = 4  # src/groups/relation.js читает ex1–ex4
+# Пояснение обязательно: у синонимов — всегда, у остальных добірок — когда на экране 2–3 связанных слова
+NOTE_ALWAYS = {'synonyms.tsv'}
 problems = 0
 
 
@@ -85,6 +89,16 @@ for lang in sorted(os.listdir(CONTENT)):
                     warn(path, n, f'«{r.get("word")}»: слов на экране {need}, а примеров бывает не больше {MAX_EX}')
                 elif have < need:
                     warn(path, n, f'«{r.get("word")}»: примеров {have}, а слов на экране {need} — у каждого слова нужен свой пример')
+                # пояснение: называет все слова экрана (на украинском и на русском)
+                words = targets + ([] if f in TARGETS_ONLY else [r['word']])
+                if targets and not (r.get('note_uk') or r.get('note_ru')):
+                    if f in NOTE_ALWAYS or len(targets) >= 2:
+                        warn(path, n, f'«{r.get("word")}»: нет пояснення (note_uk / note_ru)')
+                elif targets:
+                    for col in ('note_uk', 'note_ru'):
+                        miss = [w for w in words if not re.search(r'(?<![A-Za-z])' + re.escape(w) + r'(?![A-Za-z])', r.get(col, ''), re.I)]
+                        if miss:
+                            warn(path, n, f'«{r.get("word")}»: у {col} не названо {", ".join(miss)}')
         print(f'  groups/{f}: {len(rows)} строк')
 
 print('Всё в порядке' if not problems else f'Найдено замечаний: {problems}')
