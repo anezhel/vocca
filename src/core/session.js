@@ -40,7 +40,8 @@ export const savePractice = (course, prefs) => update(() => { progress(course.id
 // Новые слова выбранных уровней: сначала добавленные из групп, потом вразнобой с выбранных уровней — поровну
 // (решение дизайнера, 19.11.2026; раньше больше со «своего» уровня). Каждый круг — по слову с каждого уровня
 // в случайном порядке, поэтому подряд с одного уровня не больше двух. Кончились слова уровня — добирают другие.
-// Внутри уровня — от частых слов. Случайность «на день»: в течение дня подбор тот же.
+// Внутри уровня — от частых слов; пропущенные кнопкой «Пропустити» — в конце уровня (раньше пропущенные — раньше).
+// Случайность «на день»: в течение дня подбор тот же.
 function seeded(key) {   // mulberry32 от строки
   let h = 1779033703;
   for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 3432918353), h = (h << 13) | (h >>> 19);
@@ -56,7 +57,11 @@ function pickFresh(course, p, quota, chosen) {
   for (const id of p.queue) { if (out.length >= quota) return out; if (!p.cards[id] && wordById(course, id)) out.push(id); }
   const levels = LEVELS.filter((l) => chosen.includes(l));
   if (!levels.length) return out;
-  const pools = levels.map((l) => course.words.filter((w) => w.lvl === l && !p.cards[w.id] && !out.includes(w.id)).map((w) => w.id));
+  const sk = p.skipped || {};
+  const pools = levels.map((l) => {
+    const ids = course.words.filter((w) => w.lvl === l && !p.cards[w.id] && !out.includes(w.id)).map((w) => w.id);
+    return [...ids.filter((id) => !sk[id]), ...ids.filter((id) => sk[id]).sort((a, b) => sk[a] - sk[b])];
+  });
   const rnd = seeded(course.id + dayKey());
   const next = levels.map(() => 0);
   while (out.length < quota) {
@@ -112,43 +117,57 @@ export function buildQueue(course, prefs) {
 
 export function startLesson(course, prefs) {
   const queue = buildQueue(course, prefs);
-  return { queue, total: queue.length, done: 0, history: [], prefs, startedAt: Date.now(), stats: { reviews: 0, fresh: 0, learned: 0 } };
+  return { queue, total: queue.length, done: 0, history: [], prefs, startedAt: Date.now(), stats: { reviews: 0, fresh: 0, learned: 0, skipped: 0 } };
 }
 
 // «Додано у вивчені» за день (вызывать внутри update)
 export function countLearned(delta = 1) { const d = dayLog(dayKey()); d.learned = Math.max(0, (d.learned || 0) + delta); }
 function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.queue.filter((x) => x !== id); }
 
-// Кнопка на карточке: новое слово — «Я знаю це» (learned) / «Вчити» (hard);
-// повторение — «Важко» (hard) / «Легко» (almost) / «Вивчено» (learned)
+// Кнопка на карточке: новое слово — «Знаю» (learned) / «Вчити» (hard) / «Пропустити» (skip);
+// повторение — «Важко» (hard) / «Легко» (almost) / «Вивчено» (learned).
+// «Пропустити»: статус не меняется — слово остаётся новым и уходит в конец своего уровня (p.skipped); в «слова за день»
+// и в итог занятия не идёт, но карточка пройдена (счётчик «5 / 20» растёт).
+const setSkipped = (p, id, on) => { p.skipped = p.skipped || {}; if (on) p.skipped[id] = Date.now(); else delete p.skipped[id]; };
 export function answer(course, lesson, item, st) {
   let prev = null;
+  const skip = st === 'skip';
   update(() => {
     const p = progress(course.id);
     prev = p.cards[item.id] ? { ...p.cards[item.id] } : null;
+    dropFromQueue(course, item.id);
+    setSkipped(p, item.id, skip);
+    if (skip) return;
     const was = bucket(p.cards[item.id]);
     p.cards[item.id] = mark(p.cards[item.id], st);
     if (st === 'learned' && was !== 'learned') countLearned();
-    dropFromQueue(course, item.id);
     const d = dayLog(dayKey()); if (item.kind === 'new') d.fresh++; else d.reviews++;
   });
   lesson.done++;
-  if (item.kind === 'new') lesson.stats.fresh++; else lesson.stats.reviews++;
+  if (skip) lesson.stats.skipped++;
+  else if (item.kind === 'new') lesson.stats.fresh++; else lesson.stats.reviews++;
   if (st === 'learned') lesson.stats.learned++;
   lesson.history.push({ item, prev, st });   // для свайпа назад: карточка, какой она была до ответа, и ответ
 }
 
 // Другой ответ на уже пройденную карточку (вернулись свайпом): статус считается заново от того, каким он был до занятия.
-// Счётчики занятия и дня не растут (карточка та же); меняется только «вивчено», если ответ стал или перестал быть «Вивчено».
+// Число пройденных карточек не растёт (карточка та же); меняется «вивчено», если ответ стал или перестал быть «Вивчено»,
+// а «Пропустити» ↔ ответ — ещё «слова за день» и итог: пропущенное слово снова без карточки, отвеченное — с карточкой.
 export function reanswer(course, lesson, entry, st) {
   if (entry.st === st) return;
+  const wasSkip = entry.st === 'skip', nowSkip = st === 'skip';
   update(() => {
     const p = progress(course.id);
+    const id = entry.item.id;
     const was = bucket(entry.prev);
-    p.cards[entry.item.id] = mark(entry.prev, st);
+    if (nowSkip) { if (entry.prev) p.cards[id] = entry.prev; else delete p.cards[id]; }
+    else p.cards[id] = mark(entry.prev, st);
+    setSkipped(p, id, nowSkip);
     const before = entry.st === 'learned' && was !== 'learned', after = st === 'learned' && was !== 'learned';
     if (before !== after) countLearned(after ? 1 : -1);
+    if (wasSkip !== nowSkip) { const d = dayLog(dayKey()); d.fresh = Math.max(0, (d.fresh || 0) + (nowSkip ? -1 : 1)); }
   });
+  if (wasSkip !== nowSkip) { lesson.stats.skipped += nowSkip ? 1 : -1; lesson.stats.fresh += nowSkip ? -1 : 1; }
   if (entry.st === 'learned') lesson.stats.learned--;
   if (st === 'learned') lesson.stats.learned++;
   entry.st = st;

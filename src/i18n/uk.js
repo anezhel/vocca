@@ -2,7 +2,7 @@
 export default {
   common: {
     continue: 'Продовжити', next: 'Далі', apply: 'Застосувати', done: 'Готово', start: 'Почати', close: 'Закрити', back: 'Назад', gotIt: 'Зрозуміло',
-    again: 'Ще раз', home: 'На головну', learn: 'Вчити', added: 'Додано', iKnow: 'Я знаю це', train: 'Тренувати', check: 'Перевірити',
+    again: 'Ще раз', home: 'На головну', learn: 'Вчити', added: 'Додано', iKnow: 'Знаю', train: 'Тренувати', check: 'Перевірити',
     dontRemember: 'Не пам’ятаю', dontKnow: 'Не знаю', soon: 'Незабаром', cancel: 'Скасувати', change: 'Змінити', listen: 'Прослухати',
     min: 'хв', hint: 'Підказка', more: 'Показати ще',
   },
@@ -72,7 +72,7 @@ export default {
   lesson: {
     mark: { hard: 'Важко', easy: 'Легко', learned: 'Вивчено' },
     recall: 'Згадай {lang}', sayAloud: 'Скажи вголос {lang} · {n} с', sayAloudGo: 'Скажи вголос {lang}', show: 'Показати відповідь', whatMeans: 'Що це означає?',
-    newWord: 'Нове слово · {n} / {total}', cardNew: 'Нове слово', cardReview: 'Повторення', meaning: 'Пояснення слова', compare: 'Порівняй', difference: 'У чому різниця', formsLink: '3 форми дієслова', synonymsLink: 'синоніми', skipToNew: 'Перейти до нових слів',
+    newWord: 'Нове слово · {n} / {total}', cardNew: 'Нове слово', cardReview: 'Повторення', meaning: 'Пояснення слова', compare: 'Порівняй', difference: 'У чому різниця', formsLink: '3 форми дієслова', synonymsLink: 'синоніми', skipToNew: 'Перейти до нових слів', skip: 'Пропустити',
     reviewDone: 'Повторення готово', reviewDoneCap: '{w} повторено', reviewDoneNext: 'Тепер — {x}.', examples: 'Приклади', synonyms: 'Синоніми',
     english: 'По-англійськи', native: 'Українською', rememberQ: 'Пам’ятаєш це слово?', firstLetter: 'Перша буква: {x}',
     rate: { again: 'Не пам’ятаю', againShort: 'Забуто', hard: 'Важко', good: 'Знаю', easy: 'Легко', remember: 'Пам’ятаю', dontKnow: 'Не знаю', forgot: 'Забуто', known: 'Знаю це слово', knownSub: 'у вивчені' },
