@@ -26,13 +26,12 @@ function load(rows) {
 
 const state = (course, g) => progress(course.id).groups[g.id] || { seen: {} };
 
-// Счёт в словах: сколько слов можно выучить в группе (связанные слова или сама идиома)
-const size = (g, i) => (g.meaning ? 1 : Math.max(1, i.targets.length));
-
+// Счёт по карточкам (экранам): одна карточка = слово со связанными словами. Так же считают «Кількість слів»,
+// счётчик «1 / 194» в занятии и итог 3.11 (с 19.11.2026; раньше считались связанные слова — цифры расходились).
 function stats(course, g) {
   const seen = state(course, g).seen;
-  const total = g.items.reduce((n, i) => n + size(g, i), 0);
-  const learned = g.items.reduce((n, i) => n + (seen[i.id] ? size(g, i) : 0), 0);
+  const total = g.items.length;
+  const learned = g.items.filter((i) => seen[i.id]).length;
   const status = !learned ? 'fresh' : learned >= total ? 'done' : 'learning';
   const subtitle = status === 'fresh' ? pn(total, 'words') : status === 'done' ? t('groups.allLearned', { n: total }) : t('groups.learnedOf', { a: learned, b: total });
   return { total, learned, due: 0, status, subtitle };
