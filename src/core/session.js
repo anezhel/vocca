@@ -37,14 +37,19 @@ export function practicePrefs(course) {
 const kindsOf = (prefs) => prefs.kinds || (prefs.kind ? [prefs.kind] : []);
 export const savePractice = (course, prefs) => update(() => { progress(course.id).practice = { ...prefs }; });
 
-// Новые слова выбранных уровней: сначала добавленные из групп, потом вперемешку по уровням.
-// Больше всего — с «моего уровня», меньше — с соседних (вес по расстоянию 4 · 2 · 1 · 0,5). Внутри уровня — от частых слов.
-// Случайность «на день»: в течение дня подбор тот же.
-const DIST_WEIGHT = [4, 2, 1, 0.5];
+// Новые слова выбранных уровней: сначала добавленные из групп, потом вразнобой с выбранных уровней — поровну
+// (решение дизайнера, 19.11.2026; раньше больше со «своего» уровня). Каждый круг — по слову с каждого уровня
+// в случайном порядке, поэтому подряд с одного уровня не больше двух. Кончились слова уровня — добирают другие.
+// Внутри уровня — от частых слов. Случайность «на день»: в течение дня подбор тот же.
 function seeded(key) {   // mulberry32 от строки
   let h = 1779033703;
   for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 3432918353), h = (h << 13) | (h >>> 19);
   return () => { h |= 0; h = (h + 0x6d2b79f5) | 0; let t = Math.imul(h ^ (h >>> 15), 1 | h); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function shuffled(list, rnd) {
+  const a = [...list];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
 }
 function pickFresh(course, p, quota, chosen) {
   const out = [];
@@ -52,22 +57,16 @@ function pickFresh(course, p, quota, chosen) {
   const levels = LEVELS.filter((l) => chosen.includes(l));
   if (!levels.length) return out;
   const pools = levels.map((l) => course.words.filter((w) => w.lvl === l && !p.cards[w.id] && !out.includes(w.id)).map((w) => w.id));
-  const me = LEVELS.indexOf(myLevel(p) || levels[0]);
-  const weights = levels.map((l) => DIST_WEIGHT[Math.min(3, Math.abs(LEVELS.indexOf(l) - me))]);
   const rnd = seeded(course.id + dayKey());
   const next = levels.map(() => 0);
   while (out.length < quota) {
-    const live = weights.map((w, i) => (next[i] < pools[i].length ? w : 0));
-    const sum = live.reduce((a, b) => a + b, 0);
-    if (!sum) break;
-    let r = rnd() * sum, i = 0;
-    while (r >= live[i]) { r -= live[i]; i++; }
-    out.push(pools[i][next[i]++]);
+    const live = levels.map((_, i) => i).filter((i) => next[i] < pools[i].length);
+    if (!live.length) break;
+    for (const i of shuffled(live, rnd)) { if (out.length >= quota) break; out.push(pools[i][next[i]++]); }
   }
   return out;
 }
 
-// Слова со статусом b (hard / almost) выбранных уровней: сначала те, что дольше всего не тренировали
 function known(course, p, b, levels) {
   const lv = new Set(levels);
   return Object.entries(p.cards)
