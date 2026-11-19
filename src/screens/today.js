@@ -23,9 +23,11 @@ export function Today({ course, go, toast }) {
   const st = streak();
   const day = todayStats();
   const noLevels = !p.levels.length && !p.queue.length;
-  const me = myLevel(p);   // чип «🔥 B1» справа от заголовка: по тесту или самый высокий из выбранных
+  // Заголовков «Час повторити слова» и «Сьогодні план виконано!» нет (19.11.2026): сверху только чип «🔥 B1» справа,
+  // и всё содержимое поднимается выше. Заголовок остался лишь в редком случае, когда уровни не выбраны («Обери рівні»).
+  const me = myLevel(p);   // уровень: по тесту или самый высокий из выбранных
   const levels = () => go('settings', { pick: 'levels' });
-  // Главная кнопка ведёт на 2.2 «Що тренуємо». Цель на день выполнена — «Сьогодні план виконано!» и «Вчити ще».
+  // Главная кнопка ведёт на 2.2 «Що тренуємо». Цель на день выполнена — «Вчити ще», иначе «Вчити слова».
   const main = noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${levels} />`
     : html`<${Button} spring label=${t(goal.done ? 'today.learnMore' : 'today.learnWords')} onClick=${() => go('practice')} />`;
   const totalWords = course.words.length;
@@ -34,12 +36,10 @@ export function Today({ course, go, toast }) {
   const pctText = (v) => (v > 0 && v < 0.5 ? '<1%' : `${Math.round(v)}%`);
   const perLevel = Object.fromEntries(LEVELS.map((l) => [l, course.words.filter((w) => w.lvl === l).length]));
   return html`<${Screen} cls="screen--tab screen--today" tone="today">
-    <div class="today-head">
-      ${noLevels ? html`<${Title} main=${greeting()} accent=${t('today.noLevels')} />`
-        : goal.done ? html`<${Title} main=${t('today.planDone')} accent=${t('today.planDoneAccent')} />`
-        : html`<${Title} main=${t('today.timeToMain')} accent=${t('today.timeToAccent')} />`}
+    ${(noLevels || me) && html`<div class=${cx('today-head', noLevels && 'today-head--title')}>
+      ${noLevels && html`<${Title} main=${greeting()} accent=${t('today.noLevels')} />`}
       ${me && html`<button class="level-chip t-label-13" onClick=${levels} aria-label=${`${t('today.yourLevel')} ${me}`}><${Icon} name="flame" size=${18} /><b>${me}</b></button>`}
-    </div>
+    </div>`}
     <div class="hero hero--today"><div class="t-number-hero">${num(day.words)}</div>
       <div class="hero__label"><div class="t-label-16 hero__text">${t('today.passed')}</div>
         <div class="t-label-15 muted">${t('today.about', { n: day.minutes, u: plural(day.minutes, 'minutes') })}</div></div></div>
