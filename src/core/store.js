@@ -53,6 +53,7 @@ export function progress(id = state.course) {
   c.cards = c.cards || {};     // слово → карточка повторения
   c.custom = c.custom || {};   // слова из групп, которых нет в words.tsv
   c.queue = c.queue || [];     // добавлены кнопкой «Вчити» — идут первыми среди новых
+  c.skipped = c.skipped || {}; // новые слова, пропущенные кнопкой «Пізніше» (слово → время) — идут в конце своего уровня
   c.groups = c.groups || {};   // группа → { seen: { экран: время } }
   c.verbs = c.verbs || {};     // неправильный глагол → карточка
   return c;
