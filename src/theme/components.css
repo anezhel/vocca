@@ -575,7 +575,6 @@ button.card { width: 100%; text-align: left; }
 .practice-sec.is-dim { opacity: .4; }
 .practice-sec__head { display: flex; align-items: baseline; gap: var(--space-8); }
 .choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-4); }
-.choice-wrap--tight { gap: var(--space-4); }
 .choice-row6 { display: flex; gap: var(--space-4); }
 .choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 var(--space-16); border-radius: var(--radius-full);
   background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }
