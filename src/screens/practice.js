@@ -21,7 +21,8 @@ import { Screen, Title, Button, IconButton, cx } from '../ui/kit.js';
 
 // Aura/Chip: не выбран — белый с обводкой, выбран — чёрный, без галочки
 // off — неактивен (уровень без слов этого типа): бледный, не нажимается; выбранным такой уровень не бывает (fitLevels)
-// count — число в кружке справа (у добірок — сколько слів): серый кружок, у выбранного чипа — белый
+// count — число в кружке справа: у добірок — сколько карточек, у уровней — сколько слов выбранного типа (у неактивных — 0);
+// серый кружок, у выбранного чипа — серый на чёрном
 const Chip = ({ on, off, label, count, onClick }) => html`<button class=${cx('choice-chip t-label-15-medium', on && 'is-on', count != null && 'choice-chip--count')}
   aria-pressed=${on} disabled=${off} onClick=${onClick}>${label}${count != null && html`<span class="choice-chip__count t-label-11">${count}</span>`}</button>`;
 
@@ -66,7 +67,6 @@ export function Practice({ course, go, back }) {
   const counts = groupsMode ? {} : levelCounts(course, [prefs.kind]);
   const off = (l) => !groupsMode && !counts[l];
   const offLevels = LEVELS.filter(off);
-  const showLevelCount = prefs.kind === 'hard' || prefs.kind === 'almost';
   const live = prefs.levels.filter((l) => !off(l));
   const levelHint = groupsMode || !offLevels.length ? '' : t('practice.noLevelWords', { lv: offLevels.join(', '), kind: t('practice.kind.' + prefs.kind) });
 
@@ -95,7 +95,7 @@ export function Practice({ course, go, back }) {
         ${size}` : html`
         <${Section} title=${t('practice.level')}>
           <div class="choice-wrap">${LEVELS.map((l) => html`<${Chip} on=${prefs.levels.includes(l)} off=${off(l)} label=${l}
-            count=${showLevelCount ? counts[l] || 0 : null} onClick=${() => flipLevel(l)} />`)}</div>
+            count=${counts[l] || 0} onClick=${() => flipLevel(l)} />`)}</div>
           ${levelHint && html`<p class="t-label-13 muted">${levelHint}</p>`}
         </${Section}>
         ${size}`}
