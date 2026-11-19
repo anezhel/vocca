@@ -17,18 +17,24 @@ export function myLevel(p) {
   return p.testLevel && levels.includes(p.testLevel) ? p.testLevel : levels[levels.length - 1];
 }
 
-// ── 2.2 «Що тренуємо»: выбор человека запоминается; по умолчанию — «твій рівень», «Нові» + «Важкі», 20 слів ──
+// ── 2.2 «Що тренуємо»: выбор человека запоминается; по умолчанию — «Нові слова», «твій рівень», 20 слів ──
+// kind — один тип слов (с 19.11.2026 типы работают как радио): 'new' | 'hard' | 'almost' | 'groups' («Слова з добірок»).
+// group — выбранная добірка (для 'groups'); null — выберет экран 2.2. Старый выбор из нескольких типов (kinds) → первый из них.
+export const PRACTICE_KINDS = ['new', 'hard', 'almost', 'groups'];
 export function practicePrefs(course) {
   const p = progress(course.id);
   const base = { ...CONFIG.practiceDefault, levels: [myLevel(p) || p.levels[0] || LEVELS[0]] };
   const saved = p.practice || {};
+  const legacy = Array.isArray(saved.kinds) ? saved.kinds[0] : null;
+  const kind = [saved.kind, legacy].find((k) => PRACTICE_KINDS.includes(k)) || base.kind;
   return {
+    kind: kind === 'groups' && !course.groupList.length ? base.kind : kind,
     levels: (saved.levels || base.levels).filter((l) => LEVELS.includes(l)),
-    kinds: saved.kinds || base.kinds,
-    groups: (saved.groups || base.groups).filter((id) => course.groupList.some((g) => g.id === id)),
+    group: course.groupList.some((g) => g.id === saved.group) ? saved.group : null,
     size: CONFIG.practiceSizes.includes(saved.size) ? saved.size : base.size,
   };
 }
+const kindsOf = (prefs) => prefs.kinds || (prefs.kind ? [prefs.kind] : []);
 export const savePractice = (course, prefs) => update(() => { progress(course.id).practice = { ...prefs }; });
 
 // Новые слова выбранных уровней: сначала добавленные из групп, потом вперемешку по уровням.
@@ -94,7 +100,8 @@ export function countFor(course, prefs) {
 export function buildQueue(course, prefs) {
   const p = progress(course.id);
   const N = prefs.size === 'all' ? CONFIG.practiceAllCap : prefs.size;
-  const order = ['hard', 'almost', 'new'].filter((k) => prefs.kinds.includes(k));
+  const kinds = kindsOf(prefs);
+  const order = ['hard', 'almost', 'new'].filter((k) => kinds.includes(k));
   const pools = Object.fromEntries(order.map((k) => [k, k === 'new' ? pickFresh(course, p, N, prefs.levels) : known(course, p, k, prefs.levels)]));
   const take = Object.fromEntries(order.map((k) => [k, 0]));
   let total = 0;
