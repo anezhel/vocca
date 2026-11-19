@@ -597,6 +597,8 @@ button.card { width: 100%; text-align: left; }
 /* 2.5: полное лаймовое кольцо */
 .ring--lime .ring__bar { stroke: var(--bg-accent); }
 .rate3__btn:active { transform: scale(.97); }
+/* пройденная карточка (вернулись свайпом): ответ, выбранный тогда, — как обычно, остальные бледнее */
+.bottom-bar .is-other { opacity: .4; }
 .rate3__btn--hard { background: var(--tint-coral); }
 .rate3__btn--almost { background: var(--tint-mint); }
 .rate3__btn--learned { background: var(--bg-cta); color: var(--text-on-cta); }

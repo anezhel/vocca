@@ -113,7 +113,7 @@ export function buildQueue(course, prefs) {
 
 export function startLesson(course, prefs) {
   const queue = buildQueue(course, prefs);
-  return { queue, total: queue.length, done: 0, prefs, startedAt: Date.now(), stats: { reviews: 0, fresh: 0, learned: 0 } };
+  return { queue, total: queue.length, done: 0, history: [], prefs, startedAt: Date.now(), stats: { reviews: 0, fresh: 0, learned: 0 } };
 }
 
 // «Додано у вивчені» за день (вызывать внутри update)
@@ -123,8 +123,10 @@ function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.
 // Кнопка на карточке: новое слово — «Я знаю це» (learned) / «Вчити» (hard);
 // повторение — «Важко» (hard) / «Легко» (almost) / «Вивчено» (learned)
 export function answer(course, lesson, item, st) {
+  let prev = null;
   update(() => {
     const p = progress(course.id);
+    prev = p.cards[item.id] ? { ...p.cards[item.id] } : null;
     const was = bucket(p.cards[item.id]);
     p.cards[item.id] = mark(p.cards[item.id], st);
     if (st === 'learned' && was !== 'learned') countLearned();
@@ -134,6 +136,23 @@ export function answer(course, lesson, item, st) {
   lesson.done++;
   if (item.kind === 'new') lesson.stats.fresh++; else lesson.stats.reviews++;
   if (st === 'learned') lesson.stats.learned++;
+  lesson.history.push({ item, prev, st });   // для свайпа назад: карточка, какой она была до ответа, и ответ
+}
+
+// Другой ответ на уже пройденную карточку (вернулись свайпом): статус считается заново от того, каким он был до занятия.
+// Счётчики занятия и дня не растут (карточка та же); меняется только «вивчено», если ответ стал или перестал быть «Вивчено».
+export function reanswer(course, lesson, entry, st) {
+  if (entry.st === st) return;
+  update(() => {
+    const p = progress(course.id);
+    const was = bucket(entry.prev);
+    p.cards[entry.item.id] = mark(entry.prev, st);
+    const before = entry.st === 'learned' && was !== 'learned', after = st === 'learned' && was !== 'learned';
+    if (before !== after) countLearned(after ? 1 : -1);
+  });
+  if (entry.st === 'learned') lesson.stats.learned--;
+  if (st === 'learned') lesson.stats.learned++;
+  entry.st = st;
 }
 
 export function finishLesson(lesson) {

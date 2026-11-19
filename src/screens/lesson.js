@@ -1,31 +1,50 @@
 // Занятие «Вчити слова» (с 18.11.2026): очередь собирается по выбору на 2.2 «Що тренуємо».
 // 2.3 — новое слово («Я знаю це» / «Вчити»), 2.4 — повторение («Важко» / «Легко» / «Вивчено»), в конце 2.5 итог.
+// Свайп вправо — предыдущая карточка (и с итога 2.5 — последняя), влево — обратно вперёд. На пройденной карточке выбранный
+// ответ ярче, остальные бледнее; другой ответ меняет статус слова (reanswer) и ведёт к следующей карточке.
 import { html, useState, useEffect } from '../../lib/preact-htm.js';
 import { t, L, plural } from '../i18n/index.js';
 import { getState } from '../core/store.js';
-import { startLesson, answer, finishLesson, practicePrefs } from '../core/session.js';
+import { startLesson, answer, reanswer, finishLesson, practicePrefs } from '../core/session.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx } from '../ui/kit.js';
 import { Ring } from '../groups/done.js';
 
 export function Lesson({ course, route, go, back }) {
   const [lesson] = useState(() => startLesson(course, route.prefs || practicePrefs(course)));
   const [, redraw] = useState(0);
   const [sheet, setSheet] = useState(null);
+  const [view, setView] = useState(null);     // индекс в lesson.history — смотрим пройденную карточку; null — текущая
+  const [enter, setEnter] = useState(null);   // откуда въезжает карточка после свайпа
   const item = lesson.queue[0];
+  const hist = lesson.history;
+  const show = (i, dir) => { setView(i); setEnter(dir); scrollTo(0, 0); };
+  const at = view == null ? hist.length : view;
+  useSwipe(at > 0 && !sheet ? () => show(at - 1, 'left') : null,
+    view != null && !sheet ? () => show(view + 1 < hist.length ? view + 1 : null, 'right') : null);
 
   useEffect(() => { if (!item && !lesson.finished && lesson.total) { lesson.finished = true; finishLesson(lesson); redraw((n) => n + 1); } }, [item]);
   if (!lesson.total) return html`<${Empty} go=${go} />`;
-  if (!item) return html`<${Summary} lesson=${lesson} go=${go} />`;
+  const bar = { onClose: () => (lesson.done ? setSheet('exit') : back()), total: lesson.total };
+  const exit = sheet === 'exit' && html`<${ConfirmSheet} title=${t('lesson.exitTitle')} text=${t('lesson.exitText')} yes=${t('lesson.exit')} no=${t('lesson.stay')}
+      onYes=${() => { lesson.finished = true; finishLesson(lesson); go('today', {}, true); }} onNo=${() => setSheet(null)} />`;
+
+  // Пройденная карточка: тот же вид, выбранный ответ ярче; другой ответ меняет статус, дальше — следующая карточка
+  if (view != null) {
+    const e = hist[view];
+    const w = wordById(course, e.item.id);
+    const onAnswer = (st) => { reanswer(course, lesson, e, st); show(view + 1 < hist.length ? view + 1 : null, null); };
+    return html`<${WordCard} key=${'h' + view} course=${course} w=${w} lesson=${lesson} bar=${{ ...bar, done: view, count: `${view + 1} / ${lesson.total}` }}
+      item=${e.item} chosen=${e.st} enter=${enter} onAnswer=${onAnswer} />${exit}`;
+  }
+  if (!item) return html`<${Summary} lesson=${lesson} go=${go} enter=${enter} />`;
 
   const w = wordById(course, item.id);
   if (!w) { lesson.queue.shift(); lesson.total--; redraw((n) => n + 1); return null; }
-  const onAnswer = (st) => { answer(course, lesson, item, st); lesson.queue.shift(); redraw((n) => n + 1); scrollTo(0, 0); };
-  const bar = { onClose: () => (lesson.done ? setSheet('exit') : back()), total: lesson.total, done: lesson.done };
-  return html`<${WordCard} key=${item.id} course=${course} w=${w} lesson=${lesson} bar=${bar} item=${item} onAnswer=${onAnswer} />
-    ${sheet === 'exit' && html`<${ConfirmSheet} title=${t('lesson.exitTitle')} text=${t('lesson.exitText')} yes=${t('lesson.exit')} no=${t('lesson.stay')}
-      onYes=${() => { lesson.finished = true; finishLesson(lesson); go('today', {}, true); }} onNo=${() => setSheet(null)} />`}`;
+  const onAnswer = (st) => { answer(course, lesson, item, st); lesson.queue.shift(); setEnter(null); redraw((n) => n + 1); scrollTo(0, 0); };
+  return html`<${WordCard} key=${item.id} course=${course} w=${w} lesson=${lesson} bar=${{ ...bar, done: lesson.done }} item=${item} enter=${enter} onAnswer=${onAnswer} />
+    ${exit}`;
 }
 
 // Под выбор на «Що тренуємо» слов не нашлось
@@ -40,7 +59,7 @@ const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 // вверху тег уровня и «НОВЕ СЛОВО» / «ПОВТОРЕННЯ», слово Word/XL, транскрипция, озвучка в обводке, перевод; часть речи не показываем.
 // Если слово есть в добірках — их карточки сразу под словом (relatedOf ниже). Дальше «Приклади» и «Пояснення слова»,
 // в конце — «Порівняй» и «У чому різниця» из добірок; карточки через 16 px.
-function WordCard({ course, w, lesson, bar, item, onAnswer }) {
+function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer }) {
   const lang = ttsLang(course);
   const word = shown(course, w);
   useEffect(() => { if (getState().autoplay) tts.speak(word, lang); }, [w.id]);
@@ -48,11 +67,13 @@ function WordCard({ course, w, lesson, bar, item, onAnswer }) {
   const rel = relatedOf(course, w);
   const verb = irregularOf(course, w);
   // 2.3 новое слово: «Я знаю це» → Вивчено, «Вчити» → Важкі. 2.4 повторение: «Важко» · «Легко» · «Вивчено» (коралл · мята · чёрная)
+  // chosen — карточка уже пройдена (вернулись свайпом): выбранный тогда ответ как обычно, остальные бледнее (is-other)
+  const other = (st) => chosen && chosen !== st && 'is-other';
   const bottom = isNew
-    ? html`<div class="row-2"><${Button} variant="secondary" label=${t('common.iKnow')} onClick=${() => onAnswer('learned')} /><${Button} label=${t('common.learn')} onClick=${() => onAnswer('hard')} /></div>`
-    : html`<div class="rate3">${[['hard', 'hard'], ['almost', 'easy'], ['learned', 'learned']].map(([st, k]) => html`<button class=${'rate3__btn rate3__btn--' + st + ' t-title-m'} onClick=${() => onAnswer(st)}>${t('lesson.mark.' + k)}</button>`)}</div>`;
-  return html`<${Screen} cls="screen--lesson screen--grey" tone="today" bottom=${bottom}>
-    <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${counter(lesson)} />
+    ? html`<div class="row-2"><${Button} variant="secondary" cls=${other('learned')} label=${t('common.iKnow')} onClick=${() => onAnswer('learned')} /><${Button} cls=${other('hard')} label=${t('common.learn')} onClick=${() => onAnswer('hard')} /></div>`
+    : html`<div class="rate3">${[['hard', 'hard'], ['almost', 'easy'], ['learned', 'learned']].map(([st, k]) => html`<button class=${cx('rate3__btn rate3__btn--' + st + ' t-title-m', other(st))} onClick=${() => onAnswer(st)}>${t('lesson.mark.' + k)}</button>`)}</div>`;
+  return html`<${Screen} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="today" bottom=${bottom}>
+    <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} />
     <div class="word-pair">
       <div class="card word-main">
         <div class="word-main__top"><${LevelTag} lvl=${w.lvl} size="m" /><${Overline}>${t(isNew ? 'lesson.cardNew' : 'lesson.cardReview')}</${Overline}></div>
@@ -153,9 +174,9 @@ function VerbForms({ verb, lang }) {
 
 // 2.5 · Підсумок заняття: полное лаймовое кольцо — сколько слов пройдено. «Продовжити» — ещё заход с тем же выбором,
 // «Змінити налаштування» — на 2.2, «Закінчити» — на «Практика».
-function Summary({ lesson, go }) {
+function Summary({ lesson, go, enter }) {
   const n = lesson.done;
-  return html`<${Screen} cls="screen--done screen--center" tone="none" bottom=${html`<div class="done-actions">
+  return html`<${Screen} cls=${cx('screen--done screen--center', enterCls(enter))} tone="none" bottom=${html`<div class="done-actions">
       <${Button} label=${t('common.continue')} onClick=${() => go('lesson', { prefs: lesson.prefs, n: Date.now() }, true)} />
       <${Button} variant="secondary" label=${t('practice.change')} onClick=${() => go('practice', {}, true)} />
       <button class="link-btn t-title-m" onClick=${() => go('today', {}, true)}>${t('practice.finish')}</button></div>`}>

@@ -20,6 +20,56 @@ export const Screen = ({ children, bottom, cls, tone }) => html`<main class=${cx
   ${bottom && html`<div class="bottom-bar">${bottom}</div>`}
 </main>`;
 
+// Свайп по карточкам (с 19.11.2026): вправо — предыдущая карточка, влево — следующая (только уже просмотренная).
+// Пока палец ведёт, карточки (всё, кроме верхней строки) едут за ним; если листать некуда — почти стоят (сопротивление).
+// Срабатывает от 80 px или быстрым движением от 30 px. Свайп от самого края экрана не ловим — это жест «назад» в браузере.
+// На компьютере — стрелки ← / → на клавиатуре. onPrev / onNext = null — в эту сторону листать нельзя.
+export function useSwipe(onPrev, onNext) {
+  const cb = useRef({});
+  cb.current = { onPrev, onNext };
+  useEffect(() => {
+    let s = null;
+    const content = () => document.querySelector('.screen__content');
+    const shift = (x, anim) => { const c = content(); if (!c) return; c.classList.toggle('is-settling', !!anim); c.style.setProperty('--swipe', x + 'px'); };
+    const start = (e) => {
+      s = null;
+      if (e.touches.length !== 1) return;
+      const p = e.touches[0];
+      if (p.clientX < 24 || p.clientX > innerWidth - 24 || e.target.closest('.bottom-bar, .sheet, input, textarea, [data-noswipe]')) return;
+      s = { x: p.clientX, y: p.clientY, t: Date.now(), dir: null, dx: 0 };
+    };
+    const move = (e) => {
+      if (!s) return;
+      const p = e.touches[0], dx = p.clientX - s.x, dy = p.clientY - s.y;
+      if (!s.dir) { if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return; s.dir = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'h' : 'v'; }
+      if (s.dir !== 'h') return;
+      const can = dx > 0 ? cb.current.onPrev : cb.current.onNext;
+      s.dx = dx; shift(can ? dx * 0.6 : dx * 0.12);
+    };
+    const end = () => {
+      if (!s) return;
+      const { dx, dir, t: t0 } = s; s = null;
+      if (dir !== 'h') return;
+      const fast = Math.abs(dx) > 30 && Math.abs(dx) / Math.max(1, Date.now() - t0) > 0.5;
+      const go = Math.abs(dx) > 80 || fast ? (dx > 0 ? cb.current.onPrev : cb.current.onNext) : null;
+      if (go) { shift(0); go(); } else shift(0, true);
+    };
+    const key = (e) => {
+      if (e.target.closest && e.target.closest('input, textarea')) return;
+      const go = e.key === 'ArrowLeft' ? cb.current.onPrev : e.key === 'ArrowRight' ? cb.current.onNext : null;
+      if (go) { e.preventDefault(); go(); }
+    };
+    addEventListener('touchstart', start, { passive: true });
+    addEventListener('touchmove', move, { passive: true });
+    addEventListener('touchend', end);
+    addEventListener('touchcancel', end);
+    addEventListener('keydown', key);
+    return () => { for (const [n, f] of [['touchstart', start], ['touchmove', move], ['touchend', end], ['touchcancel', end], ['keydown', key]]) removeEventListener(n, f); };
+  }, []);
+}
+// Класс экрана для въезда карточки после свайпа: 'left' — предыдущая (въезжает слева), 'right' — следующая
+export const enterCls = (dir) => dir && 'screen--from-' + dir;
+
 // Aura/CTA — чёрная кнопка с лаймовым кругом-стрелкой. secondary — белая. outline — контурная.
 // variant: cta — чёрная со стрелкой в кружке (шаг вперёд); dark — чёрная без стрелки (Aura/Button primary: «Застосувати», «Зрозуміло» в листах); accent — лаймовая с иконкой в белом кружке (04: «Повторити слова, які вчу»)
 // spring — пружинка при нажатии, как у пузырька меню (useSpringPress ниже); переход — после отскока
