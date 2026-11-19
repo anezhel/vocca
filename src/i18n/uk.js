@@ -28,7 +28,6 @@ export default {
   },
   practice: {
     title: 'Що тренуємо?', level: 'Рівень', words: 'Типи слів', kind: { new: 'Нові', hard: 'Важкі', almost: 'Майже вивчені' },
-    groups: 'Добірки', optional: '(Необов’язково)', groupsNote: 'Тренуємо вибрану добірку: слова вибраних рівнів, типи слів не враховуються.', noneAtLevel: 'У цій добірці немає слів вибраних рівнів — вибери інший рівень.',
     size: 'Кількість слів', all: 'Без обмежень', start: 'Почати', change: 'Змінити налаштування', finish: 'Закінчити',
   },
   onboarding: {
@@ -61,9 +60,9 @@ export default {
     yourLevel: 'твій рівень', statLearned: 'вивчено слів', passed: 'Слів\nпройдено', statStreak: '{d} поспіль', statCourse: 'курсу',
     groupsSub: 'Добірки слів та тренажери', learnedShort: 'Вивчено',
     about: '≈ {n} {u}', review: '{n} повторити', fresh: '+{n} нових',
-    timeToMain: 'Час повторити', timeToAccent: 'слова', learnNew: 'Вчити нові слова', learnWords: 'Вчити слова', myLevel: 'Мій рівень', repeatWords: 'Повторити слова', groupsLearning: 'В процесі', groupsNew: 'Нові', groupsDone: 'Пройдені', statsRepeated: 'Повторено слів', statsLearned: 'Додано у вивчені', statsSub: 'Статистика по днях',
+    learnNew: 'Вчити нові слова', learnWords: 'Вчити слова', myLevel: 'Мій рівень', repeatWords: 'Повторити слова', groupsLearning: 'В процесі', groupsNew: 'Нові', groupsDone: 'Пройдені', statsRepeated: 'Повторено слів', statsLearned: 'Додано у вивчені', statsSub: 'Статистика по днях',
     learn: 'Вчити слова', learnMore: 'Вчити ще', chooseLevels: 'Обрати рівні',
-    repeatLearning: 'Повторити слова, які вчу', moreNew: 'Ще {n} нових слів', planDone: 'Сьогодні план', planDoneAccent: 'виконано!', grammar: 'Граматика', grammarSub: 'Правила та вправи', grammarSoon: 'Граматика з’явиться незабаром', collections: 'Добірки слів', stats: 'Статистика',
+    repeatLearning: 'Повторити слова, які вчу', moreNew: 'Ще {n} нових слів', grammar: 'Граматика', grammarSub: 'Правила та вправи', grammarSoon: 'Граматика з’явиться незабаром', collections: 'Добірки слів', stats: 'Статистика',
     repeated: '{n} повторено', freshDone: '{n} нових',
     learned: 'Вивчено слів', forecast: 'Прогноз повторень', forecastSub: 'Слів до повторення по днях', days: '{n} днів',
     todayShort: 'Сьог.', tomorrow: 'Завтра', newNow: 'нових слів зараз', reviewsToday: '{x} сьогодні', newWords: 'Нові слова · {n}',

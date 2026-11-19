@@ -466,10 +466,12 @@ button.card { width: 100%; text-align: left; }
 
 /* 04 · отступы по макету 04i: между блоками 20, цифра и чипсы — 12 */
 .screen--today .screen__content { gap: var(--space-20); }
-/* 2.1 · без логотипа: заголовок слева, чип уровня справа — по центру первой строки заголовка (34 − 30) / 2 */
-.today-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-12); }
+/* 2.1 · сверху только чип уровня справа (с 19.11.2026 без заголовка); если уровни не выбраны — заголовок слева, чип по его первой строке */
+.today-head { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-12); }
+.today-head--title { align-items: flex-start; justify-content: space-between; }
 .today-head .title { flex: 1; min-width: 0; }
-.today-head .level-chip { flex: none; margin-top: 2px; }
+.today-head--title .level-chip { margin-top: 2px; }
+.today-head .level-chip { flex: none; }
 .screen--today .title { margin: 0; }
 .screen--today .pills { margin-top: calc(var(--space-8) * -1); }
 .screen--today .cta-wrap { margin-top: 0; }
@@ -575,7 +577,6 @@ button.card { width: 100%; text-align: left; }
 .practice-sec.is-dim { opacity: .4; }
 .practice-sec__head { display: flex; align-items: baseline; gap: var(--space-8); }
 .choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-4); }
-.choice-wrap--tight { gap: var(--space-4); }
 .choice-row6 { display: flex; gap: var(--space-4); }
 .choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 var(--space-16); border-radius: var(--radius-full);
   background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }

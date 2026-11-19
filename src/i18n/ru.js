@@ -28,7 +28,6 @@ export default {
   },
   practice: {
     title: 'Что тренируем?', level: 'Уровень', words: 'Типы слов', kind: { new: 'Новые', hard: 'Трудные', almost: 'Почти выученные' },
-    groups: 'Подборки', optional: '(Необязательно)', groupsNote: 'Тренируем выбранную подборку: слова выбранных уровней, типы слов не учитываются.', noneAtLevel: 'В этой подборке нет слов выбранных уровней — выберите другой уровень.',
     size: 'Количество слов', all: 'Без ограничений', start: 'Начать', change: 'Изменить настройки', finish: 'Закончить',
   },
   onboarding: {
@@ -61,9 +60,9 @@ export default {
     yourLevel: 'твой уровень', statLearned: 'выучено слов', passed: 'Слов\nпройдено', statStreak: '{d} подряд', statCourse: 'курса',
     groupsSub: 'Подборки слов и тренажёры', learnedShort: 'Выучено',
     about: '≈ {n} {u}', review: '{n} повторить', fresh: '+{n} новых',
-    timeToMain: 'Время повторить', timeToAccent: 'слова', learnNew: 'Учить новые слова', learnWords: 'Учить слова', myLevel: 'Мой уровень', repeatWords: 'Повторить слова', groupsLearning: 'В процессе', groupsNew: 'Новые', groupsDone: 'Пройденные', statsRepeated: 'Повторено слов', statsLearned: 'Добавлено в выученные', statsSub: 'Статистика по дням',
+    learnNew: 'Учить новые слова', learnWords: 'Учить слова', myLevel: 'Мой уровень', repeatWords: 'Повторить слова', groupsLearning: 'В процессе', groupsNew: 'Новые', groupsDone: 'Пройденные', statsRepeated: 'Повторено слов', statsLearned: 'Добавлено в выученные', statsSub: 'Статистика по дням',
     learn: 'Учить слова', learnMore: 'Учить ещё', chooseLevels: 'Выбрать уровни',
-    repeatLearning: 'Повторить слова, которые учу', moreNew: 'Ещё {n} новых слов', planDone: 'Сегодня план', planDoneAccent: 'выполнен!', grammar: 'Грамматика', grammarSub: 'Правила и упражнения', grammarSoon: 'Грамматика появится скоро', collections: 'Подборки слов', stats: 'Статистика',
+    repeatLearning: 'Повторить слова, которые учу', moreNew: 'Ещё {n} новых слов', grammar: 'Грамматика', grammarSub: 'Правила и упражнения', grammarSoon: 'Грамматика появится скоро', collections: 'Подборки слов', stats: 'Статистика',
     repeated: '{n} повторено', freshDone: '{n} новых',
     learned: 'Выучено слов', forecast: 'Прогноз повторений', forecastSub: 'Слов к повторению по дням', days: '{n} дней',
     todayShort: 'Сег.', tomorrow: 'Завтра', newNow: 'новых слов сейчас', reviewsToday: '{x} сегодня', newWords: 'Новые слова · {n}',
