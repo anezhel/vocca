@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Проверка таблиц слов и групп после правок.  Запуск:  python3 tools/check-content.py
-Находит: пустые обязательные колонки, неверный уровень, повторы слов, незакрытые [скобки] в примерах, сдвинутые колонки."""
+Находит: пустые обязательные колонки, неверный уровень, повторы слов, незакрытые [скобки] в примерах, сдвинутые колонки,
+экраны добірок, где примеров меньше, чем слов (у каждого слова на экране — свой пример, по порядку слов)."""
 import os, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONTENT = os.path.join(ROOT, 'src', 'content')
 LEVELS = {'A1', 'A2', 'B1', 'B2', 'C1', 'C2'}
+# Добірки, где примеры нужны только к связанным словам (give up, make a decision), а не к самому слову (give, decision)
+TARGETS_ONLY = {'phrasal.tsv', 'collocations.tsv'}
+MAX_EX = 4  # src/groups/relation.js читает ex1–ex4
 problems = 0
 
 
@@ -72,6 +76,15 @@ for lang in sorted(os.listdir(CONTENT)):
                 warn(path, n, 'пустая колонка word')
             elif not (r.get('to1') or r.get('to1_uk') or r.get('to1_ru')):
                 warn(path, n, f'у «{r.get("word")}» нет связанного слова (to1)')
+            else:
+                # слова на экране: само слово (кроме TARGETS_ONLY) и связанные английские слова to1–to3; у ідіом их нет — один пример
+                targets = [r[f'to{i}'] for i in (1, 2, 3) if r.get(f'to{i}')]
+                need = max(1, len(targets) + (0 if f in TARGETS_ONLY else 1))
+                have = sum(1 for i in range(1, MAX_EX + 1) if r.get(f'ex{i}'))
+                if need > MAX_EX:
+                    warn(path, n, f'«{r.get("word")}»: слов на экране {need}, а примеров бывает не больше {MAX_EX}')
+                elif have < need:
+                    warn(path, n, f'«{r.get("word")}»: примеров {have}, а слов на экране {need} — у каждого слова нужен свой пример')
         print(f'  groups/{f}: {len(rows)} строк')
 
 print('Всё в порядке' if not problems else f'Найдено замечаний: {problems}')
