@@ -20,6 +20,13 @@ svg { flex: none; }
 .screen--bar { padding-bottom: calc(var(--layout-content-bottom) + env(safe-area-inset-bottom)); }
 .screen--tab { padding-bottom: calc(84px + max(16px, env(safe-area-inset-bottom))); }
 .screen__content { position: relative; display: flex; flex-direction: column; gap: var(--space-14); }
+/* Свайп по карточкам (useSwipe в kit.js): карточки едут за пальцем, верхняя строка (крестик, прогресс) стоит на месте */
+.screen__content > :not(.top-bar) { transform: translateX(var(--swipe, 0px)); }
+.screen__content.is-settling > :not(.top-bar) { transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.screen--from-left .screen__content > :not(.top-bar) { animation: from-left .28s cubic-bezier(.2, .8, .2, 1); }
+.screen--from-right .screen__content > :not(.top-bar) { animation: from-right .28s cubic-bezier(.2, .8, .2, 1); }
+@keyframes from-left { from { transform: translateX(-56px); opacity: 0; } }
+@keyframes from-right { from { transform: translateX(56px); opacity: 0; } }
 
 /* Нижняя панель с кнопкой: контент уходит под неё через переход из прозрачного в цвет фона */
 .bottom-bar {

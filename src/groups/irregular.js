@@ -13,7 +13,7 @@ import { t, L, pn } from '../i18n/index.js';
 import { update, progress, getState } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Pill, cx } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Pill, cx, useSwipe, enterCls } from '../ui/kit.js';
 import { GroupDone } from './done.js';
 
 const DAY = 86400000;
@@ -117,7 +117,7 @@ function VerbCard({ v, lang }) {
   </div>`;
 }
 
-// Экран 12b: карточка глагола, внизу «Далі». После порции — итог 19c.
+// Экран 12b: карточка глагола, внизу «Далі». После порции — итог 19c. Свайп вправо — предыдущий глагол, влево — вперёд до уже просмотренного.
 function VerbCards({ course, group, route, back }) {
   const lang = ttsLang(course);
   const N = CONFIG.verbSessionSize;
@@ -132,7 +132,12 @@ function VerbCards({ course, group, route, back }) {
   const left = Math.max(0, queue.length - start - list.length);
   const v = list[pos];
   const kindTitle = t('verbs.' + kind);
-  const restart = (s) => { setStart(s); setPos(0); setDone(false); scrollTo(0, 0); };
+  const [far, setFar] = useState(0);
+  const [enter, setEnter] = useState(null);
+  const step = (p, dir) => { setPos(p); setEnter(dir); scrollTo(0, 0); };
+  useSwipe(done ? () => { setDone(false); setEnter('left'); scrollTo(0, 0); } : pos > 0 ? () => step(pos - 1, 'left') : null,
+    !done && pos < far ? () => step(pos + 1, 'right') : null);
+  const restart = (s) => { setStart(s); setPos(0); setFar(0); setEnter(null); setDone(false); scrollTo(0, 0); };
 
   if (done || !v) {
     const cs = cards(course);
@@ -141,9 +146,9 @@ function VerbCards({ course, group, route, back }) {
   }
   const next = () => {
     update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; });
-    if (pos + 1 < list.length) { setPos(pos + 1); scrollTo(0, 0); } else setDone(true);
+    if (pos + 1 < list.length) { step(pos + 1, null); setFar(Math.max(far, pos + 1)); } else { setFar(Math.max(far, pos)); setDone(true); }
   };
-  return html`<${Screen} cls="screen--lesson screen--grey" tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
+  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
     <${VerbCard} v=${v} lang=${lang} />
   </${Screen}>`;
