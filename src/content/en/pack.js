@@ -2,7 +2,7 @@
 //
 // Как добавить группу: положите таблицу в groups/ и добавьте строку в список groups ниже.
 // Как убрать группу: удалите или закомментируйте её строку (// в начале). Таблицу можно оставить.
-// Порядок строк = порядок карточек на экране «Групи» (группы в процессе всё равно поднимаются наверх).
+// Порядок строк = порядок добірок внутри темы и чипов на 2.2 (в теме в процессе всё равно идут первыми, потом новые, потом пройденные).
 //
 // type — как выглядит экран группы:
 //   'relation'  — слово и связанные с ним слова (синонимы, антонимы, ложные друзья…) — src/groups/relation.js
@@ -24,37 +24,53 @@ export default {
     { id: 'uk', name: { uk: 'Британія', ru: 'Британия' }, tts: 'en-GB' },
   ],
 
+  // Темы добірок (19.11.2026): на «Практика» добірки сгруппированы по темам, а не по «В процесі / Нові / Пройдені».
+  // section: 'words' — в «Добірки слів», 'grammar' — в «Граматика». Порядок тем — порядок блоков на экране.
+  // У каждой группы ниже — topic: id темы. Группа без темы попадёт в блок «Інші добірки».
+  topics: [
+    { id: 'verbs', section: 'words', title: { uk: 'Дієслова', ru: 'Глаголы' } },
+    { id: 'links', section: 'words', title: { uk: 'Зв’язки слів', ru: 'Связи слов' } },
+    { id: 'phrases', section: 'words', title: { uk: 'Вирази', ru: 'Выражения' } },
+    { id: 'confusing', section: 'words', title: { uk: 'Не плутай', ru: 'Не путай' } },
+    { id: 'grammar', section: 'grammar', title: { uk: 'Граматичні слова', ru: 'Грамматические слова' } },
+  ],
+
   groups: [
-    { id: 'irregular', type: 'irregular', file: 'groups/irregular.tsv',
+    // ── verbs
+    { id: 'irregular', topic: 'verbs', type: 'irregular', file: 'groups/irregular.tsv',
       title: { uk: '3 форми дієслів', ru: '3 формы глаголов' } },
-    { id: 'false-friends', type: 'relation', file: 'groups/false-friends.tsv',
-      title: { uk: 'Хибні друзі', ru: 'Ложные друзья' }, chip: { uk: '≠ не плутай', ru: '≠ не путай' },
-      examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Чому плутають', ru: 'Почему путают' } },
-    { id: 'confusing', type: 'relation', file: 'groups/confusing.tsv',
-      title: { uk: 'Слова, які плутають', ru: 'Слова, которые путают' }, chip: { uk: '⇄ не плутай', ru: '⇄ не путай' },
-      examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Як запам’ятати', ru: 'Как запомнить' } },
-    { id: 'idioms', type: 'relation', file: 'groups/idioms.tsv', meaning: true,
-      title: { uk: 'Ідіоми', ru: 'Идиомы' }, chip: { uk: '= насправді', ru: '= на самом деле' },
-      examples: { uk: 'Приклади', ru: 'Примеры' }, note: { uk: 'Де так кажуть', ru: 'Где так говорят' } },
-    { id: 'phrasal', type: 'relation', file: 'groups/phrasal.tsv',
+    { id: 'phrasal', topic: 'verbs', type: 'relation', file: 'groups/phrasal.tsv',
       title: { uk: 'Фразові дієслова', ru: 'Фразовые глаголы' }, chip: { uk: '+ частка', ru: '+ частица' },
       examples: { uk: 'Приклади', ru: 'Примеры' }, note: { uk: 'Як це працює', ru: 'Как это работает' } },
-    { id: 'word-family', type: 'relation', file: 'groups/word-family.tsv',
+    // ── links
+    { id: 'word-family', topic: 'links', type: 'relation', file: 'groups/word-family.tsv',
       title: { uk: 'Спільнокореневі', ru: 'Однокоренные' }, chip: { uk: '≈ одна родина', ru: '≈ одна семья' },
       examples: { uk: 'Приклади', ru: 'Примеры' }, note: { uk: 'Як утворюються', ru: 'Как образуются' } },
-    { id: 'similar', type: 'relation', file: 'groups/similar.tsv',
-      title: { uk: 'Схожі слова', ru: 'Похожие слова' }, chip: { uk: '≈ звучить схоже', ru: '≈ звучит похоже' },
-      examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Як розрізнити', ru: 'Как различить' } },
-    { id: 'collocations', type: 'relation', file: 'groups/collocations.tsv',
-      title: { uk: 'Сталі вирази', ru: 'Устойчивые выражения' }, chip: { uk: '+ {link}', ru: '+ {link}' },
-      examples: { uk: 'Приклади', ru: 'Примеры' }, note: { uk: 'Чому саме {link}', ru: 'Почему именно {link}' } },
-    { id: 'synonyms', type: 'relation', file: 'groups/synonyms.tsv',
+    { id: 'synonyms', topic: 'links', type: 'relation', file: 'groups/synonyms.tsv',
       title: { uk: 'Синоніми', ru: 'Синонимы' }, chip: { uk: '≈ синоніми', ru: '≈ синонимы' },
       examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'У чому різниця', ru: 'В чём разница' } },
-    { id: 'antonyms', type: 'relation', file: 'groups/antonyms.tsv',
+    { id: 'antonyms', topic: 'links', type: 'relation', file: 'groups/antonyms.tsv',
       title: { uk: 'Антоніми', ru: 'Антонимы' }, chip: { uk: '↔ антоніми', ru: '↔ антонимы' },
       examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'У чому різниця', ru: 'В чём разница' } },
-    { id: 'pronouns', type: 'relation', file: 'groups/pronouns.tsv',
+    // ── phrases
+    { id: 'collocations', topic: 'phrases', type: 'relation', file: 'groups/collocations.tsv',
+      title: { uk: 'Сталі вирази', ru: 'Устойчивые выражения' }, chip: { uk: '+ {link}', ru: '+ {link}' },
+      examples: { uk: 'Приклади', ru: 'Примеры' }, note: { uk: 'Чому саме {link}', ru: 'Почему именно {link}' } },
+    { id: 'idioms', topic: 'phrases', type: 'relation', file: 'groups/idioms.tsv', meaning: true,
+      title: { uk: 'Ідіоми', ru: 'Идиомы' }, chip: { uk: '= насправді', ru: '= на самом деле' },
+      examples: { uk: 'Приклади', ru: 'Примеры' }, note: { uk: 'Де так кажуть', ru: 'Где так говорят' } },
+    // ── confusing
+    { id: 'false-friends', topic: 'confusing', type: 'relation', file: 'groups/false-friends.tsv',
+      title: { uk: 'Хибні друзі', ru: 'Ложные друзья' }, chip: { uk: '≠ не плутай', ru: '≠ не путай' },
+      examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Чому плутають', ru: 'Почему путают' } },
+    { id: 'confusing', topic: 'confusing', type: 'relation', file: 'groups/confusing.tsv',
+      title: { uk: 'Слова, які плутають', ru: 'Слова, которые путают' }, chip: { uk: '⇄ не плутай', ru: '⇄ не путай' },
+      examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Як запам’ятати', ru: 'Как запомнить' } },
+    { id: 'similar', topic: 'confusing', type: 'relation', file: 'groups/similar.tsv',
+      title: { uk: 'Схожі слова', ru: 'Похожие слова' }, chip: { uk: '≈ звучить схоже', ru: '≈ звучит похоже' },
+      examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Як розрізнити', ru: 'Как различить' } },
+    // ── grammar
+    { id: 'pronouns', topic: 'grammar', type: 'relation', file: 'groups/pronouns.tsv',
       title: { uk: 'Займенники', ru: 'Местоимения' }, chip: { uk: '→ інші форми', ru: '→ другие формы' },
       examples: { uk: 'Приклади', ru: 'Примеры' }, note: { uk: 'Коли яка форма', ru: 'Когда какая форма' } },
   ],
