@@ -587,6 +587,8 @@ button.card { width: 100%; text-align: left; }
   background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }
 .choice-chip.is-on { background: var(--bg-chip-selected); border-color: var(--bg-chip-selected); color: var(--text-on-chip-selected); }
 .choice-wrap--count .choice-chip { height: 52px; }
+/* уровень без слов под выбранные типы — бледный и не нажимается; если был выбран, остаётся чёрным, но бледным */
+.choice-chip:disabled { opacity: .35; cursor: default; }
 
 /* 2.4: «Важко · Легко · Вивчено» */
 .rate3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
