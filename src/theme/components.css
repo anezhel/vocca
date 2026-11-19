@@ -402,10 +402,10 @@ button.card { width: 100%; text-align: left; }
 .counter--dark { background: var(--bg-inverse); color: var(--text-on-inverse); border-color: transparent; }
 .done-actions { display: flex; flex-direction: column; gap: var(--space-8); }
 .link-btn { height: 52px; width: 100%; text-align: center; }
-/* 2.3 новое слово: «Знаю» · «Вчити», под ними текстовая «Пропустити» (44 px, через 4) */
+/* 2.3 новое слово: «Знаю» · «Вчити», под ними текстовая «Пізніше» (44 px, через 4) */
 .new-actions { display: flex; flex-direction: column; gap: var(--space-4); }
 .skip-btn { height: 44px; }
-.screen--bar:has(.new-actions) { padding-bottom: calc(var(--layout-content-bottom) + 48px + env(safe-area-inset-bottom)); }   /* панель выше на «Пропустити» */
+.screen--bar:has(.new-actions) { padding-bottom: calc(var(--layout-content-bottom) + 48px + env(safe-area-inset-bottom)); }   /* панель выше на «Пізніше» */
 
 /* 04a · Вивчено: строка выученного слова раскрывается — примеры и «Повернути у вивчення» */
 .word-list--tight { gap: 6px; }
