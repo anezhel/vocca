@@ -3,6 +3,8 @@
 //   Типи слів — один из «Нові слова / Важко згадати / Легко згадати / Слова з добірок» (как радио).
 //   Обычные типы: Рівень (можно несколько), под ним Кількість слів. Уровень, на котором нет слов этого типа, бледный и
 //     не нажимается; если он был выбран раньше, выбор сохраняется и снова работает, когда слова появятся (2.2a).
+//     У «Важко згадати» и «Легко згадати» на уровне кружок — сколько карточек этого типа можно повторить (у «Нові слова» нет;
+//     у уровня без карточек кружка нет — он и так бледный, а под уровнями подсказка).
 //   «Слова з добірок»: уровней нет, под типами — «Добірки» (все добірки курса, одна; в кружке — сколько в ней карточок,
 //     как на «Практика» и в счётчике занятия), потом Кількість слів (2.2b).
 //     «Почати» — экраны добірки 3.1–3.10 (для «3 форми дієслів» — карточки 3.13) по «Кількість слів» за раз, итог 3.11.
@@ -43,6 +45,7 @@ export function Practice({ course, go, back }) {
   const counts = groupsMode ? {} : levelCounts(course, [prefs.kind]);
   const off = (l) => !groupsMode && !counts[l];
   const offLevels = LEVELS.filter(off);
+  const showLevelCount = prefs.kind === 'hard' || prefs.kind === 'almost';
   const live = prefs.levels.filter((l) => !off(l));
   const levelHint = groupsMode ? '' : prefs.levels.length > 0 && !live.length ? t('practice.pickOtherLevel')
     : offLevels.length ? t('practice.noLevelWords', { lv: offLevels.join(', '), kind: t('practice.kind.' + prefs.kind) }) : '';
@@ -71,7 +74,8 @@ export function Practice({ course, go, back }) {
         </${Section}>
         ${size}` : html`
         <${Section} title=${t('practice.level')}>
-          <div class="choice-wrap">${LEVELS.map((l) => html`<${Chip} on=${prefs.levels.includes(l)} off=${off(l)} label=${l} onClick=${() => flipLevel(l)} />`)}</div>
+          <div class="choice-wrap">${LEVELS.map((l) => html`<${Chip} on=${prefs.levels.includes(l)} off=${off(l)} label=${l}
+            count=${showLevelCount && counts[l] > 0 ? counts[l] : null} onClick=${() => flipLevel(l)} />`)}</div>
           ${levelHint && html`<p class="t-label-13 muted">${levelHint}</p>`}
         </${Section}>
         ${size}`}
