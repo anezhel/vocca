@@ -444,8 +444,6 @@ button.card { width: 100%; text-align: left; }
 .word-pair__link { position: relative; z-index: 2; align-self: center; margin: -18px 0; height: 28px; padding: 0 12px; display: inline-flex; align-items: center;
   border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
 .syn-card { padding: var(--space-20); border-radius: var(--radius-28); }
-/* вторая и следующие добірки слова: плашка лежит на верхнем крае своей карточки */
-.word-pair--next { margin-top: var(--space-4); }
 .syn-row { display: flex; align-items: center; gap: var(--space-12); }
 .syn-row + .syn-row { border-top: 1px solid var(--border-muted); margin-top: var(--space-12); padding-top: var(--space-12); }
 .syn-row__text { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }

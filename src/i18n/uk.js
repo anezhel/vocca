@@ -72,7 +72,7 @@ export default {
   lesson: {
     mark: { hard: 'Важко', easy: 'Легко', learned: 'Вивчено' },
     recall: 'Згадай {lang}', sayAloud: 'Скажи вголос {lang} · {n} с', sayAloudGo: 'Скажи вголос {lang}', show: 'Показати відповідь', whatMeans: 'Що це означає?',
-    newWord: 'Нове слово · {n} / {total}', cardNew: 'Нове слово', cardReview: 'Повторення', meaning: 'Пояснення слова', formsLink: '3 форми дієслова', synonymsLink: 'синоніми', skipToNew: 'Перейти до нових слів',
+    newWord: 'Нове слово · {n} / {total}', cardNew: 'Нове слово', cardReview: 'Повторення', meaning: 'Пояснення слова', compare: 'Порівняй', difference: 'У чому різниця', formsLink: '3 форми дієслова', synonymsLink: 'синоніми', skipToNew: 'Перейти до нових слів',
     reviewDone: 'Повторення готово', reviewDoneCap: '{w} повторено', reviewDoneNext: 'Тепер — {x}.', examples: 'Приклади', synonyms: 'Синоніми',
     english: 'По-англійськи', native: 'Українською', rememberQ: 'Пам’ятаєш це слово?', firstLetter: 'Перша буква: {x}',
     rate: { again: 'Не пам’ятаю', againShort: 'Забуто', hard: 'Важко', good: 'Знаю', easy: 'Легко', remember: 'Пам’ятаю', dontKnow: 'Не знаю', forgot: 'Забуто', known: 'Знаю це слово', knownSub: 'у вивчені' },
