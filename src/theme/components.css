@@ -506,7 +506,7 @@ button.card { width: 100%; text-align: left; }
 .level-chip svg { color: #ff7758; } /* огонёк заливкой, как в 08 */
 .level-chip svg path { fill: currentColor; }
 .hero__label { display: flex; flex-direction: column; gap: var(--space-8); padding-bottom: var(--space-8); }
-.hero__text { white-space: pre-line; } /* «Слів» / «пройдено» — в две строки, как в 2.1 */
+.hero__text { white-space: pre-line; } /* «Слів сьогодні» / «пройдено» — в две строки, как в 2.1 */
 .screen--today .stats .stat { border-radius: var(--radius-24); }
 /* Aura/Choice row — «Групи слів»: лавандовая карточка, иконка в белом кружке, стрелка в обводке */
 .choice-row { width: 100%; min-height: 86px; display: flex; align-items: center; gap: var(--space-14); padding: 0 var(--space-16);
