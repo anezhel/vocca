@@ -573,21 +573,17 @@ button.card { width: 100%; text-align: left; }
 .plan__tag { position: absolute; top: var(--space-14); left: var(--space-14); padding: 4px 10px; border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
 .paywall__free { height: auto; padding: var(--space-8) 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 
-/* 2.2 «Що тренуємо / цього разу?» (макет 19.11.2026, обновлён): секции через 28, заголовок секции → чипы 12;
-   Aura/Chip 48 px (в «Кількість слів» — 52), поля 16; выбранный — чёрный без галочки; между чипами 4 (в «Кількість» по вертикали — 8) */
+/* 2.2 «Що тренуємо / цього разу?» (макеты 2.2 / 2.2a / 2.2b, 19.11.2026): секции через 32, заголовок секции → чипы 12;
+   Aura/Chip 40 px, скругление 10, поля 16; выбранный — чёрный без галочки; между чипами 6 по горизонтали и вертикали */
 .screen--practice .screen__content { gap: var(--space-16); }
-.practice-secs { display: flex; flex-direction: column; gap: var(--space-28); margin-top: var(--space-16); }
-.practice-sec { display: flex; flex-direction: column; gap: var(--space-12); transition: opacity .2s; }
-.practice-sec.is-dim { opacity: .4; }
+.practice-secs { display: flex; flex-direction: column; gap: var(--space-32); margin-top: var(--space-16); }
+.practice-sec { display: flex; flex-direction: column; gap: var(--space-12); }
 .practice-sec__head { display: flex; align-items: baseline; gap: var(--space-8); }
-.choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-4); }
-.choice-wrap--tight { gap: var(--space-4); }
-.choice-row6 { display: flex; gap: var(--space-4); }
-.choice-chip { height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 var(--space-16); border-radius: var(--radius-full);
+.choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-6); }
+.choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0 var(--space-16); border-radius: var(--radius-10);
   background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }
 .choice-chip.is-on { background: var(--bg-chip-selected); border-color: var(--bg-chip-selected); color: var(--text-on-chip-selected); }
-.choice-wrap--count .choice-chip { height: 52px; }
-/* уровень без слов под выбранные типы — бледный и не нажимается; если был выбран, остаётся чёрным, но бледным */
+/* уровень без слов этого типа — бледный и не нажимается; если был выбран, остаётся чёрным, но бледным */
 .choice-chip:disabled { opacity: .35; cursor: default; }
 
 /* 2.4: «Важко · Легко · Вивчено» */

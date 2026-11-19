@@ -36,9 +36,9 @@ export const CONFIG = {
   repeatGoalDefault: 20,
 
   // ── «Що тренуємо» (2.2): значения по умолчанию; дальше приложение помнит выбор человека ──
-  practiceSizes: [20, 30, 40, 'all'],     // «Кількість слів»; 'all' — «Без обмежень»
+  practiceSizes: [20, 30, 40, 'all'],     // «Кількість слів»; 'all' — «Всі»
   practiceAllCap: 500,                    // «Без обмежень» — не больше стольких слов за заход
-  practiceDefault: { kinds: ['new', 'hard'], groups: [], size: 20 },  // уровень — «твій рівень»
+  practiceDefault: { kind: 'new', size: 20 },  // 2.2: тип слов — один; уровень — «твій рівень», добірка — та, что в процессе
   reminderTimes: [['08:00', 'morning'], ['13:00', 'day'], ['20:00', 'evening']],
   reminderDefault: '20:00',
 
