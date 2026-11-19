@@ -337,26 +337,28 @@ export const Example = ({ ex, hl }) => html`<div class="example"><div class="t-b
 // его можно тянуть пальцем — вкладка выбирается, когда палец отпущен. Нажатие на вкладку — обычный click.
 // Движение — пружина в requestAnimationFrame; стили пишутся прямо в DOM, без перерисовки на каждом кадре.
 // «Групи» в меню нет с 16.11.2026. С 18.11.2026 (Aura/Tab bar v2): в капсуле «Практика · Слова» (до 18.11.2026 — «Сьогодні») (и «Прогрес», когда
-// появится страница), «Налаштування» — отдельный круглый кружок справа (Aura/Settings button), без подписи.
+// появится страница). С 19.11.2026 «Налаштування» — внутри капсулы, справа: иконка без подписи в сером круге 56 px. Пузырёк к нему
+// не едет (ездит только между вкладками): когда открыты настройки, пузырька нет, а круг становится розовым, цвета пузырька.
 const TABS = [['today', 'bolt'], ['words', 'cards'], ['progress', 'chart']];
-const PAD = 4;
-const NavItems = ({ items, cls }) => items.map(([name, icon]) => html`<span key=${name} class=${cls}><${Icon} name=${icon} size=${24} />
-  <span class="nav__label">${t('nav.' + name)}</span></span>`);
+const PAD = 4, SET = 56 + 4;   // круг настроек 56 px + 4 px до вкладок
+const NavItems = ({ items, cls, set }) => [...items.map(([name, icon]) => html`<span key=${name} class=${cls}><${Icon} name=${icon} size=${24} />
+  <span class="nav__label">${t('nav.' + name)}</span></span>`), set && html`<span key="set" class="nav__set-slot"></span>`];
 
 export function Nav({ active, onNav, tabs }) {
   const items = TABS.filter(([n]) => tabs.includes(n));
+  const hasSet = tabs.includes('settings');
   const idx = items.findIndex(([n]) => n === active);   // -1 — открыты «Налаштування»: пузырька в капсуле нет
   const barRef = useRef(null), bubRef = useRef(null), lensRef = useRef(null), st = useRef(null);
-  const latest = useRef(null); latest.current = { items, idx, active, onNav };
+  const latest = useRef(null); latest.current = { items, idx, active, onNav, hasSet };
 
   useEffect(() => {
     const bar = barRef.current, bub = bubRef.current, lens = lensRef.current;
     const s = (st.current = { x: 0, v: 0, target: 0, pressed: false, raf: 0, last: 0 });
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const n = () => latest.current.items.length;
-    const measure = () => { s.W = bar.clientWidth; s.H = bar.clientHeight; s.tw = (s.W - 2 * PAD) / n(); lens.style.width = s.W + 'px'; lens.style.height = s.H + 'px'; };
+    const measure = () => { s.W = bar.clientWidth; s.H = bar.clientHeight; s.tw = (s.W - 2 * PAD - (latest.current.hasSet ? SET : 0)) / n(); lens.style.width = s.W + 'px'; lens.style.height = s.H + 'px'; };
     const center = (i) => PAD + s.tw * (i + 0.5);
-    const clampX = (x) => Math.min(Math.max(x, PAD + s.tw / 2), s.W - PAD - s.tw / 2);
+    const clampX = (x) => Math.min(Math.max(x, PAD + s.tw / 2), PAD + s.tw * (n() - 0.5));   // круг настроек пузырёк не заезжает
     // пузырёк всегда размером с вкладку; внутри — копия иконок и подписей в цвете nav/active, сдвинутая под пузырёк
     const draw = () => {
       const w = s.tw, h = s.H - 2 * PAD;
@@ -377,7 +379,7 @@ export function Nav({ active, onNav, tabs }) {
     const at = (e) => e.clientX - bar.getBoundingClientRect().left;
     // Обычное нажатие — стандартный click кнопки (надёжно на iPhone). Свои обработчики — только для
     // перетаскивания пузырька: оно начинается, когда палец сдвинулся больше чем на 8 px.
-    const down = (e) => { if (e.button > 0) return; s.pressed = true; s.dragging = false; s.startX = e.clientX; s.pid = e.pointerId; };
+    const down = (e) => { if (e.button > 0 || e.target.closest('.nav__set')) return; s.pressed = true; s.dragging = false; s.startX = e.clientX; s.pid = e.pointerId; };
     const move = (e) => {
       if (!s.pressed) return;
       if (!s.dragging && Math.abs(e.clientX - s.startX) > 8) { s.dragging = true; try { bar.setPointerCapture(s.pid); } catch (_) { /* касание уже закончилось */ } }
@@ -406,13 +408,13 @@ export function Nav({ active, onNav, tabs }) {
   useEffect(() => { const s = st.current; if (s && s.goTo && !s.pressed && idx >= 0) s.goTo(idx); }, [idx]);
 
   return html`<div class="nav-dock">
-    <nav class=${cx('nav', idx < 0 && 'nav--none')} ref=${barRef} aria-label="menu">
+    <nav class=${cx('nav', idx < 0 && 'nav--none', hasSet && 'nav--set')} ref=${barRef} aria-label="menu" style=${`--tabs:${items.length}`}>
       <div class="nav__row">${items.map(([name, icon]) => html`<button key=${name} class="nav__tab" aria-current=${active === name ? 'page' : null}
-        onClick=${() => tap(name)}><${Icon} name=${icon} size=${24} /><span class="nav__label">${t('nav.' + name)}</span></button>`)}</div>
-      <div class="nav__bubble" ref=${bubRef} aria-hidden="true"><div class="nav__lens" ref=${lensRef}><${NavItems} items=${items} cls="nav__tab" /></div></div>
+        onClick=${() => tap(name)}><${Icon} name=${icon} size=${24} /><span class="nav__label">${t('nav.' + name)}</span></button>`)}
+        ${hasSet && html`<button class=${cx('nav__set', active === 'settings' && 'is-active')} aria-label=${t('nav.settings')}
+          aria-current=${active === 'settings' ? 'page' : null} onClick=${() => active !== 'settings' && onNav('settings')}><${Icon} name="settings" size=${24} /></button>`}</div>
+      <div class="nav__bubble" ref=${bubRef} aria-hidden="true"><div class="nav__lens" ref=${lensRef}><${NavItems} items=${items} cls="nav__tab" set=${hasSet} /></div></div>
     </nav>
-    ${tabs.includes('settings') && html`<button class=${cx('nav-settings', active === 'settings' && 'is-active')} aria-label=${t('nav.settings')}
-      aria-current=${active === 'settings' ? 'page' : null} onClick=${() => active !== 'settings' && onNav('settings')}><${Icon} name="settings" size=${24} /></button>`}
   </div>`;
 }
 

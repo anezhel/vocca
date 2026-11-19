@@ -134,21 +134,24 @@ button.card { width: 100%; text-align: left; }
 .check-row { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-6) 0; }
 .note-box { display: flex; gap: var(--space-10); align-items: flex-start; padding: var(--space-14) var(--space-16); border-radius: var(--radius-20); background: var(--tint-lavender); }
 
-/* ── Aura/Tab bar v2: стеклянная капсула 290 px с вкладками + круглая кнопка настроек 64 px справа, через 8 px ──
-   за активной вкладкой светло-розовый пузырёк (nav/active-bg). Над полоской «домой» на iPhone: у нижнего края
+/* ── Aura/Tab bar v2 (19.11.2026): стеклянная капсула — вкладки по 98 px и справа, через 4 px, серый круг настроек 56 px
+   (bg/surface-3, иконка без подписи). За активной вкладкой светло-розовый пузырёк (nav/active-bg); к настройкам он не едет —
+   когда они открыты, пузырька нет, а круг розовый (nav/active-bg, иконка nav/active). Над полоской «домой» на iPhone: у нижнего края
    нажатия перехватывает система (и панель Safari). */
 .nav-dock { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: max(16px, env(safe-area-inset-bottom));
   width: calc(min(430px, 100%) - 28px); display: flex; justify-content: center; gap: var(--space-8); pointer-events: none; }
-.nav, .nav-settings { pointer-events: auto; height: 64px; border-radius: var(--radius-full);
+.nav { pointer-events: auto; height: 64px; border-radius: var(--radius-full);
   background: rgba(255, 255, 255, .5); -webkit-backdrop-filter: blur(16px) saturate(1.8); backdrop-filter: blur(16px) saturate(1.8);
   border: 1px solid rgba(255, 255, 255, .75); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 12px 32px rgba(20, 20, 22, .18); }
-.nav { position: relative; flex: 0 1 290px; min-width: 0;
+.nav { position: relative; flex: 0 1 auto; width: calc(var(--tabs, 2) * 98px + 8px); max-width: 100%; min-width: 0;
   touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: pointer; }
 .nav--none .nav__bubble { opacity: 0; }
-.nav-settings { position: relative; flex: none; width: 64px; display: grid; place-items: center; color: var(--text-secondary); -webkit-tap-highlight-color: transparent; }
-.nav-settings svg { position: relative; }
-.nav-settings.is-active { color: var(--nav-active); }
-.nav-settings.is-active::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--nav-active-bg); }
+.nav--set { width: calc(var(--tabs, 2) * 98px + 68px); }
+.nav__set { flex: none; width: 56px; height: 56px; margin-left: 4px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--bg-surface-3); color: var(--text-secondary); transition: background-color .2s, color .2s; -webkit-tap-highlight-color: transparent; }
+.nav__set svg { display: block; }
+.nav__set.is-active { background: var(--nav-active-bg); color: var(--nav-active); }
+.nav__set-slot { flex: none; width: 60px; }   /* в копии под пузырьком — место круга, чтобы вкладки совпали */
 .nav__row { position: absolute; inset: 0; display: flex; padding: 4px; }
 .nav__lens { position: absolute; left: 0; top: 0; display: flex; padding: 4px; will-change: transform; }
 .nav__tab { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
