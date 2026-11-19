@@ -20,51 +20,84 @@ export const Screen = ({ children, bottom, cls, tone }) => html`<main class=${cx
   ${bottom && html`<div class="bottom-bar">${bottom}</div>`}
 </main>`;
 
-// Свайп по карточкам (с 19.11.2026): вправо — предыдущая карточка, влево — следующая (только уже просмотренная).
-// Пока палец ведёт, карточки (всё, кроме верхней строки) едут за ним; если листать некуда — почти стоят (сопротивление).
-// Срабатывает от 80 px или быстрым движением от 30 px. Свайп от самого края экрана не ловим — это жест «назад» в браузере.
-// На компьютере — стрелки ← / → на клавиатуре. onPrev / onNext = null — в эту сторону листать нельзя.
+// Свайп по карточкам (с 19.11.2026, плавнее — 19.11.2026): вправо — предыдущая карточка, влево — следующая (только уже
+// просмотренная). Карточки (всё, кроме верхней строки) идут за пальцем 1 : 1; если листать некуда — тянутся с сопротивлением.
+// Отпустили дальше 20 % ширины экрана или быстрым движением — карточка уезжает за край, а новая въезжает с другой стороны
+// (enterCls ниже); иначе — мягко возвращается. Пока свайп горизонтальный, страница не прокручивается по вертикали.
+// В браузере свайп от самого края не ловим — там жест «назад» Safari; в приложении на экране «Домой» — ловим и от края.
+// На компьютере — стрелки ← / →. onPrev / onNext = null — в эту сторону листать нельзя.
 export function useSwipe(onPrev, onNext) {
   const cb = useRef({});
   cb.current = { onPrev, onNext };
   useEffect(() => {
-    let s = null;
+    const app = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    const edge = app ? 0 : 16;
+    let s = null, raf = 0, busy = false;
     const content = () => document.querySelector('.screen__content');
-    const shift = (x, anim) => { const c = content(); if (!c) return; c.classList.toggle('is-settling', !!anim); c.style.setProperty('--swipe', x + 'px'); };
+    // сдвиг карточек: --swipe (px) и --swipe-o (прозрачность); mode: '' — за пальцем, 'back' — вернуться, 'out' — уехать
+    const set = (x, mode = '') => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const c = content(); if (!c) return;
+        c.classList.toggle('is-dragging', mode === '');
+        c.classList.toggle('is-settling', mode === 'back');
+        c.classList.toggle('is-leaving', mode === 'out');
+        c.style.setProperty('--swipe', x + 'px');
+        c.style.setProperty('--swipe-o', String(1 - Math.min(0.5, Math.abs(x) / innerWidth / 1.6)));
+      });
+    };
+    const clear = () => { const c = content(); if (c) { c.classList.remove('is-dragging', 'is-settling', 'is-leaving'); c.style.removeProperty('--swipe'); c.style.removeProperty('--swipe-o'); } };
     const start = (e) => {
       s = null;
-      if (e.touches.length !== 1) return;
+      if (busy || e.touches.length !== 1) return;
       const p = e.touches[0];
-      if (p.clientX < 24 || p.clientX > innerWidth - 24 || e.target.closest('.bottom-bar, .sheet, input, textarea, [data-noswipe]')) return;
-      s = { x: p.clientX, y: p.clientY, t: Date.now(), dir: null, dx: 0 };
+      if (p.clientX < edge || p.clientX > innerWidth - edge || e.target.closest('.bottom-bar, .sheet, input, textarea, [data-noswipe]')) return;
+      s = { x: p.clientX, y: p.clientY, dir: null, dx: 0, pts: [[p.clientX, e.timeStamp]] };
     };
     const move = (e) => {
       if (!s) return;
       const p = e.touches[0], dx = p.clientX - s.x, dy = p.clientY - s.y;
-      if (!s.dir) { if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return; s.dir = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'h' : 'v'; }
+      if (!s.dir) { if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return; s.dir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v'; }
       if (s.dir !== 'h') return;
+      if (e.cancelable) e.preventDefault();          // горизонтальный свайп — страницу не прокручиваем
+      s.dx = dx;
+      s.pts.push([p.clientX, e.timeStamp]); if (s.pts.length > 5) s.pts.shift();
       const can = dx > 0 ? cb.current.onPrev : cb.current.onNext;
-      s.dx = dx; shift(can ? dx * 0.6 : dx * 0.12);
+      set(can ? dx : dx / (3 + Math.abs(dx) / 40));   // некуда листать — резинка
     };
-    const end = () => {
+    const end = (e) => {
       if (!s) return;
-      const { dx, dir, t: t0 } = s; s = null;
+      const { dx, dir, pts } = s; s = null;
       if (dir !== 'h') return;
-      const fast = Math.abs(dx) > 30 && Math.abs(dx) / Math.max(1, Date.now() - t0) > 0.5;
-      const go = Math.abs(dx) > 80 || fast ? (dx > 0 ? cb.current.onPrev : cb.current.onNext) : null;
-      if (go) { shift(0); go(); } else shift(0, true);
+      const [x0, t0] = pts[0], [x1, t1] = pts[pts.length - 1];
+      const v = t1 > t0 ? (x1 - x0) / (t1 - t0) : 0;  // px/мс за последние движения
+      const go = dx > 0 ? cb.current.onPrev : cb.current.onNext;
+      const far = Math.abs(dx) > innerWidth * 0.2, flick = Math.abs(dx) > 24 && Math.abs(v) > 0.3 && Math.sign(v) === Math.sign(dx);
+      if (go && (far || flick)) {
+        busy = true;
+        set(Math.sign(dx) * innerWidth, 'out');
+        setTimeout(() => { busy = false; go(); clear(); }, 170);
+      } else {
+        set(0, 'back');
+        setTimeout(() => { if (!s && !busy) clear(); }, 260);
+      }
     };
     const key = (e) => {
-      if (e.target.closest && e.target.closest('input, textarea')) return;
+      if (busy || (e.target.closest && e.target.closest('input, textarea'))) return;
       const go = e.key === 'ArrowLeft' ? cb.current.onPrev : e.key === 'ArrowRight' ? cb.current.onNext : null;
       if (go) { e.preventDefault(); go(); }
     };
+    const opts = { passive: false };
     addEventListener('touchstart', start, { passive: true });
-    addEventListener('touchmove', move, { passive: true });
+    addEventListener('touchmove', move, opts);
     addEventListener('touchend', end);
     addEventListener('touchcancel', end);
     addEventListener('keydown', key);
-    return () => { for (const [n, f] of [['touchstart', start], ['touchmove', move], ['touchend', end], ['touchcancel', end], ['keydown', key]]) removeEventListener(n, f); };
+    return () => {
+      cancelAnimationFrame(raf); clear();
+      removeEventListener('touchstart', start); removeEventListener('touchmove', move, opts);
+      removeEventListener('touchend', end); removeEventListener('touchcancel', end); removeEventListener('keydown', key);
+    };
   }, []);
 }
 // Класс экрана для въезда карточки после свайпа: 'left' — предыдущая (въезжает слева), 'right' — следующая
