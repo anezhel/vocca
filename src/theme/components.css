@@ -428,18 +428,24 @@ button.card { width: 100%; text-align: left; }
 .chart__next-label { font-size: 12px; fill: var(--text-secondary); opacity: .6; }
 
 /* 07 · Нове слово / 07p · Повторення: белая карточка слова, синонимы под ней со связкой «≈ синоніми» */
-.screen--lesson .screen__content { gap: var(--space-20); }
+.screen--lesson .screen__content { gap: var(--space-16); }
+.screen--lesson .top-bar { margin-bottom: var(--space-4); }   /* от верхней строки до карточки — 20, между карточками — 16 */
 .word-pair { display: flex; flex-direction: column; gap: var(--space-8); }
-.word-main { padding: var(--space-20); border-radius: var(--radius-28); display: flex; flex-direction: column; gap: var(--space-16); }
+.word-main { padding: var(--space-20) var(--space-20) var(--space-32); border-radius: var(--radius-28); display: flex; flex-direction: column; gap: var(--space-16); }
+.word-main__top { display: flex; align-items: center; gap: var(--space-14); }
+.word-main__top .overline { margin: 0; }
+.word-main .new-head__text { gap: 2px; }
 .word-main .new-head { margin-top: 0; align-items: flex-start; }
 .new-head__text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .new-head__text .overline { margin: 0; }
 .tags--word { gap: 6px; }
-.tags--word .level-tag { height: 28px; padding: 0 12px; font-size: 14px; font-weight: 600; }
+.tags--word .level-tag, .word-main__top .level-tag { height: 28px; padding: 0 12px; font-size: 14px; font-weight: 600; }
 .pill--tag { height: 28px; padding: 0 12px; background: transparent; border-color: var(--border-default); font-size: 14px; font-weight: 500; }
 .word-pair__link { position: relative; z-index: 2; align-self: center; margin: -18px 0; height: 28px; padding: 0 12px; display: inline-flex; align-items: center;
   border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
 .syn-card { padding: var(--space-20); border-radius: var(--radius-28); }
+/* вторая и следующие добірки слова: плашка лежит на верхнем крае своей карточки */
+.word-pair--next { margin-top: var(--space-4); }
 .syn-row { display: flex; align-items: center; gap: var(--space-12); }
 .syn-row + .syn-row { border-top: 1px solid var(--border-muted); margin-top: var(--space-12); padding-top: var(--space-12); }
 .syn-row__text { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -569,19 +575,20 @@ button.card { width: 100%; text-align: left; }
 .plan__tag { position: absolute; top: var(--space-14); left: var(--space-14); padding: 4px 10px; border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
 .paywall__free { height: auto; padding: var(--space-8) 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 
-/* 2.2 «Що тренуємо» (макет 19.11.2026): секции через 28, заголовок секции → чипы 12; Aura/Chip 40 px,
-   выбранный — чёрный без галочки; уровни и количество — поля 14, остальные — 16; между чипами 4 */
+/* 2.2 «Що тренуємо / цього разу?» (макет 19.11.2026, обновлён): секции через 28, заголовок секции → чипы 12;
+   Aura/Chip 48 px (в «Кількість слів» — 52), поля 16; выбранный — чёрный без галочки; между чипами 4 (в «Кількість» по вертикали — 8) */
 .screen--practice .screen__content { gap: var(--space-16); }
 .practice-secs { display: flex; flex-direction: column; gap: var(--space-28); margin-top: var(--space-16); }
 .practice-sec { display: flex; flex-direction: column; gap: var(--space-12); transition: opacity .2s; }
 .practice-sec.is-dim { opacity: .4; }
 .practice-sec__head { display: flex; align-items: baseline; gap: var(--space-8); }
 .choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-4); }
+.choice-wrap--tight { gap: var(--space-4); }
 .choice-row6 { display: flex; gap: var(--space-4); }
-.choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 var(--space-16); border-radius: var(--radius-full);
+.choice-chip { height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 var(--space-16); border-radius: var(--radius-full);
   background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }
 .choice-chip.is-on { background: var(--bg-chip-selected); border-color: var(--bg-chip-selected); color: var(--text-on-chip-selected); }
-.choice-row6 .choice-chip, .choice-wrap--short .choice-chip { padding: 0 var(--space-14); }
+.choice-wrap--count .choice-chip { height: 52px; }
 
 /* 2.4: «Важко · Легко · Вивчено» */
 .rate3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
