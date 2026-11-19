@@ -1,5 +1,5 @@
 // Занятие «Вчити слова» (с 18.11.2026): очередь собирается по выбору на 2.2 «Що тренуємо».
-// 2.3 — новое слово («Знаю» / «Вчити», под ними «Пізніше»), 2.4 — повторение («Важко» / «Легко» / «Вивчено»), в конце 2.5 итог.
+// 2.3 — новое слово («Пізніше» / «Знаю» / «Вчити» в один ряд), 2.4 — повторение («Важко» / «Легко» / «Вивчено»), в конце 2.5 итог.
 // Свайп вправо — предыдущая карточка (и с итога 2.5 — последняя), влево — обратно вперёд. На пройденной карточке выбранный
 // ответ ярче, остальные бледнее; другой ответ меняет статус слова (reanswer) и ведёт к следующей карточке.
 import { html, useState, useEffect } from '../../lib/preact-htm.js';
@@ -66,12 +66,13 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer }) {
   const isNew = item.kind === 'new';
   const rel = relatedOf(course, w);
   const verb = irregularOf(course, w);
-  // 2.3 новое слово: «Знаю» → Вивчено, «Вчити» → Важкі, текстовая «Пізніше» под ними — слово остаётся новым. 2.4 повторение: «Важко» · «Легко» · «Вивчено» (коралл · мята · чёрная)
+  // 2.3 новое слово, три в ряд: «Пізніше» (текстовая) — слово остаётся новым, «Знаю» → Вивчено, «Вчити» (чёрная без стрелки) → Важкі. 2.4 повторение: «Важко» · «Легко» · «Вивчено» (коралл · мята · чёрная)
   // chosen — карточка уже пройдена (вернулись свайпом): выбранный тогда ответ как обычно, остальные бледнее (is-other)
   const other = (st) => chosen && chosen !== st && 'is-other';
   const bottom = isNew
-    ? html`<div class="new-actions"><div class="row-2"><${Button} variant="secondary" cls=${other('learned')} label=${t('common.iKnow')} onClick=${() => onAnswer('learned')} /><${Button} cls=${other('hard')} label=${t('common.learn')} onClick=${() => onAnswer('hard')} /></div>
-        <button class=${cx('link-btn skip-btn t-title-m', other('skip'))} onClick=${() => onAnswer('skip')}>${t('lesson.skip')}</button></div>`
+    ? html`<div class="row-3"><${Button} variant="ghost" cls=${other('skip')} label=${t('lesson.skip')} onClick=${() => onAnswer('skip')} />
+        <${Button} variant="secondary" cls=${other('learned')} label=${t('common.iKnow')} onClick=${() => onAnswer('learned')} />
+        <${Button} variant="dark" cls=${other('hard')} label=${t('common.learn')} onClick=${() => onAnswer('hard')} /></div>`
     : html`<div class="rate3">${[['hard', 'hard'], ['almost', 'easy'], ['learned', 'learned']].map(([st, k]) => html`<button class=${cx('rate3__btn rate3__btn--' + st + ' t-title-m', other(st))} onClick=${() => onAnswer(st)}>${t('lesson.mark.' + k)}</button>`)}</div>`;
   return html`<${Screen} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="today" bottom=${bottom}>
     <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} />
