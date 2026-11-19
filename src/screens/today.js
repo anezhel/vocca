@@ -50,8 +50,8 @@ export function Today({ course, go, toast }) {
     </div>
     <div class="cta-wrap">${main}</div>
     <div class="practice-rows">
-      ${feature('groups') && course.groupList?.length > 0 && html`<${Collections} course=${course} go=${go} />`}
-      <${Grammar} toast=${toast} />
+      ${feature('groups') && course.groupList?.length > 0 && html`<${Topics} course=${course} go=${go} section="words" icon="grid" title="today.collections" sub="today.groupsSub" />`}
+      <${Topics} course=${course} go=${go} section="grammar" icon="doc" title="today.grammar" sub="today.grammarSub" mint soon="today.grammarSoon" toast=${toast} />
     </div>
     <div class="card learned-levels">
       <div class="learned-levels__top"><span class="t-label-16-strong">${t('today.stats')}</span></div>
@@ -65,43 +65,47 @@ export function Today({ course, go, toast }) {
   </${Screen}>`;
 }
 
-// «Добірки слів» (2.1–2.1b): карточка раскрывается на месте; внутри «В процесі», «Нові», «Пройдені» —
-// каждый блок тоже свёрнут, пока не нажать. Свёрнуто — шеврон вниз, развёрнуто — вверх.
-// Кнопка у добірки: «Вчити» (в процесі), «Почати» (нова), «Повторити» (пройдена) — занятие по этой добірці.
-const BLOCKS = [['learning', 'groupsLearning', 'learn'], ['fresh', 'groupsNew', 'start'], ['done', 'groupsDone', 'repeat']];
-// «Граматика» (19.11.2026) — такая же строка, как «Добірки слів», мятная (цвет A1). Разделов пока нет:
-// нажатие показывает «Граматика з’явиться незабаром».
-function Grammar({ toast }) {
-  return html`<button class="choice-row choice-row--mint" onClick=${() => toast && toast(t('today.grammarSoon'))}>
-    <span class="ib ib--white" style="--ib:48px"><${Icon} name="doc" size=${22} /></span>
-    <span class="choice-row__text"><span class="t-title-l">${t('today.grammar')}</span><span class="t-label-13">${t('today.grammarSub')}</span></span>
-    <span class="ib ib--outline" style="--ib:40px"><${Icon} name="chevron-down" size=${20} /></span></button>`;
+// «Добірки слів» и «Граматика» (2.1–2.1c): строка раскрывается на месте, внутри — блоки-темы (course.topics в pack.js:
+// «Дієслова», «Зв’язки слів», «Вирази», «Не плутай»; в «Граматиці» — «Граматичні слова»). Каждый блок тоже свёрнут, пока
+// не нажать; рядом с названием — сколько в теме добірок. Свёрнуто — шеврон вниз, развёрнуто — вверх.
+// В теме сначала добірки в процессе, потом новые, потом пройденные. Кнопка у добірки: «Вчити» (в процесі),
+// «Почати» (нова), «Повторити» (пройдена) — занятие по этой добірці; у в процессе — полоска прогресса.
+const STATUS = { learning: ['learning', 'learn'], due: ['learning', 'learn'], fresh: ['fresh', 'start'], done: ['done', 'repeat'] };
+const RANK = { learning: 0, fresh: 1, done: 2 };
+function topicsOf(course, section) {
+  const list = course.groupList.map((g) => ({ g, s: GROUP_TYPES[g.type].stats(course, g) }))
+    .map((x) => ({ ...x, k: STATUS[x.s.status][0], btn: STATUS[x.s.status][1] }));
+  const topics = (course.topics || []).filter((tp) => (tp.section || 'words') === section);
+  const known = new Set((course.topics || []).map((tp) => tp.id));
+  const blocks = topics.map((tp) => ({ id: tp.id, title: L(tp.title), items: list.filter(({ g }) => g.topic === tp.id) }));
+  // добірки без темы (или с темой, которой нет в списке) — в «Інші добірки»
+  if (section === 'words') blocks.push({ id: 'other', title: t('today.groupsOther'), items: list.filter(({ g }) => !known.has(g.topic)) });
+  return blocks.filter((b) => b.items.length).map((b) => ({ ...b, items: [...b.items].sort((x, y) => RANK[x.k] - RANK[y.k]) }));
 }
 
-function Collections({ course, go }) {
+// Строка «Добірки слів» / «Граматика» с раскрывающимися темами. Тем нет — строка показывает тост (soon), если он задан.
+function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState({});
-  const list = course.groupList.map((g) => ({ g, s: GROUP_TYPES[g.type].stats(course, g) }));
-  const of = (k) => list.filter(({ s }) => (k === 'learning' ? s.status === 'learning' || s.status === 'due' : s.status === k));
+  const blocks = topicsOf(course, section);
   const size = practicePrefs(course).size;
   // «3 форми дієслів» открывает свой экран с группами и «Тренажер», остальные добірки — сразу занятие
   const open3 = (g, k) => (GROUP_TYPES[g.type].Screen ? go('group', { group: g.id })
     : go('collection', { groups: [g.id], size, review: k === 'done' }));
   const chev = (on) => html`<${Icon} name=${on ? 'chevron-up' : 'chevron-down'} size=${20} />`;
-  // «Добірки слів» и раскрытые блоки — одной группой: между ними 2 px, как в макете 2.1a (а не 20, как между блоками экрана)
-  return html`<div class="colls-wrap"><button class=${cx('choice-row', open && 'is-open')} aria-expanded=${open} onClick=${() => setOpen(!open)}>
-      <span class="ib ib--white" style="--ib:48px"><${Icon} name="grid" size=${22} /></span>
-      <span class="choice-row__text"><span class="t-title-l">${t('today.collections')}</span><span class="t-label-13">${t('today.groupsSub')}</span></span>
+  const tap = () => (blocks.length ? setOpen(!open) : soon && toast && toast(t(soon)));
+  // строка и раскрытые темы — одной группой: между ними 2 px, как в макете 2.1a (а не 20, как между блоками экрана)
+  return html`<div class="colls-wrap"><button class=${cx('choice-row', mint && 'choice-row--mint', open && 'is-open')} aria-expanded=${open} onClick=${tap}>
+      <span class="ib ib--white" style="--ib:48px"><${Icon} name=${icon} size=${22} /></span>
+      <span class="choice-row__text"><span class="t-title-l">${t(title)}</span><span class="t-label-13">${t(sub)}</span></span>
       <span class="ib ib--outline" style="--ib:40px">${chev(open)}</span></button>
-    ${open && html`<div class="colls">${BLOCKS.map(([k, title, btn]) => {
-      const items = of(k);
-      if (!items.length) return null;
-      const on = !!shown[k];
-      return html`<div key=${k} class="card coll-block">
-        <button class="coll-block__head" aria-expanded=${on} onClick=${() => setShown({ ...shown, [k]: !on })}>
-          <span class="t-title-m">${t('today.' + title)}</span><span class="count-pill t-label-13-medium">${items.length}</span><span class="grow"></span>
+    ${open && html`<div class=${cx('colls', mint && 'colls--mint')}>${blocks.map((b) => {
+      const on = !!shown[b.id];
+      return html`<div key=${b.id} class="card coll-block">
+        <button class="coll-block__head" aria-expanded=${on} onClick=${() => setShown({ ...shown, [b.id]: !on })}>
+          <span class="t-title-m">${b.title}</span><span class="count-pill t-label-13-medium">${b.items.length}</span><span class="grow"></span>
           <span class="ib ib--grey" style="--ib:40px">${chev(on)}</span></button>
-        ${on && items.map(({ g, s }) => html`<div key=${g.id} class="coll-row">
+        ${on && b.items.map(({ g, s, k, btn }) => html`<div key=${g.id} class="coll-row">
           <div class="coll-row__head"><div class="coll-row__text"><span class="t-title-m">${L(g.title)}</span><span class="t-label-13 muted">${s.subtitle}</span></div>
             <button class=${'pill-btn pill-btn--' + k + ' t-label-15-medium'} onClick=${() => open3(g, k)}>
               ${k === 'done' && html`<${Icon} name="refresh" size=${16} />`}${t('groups.' + btn)}</button></div>
