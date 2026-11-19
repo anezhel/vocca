@@ -32,7 +32,7 @@ export const ROUTES = {
 
 let current = null;
 // Вкладки меню. «Групи» убраны из меню 16.11.2026: группы — на главной (блоки «В процесі», «Нові», «Пройдені»).
-const tabs = () => ['today', feature('wordsTab') && 'words', 'settings'].filter(Boolean);
+const tabs = () => ['today', feature('wordsTab') && 'words', feature('statsTab') && 'stats', 'settings'].filter(Boolean);
 
 export function applyTheme() {
   const th = getState().theme;
