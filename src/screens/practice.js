@@ -25,16 +25,16 @@ export function Practice({ course, go, back }) {
   const start = () => go('lesson', { prefs });
   return html`<${Screen} cls="screen--grey screen--practice" tone="today" bottom=${html`<${Button} label=${t('practice.start')} disabled=${!canStart} onClick=${start} />`}>
     <div class="top-bar"><${IconButton} icon="arrow-left" size=${48} onClick=${back} label=${t('common.back')} /></div>
-    <${Title} main=${t('practice.title')} />
+    <${Title} main=${t('practice.title')} accent=${t('practice.titleAccent')} />
     <div class="practice-secs">
       <${Section} title=${t('practice.words')}>
-        <div class="choice-wrap">${['new', 'hard', 'almost'].map((k) => html`<${Chip} on=${prefs.kinds.includes(k)} label=${t('practice.kind.' + k)} onClick=${() => flip('kinds', k)} />`)}</div>
+        <div class="choice-wrap choice-wrap--tight">${['new', 'hard', 'almost'].map((k) => html`<${Chip} on=${prefs.kinds.includes(k)} label=${t('practice.kind.' + k)} onClick=${() => flip('kinds', k)} />`)}</div>
       </${Section}>
       <${Section} title=${t('practice.level')}>
         <div class="choice-row6">${LEVELS.map((l) => html`<${Chip} on=${prefs.levels.includes(l)} label=${l} onClick=${() => flip('levels', l)} />`)}</div>
       </${Section}>
       <${Section} title=${t('practice.size')}>
-        <div class="choice-wrap choice-wrap--short">${CONFIG.practiceSizes.map((n) => html`<${Chip} on=${prefs.size === n} label=${n === 'all' ? t('practice.all') : String(n)} onClick=${() => set({ size: n })} />`)}</div>
+        <div class="choice-wrap choice-wrap--count">${CONFIG.practiceSizes.map((n) => html`<${Chip} on=${prefs.size === n} label=${n === 'all' ? t('practice.all') : String(n)} onClick=${() => set({ size: n })} />`)}</div>
       </${Section}>
     </div>
   </${Screen}>`;
