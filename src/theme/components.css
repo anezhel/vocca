@@ -583,11 +583,12 @@ button.card { width: 100%; text-align: left; }
 .choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-8); padding: 0 var(--space-16); border-radius: var(--radius-10);
   background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }
 .choice-chip.is-on { background: var(--bg-chip-selected); border-color: var(--bg-chip-selected); color: var(--text-on-chip-selected); }
-/* число в кружке (у добірок — сколько карточок): 20 px, Label/11 Medium, поля 5; серый (bg/surface-3), у выбранного чипа — белый; справа у чипа поле 8 */
+/* число в кружке (у добірок — сколько карточок): 20 px, Label/11 Medium, поля 5; светло-серый (bg/surface-2),
+   у выбранного (чёрного) чипа — тёмно-серый (bg/inverse-2, текст text/on-inverse-2); справа у чипа поле 8 */
 .choice-chip--count { padding-right: var(--space-8); }
 .choice-chip__count { min-width: 20px; height: 20px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center;
-  border-radius: var(--radius-full); background: var(--bg-surface-3); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
-.choice-chip.is-on .choice-chip__count { background: var(--bg-surface); color: var(--text-primary); }
+  border-radius: var(--radius-full); background: var(--bg-surface-2); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.choice-chip.is-on .choice-chip__count { background: var(--bg-inverse-2); color: var(--text-on-inverse-2); }
 /* уровень без слов этого типа — бледный и не нажимается; если был выбран, остаётся чёрным, но бледным */
 .choice-chip:disabled { opacity: .35; cursor: default; }
 
