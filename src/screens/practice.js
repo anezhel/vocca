@@ -3,7 +3,8 @@
 //   Типи слів — один из «Нові слова / Важко згадати / Легко згадати / Слова з добірок» (как радио).
 //   Обычные типы: Рівень (можно несколько), под ним Кількість слів. Уровень, на котором нет слов этого типа, бледный и
 //     не нажимается; если он был выбран раньше, выбор сохраняется и снова работает, когда слова появятся (2.2a).
-//   «Слова з добірок»: уровней нет, под типами — «Добірки» (все добірки курса, одна), потом Кількість слів (2.2b).
+//   «Слова з добірок»: уровней нет, под типами — «Добірки» (все добірки курса, одна; в кружке — сколько в ней слів,
+//     как на «Практика»), потом Кількість слів (2.2b).
 //     «Почати» — экраны добірки 3.1–3.10 (для «3 форми дієслів» — карточки 3.13) по «Кількість слів» за раз, итог 3.11.
 //   Кількість слів — одно из 10 / 20 / 30 / 40 / «Всі», снять нельзя.
 import { html, useState } from '../../lib/preact-htm.js';
@@ -16,8 +17,9 @@ import { Screen, Title, Button, IconButton, cx } from '../ui/kit.js';
 
 // Aura/Chip: не выбран — белый с обводкой, выбран — чёрный, без галочки
 // off — неактивен (уровень без слов этого типа): бледный, не нажимается; выбор при этом не теряется
-const Chip = ({ on, off, label, onClick }) => html`<button class=${cx('choice-chip t-label-15-medium', on && 'is-on')} aria-pressed=${on}
-  disabled=${off} onClick=${onClick}>${label}</button>`;
+// count — число в кружке справа (у добірок — сколько слів): серый кружок, у выбранного чипа — белый
+const Chip = ({ on, off, label, count, onClick }) => html`<button class=${cx('choice-chip t-label-15-medium', on && 'is-on', count != null && 'choice-chip--count')}
+  aria-pressed=${on} disabled=${off} onClick=${onClick}>${label}${count != null && html`<span class="choice-chip__count t-label-12-medium">${count}</span>`}</button>`;
 
 const Section = ({ title, children }) => html`<section class="practice-sec">
   <div class="practice-sec__head"><span class="t-title-m">${title}</span></div>
@@ -64,7 +66,8 @@ export function Practice({ course, go, back }) {
       </${Section}>
       ${groupsMode ? html`
         <${Section} title=${t('practice.groups')}>
-          <div class="choice-wrap">${course.groupList.map((g) => html`<${Chip} on=${prefs.group === g.id} label=${L(g.title)} onClick=${() => set({ group: g.id })} />`)}</div>
+          <div class="choice-wrap">${course.groupList.map((g) => html`<${Chip} on=${prefs.group === g.id} label=${L(g.title)}
+            count=${GROUP_TYPES[g.type].stats(course, g).total} onClick=${() => set({ group: g.id })} />`)}</div>
         </${Section}>
         ${size}` : html`
         <${Section} title=${t('practice.level')}>

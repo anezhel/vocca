@@ -580,9 +580,14 @@ button.card { width: 100%; text-align: left; }
 .practice-sec { display: flex; flex-direction: column; gap: var(--space-12); }
 .practice-sec__head { display: flex; align-items: baseline; gap: var(--space-8); }
 .choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-6); }
-.choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0 var(--space-16); border-radius: var(--radius-10);
+.choice-chip { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-8); padding: 0 var(--space-16); border-radius: var(--radius-10);
   background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--text-primary); white-space: nowrap; }
 .choice-chip.is-on { background: var(--bg-chip-selected); border-color: var(--bg-chip-selected); color: var(--text-on-chip-selected); }
+/* число в кружке (у добірок — сколько слів): 24 px, серый; у выбранного чипа — белый; справа у чипа поле 8 */
+.choice-chip--count { padding-right: var(--space-8); }
+.choice-chip__count { min-width: 24px; height: 24px; padding: 0 7px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-full); background: var(--bg-surface-2); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.choice-chip.is-on .choice-chip__count { background: var(--bg-surface); color: var(--text-primary); }
 /* уровень без слов этого типа — бледный и не нажимается; если был выбран, остаётся чёрным, но бледным */
 .choice-chip:disabled { opacity: .35; cursor: default; }
 
