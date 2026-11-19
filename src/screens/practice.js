@@ -2,7 +2,8 @@
 // что человек выбрал в прошлый раз (в первый раз — «Нові слова», «твій рівень», 20 слів). Выбор запоминается сразу.
 //   Типи слів — один из «Нові слова / Важко згадати / Легко згадати / Слова з добірок» (как радио).
 //   Обычные типы: Рівень (можно несколько), под ним Кількість слів. Уровень, на котором нет слов этого типа, бледный и
-//     не нажимается; если он был выбран раньше, выбор сохраняется и снова работает, когда слова появятся (2.2a).
+//     не нажимается, а если был выбран — выбор с него снимается (решение дизайнера 19.11.2026; раньше выбор сохранялся).
+//     Если так не осталось ни одного выбранного уровня — выбирается доступный, ближайший к «моему» (2.2a).
 //     У «Важко згадати» и «Легко згадати» на уровне кружок — сколько карточек этого типа можно повторить (у «Нові слова» нет);
 //     у уровня без таких карточек — 0 (сам чип бледный, а под уровнями подсказка).
 //   «Слова з добірок»: уровней нет, под типами — «Добірки» (все добірки курса, одна; в кружке — сколько в ней карточок,
@@ -14,11 +15,12 @@ import { CONFIG } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { GROUP_TYPES } from '../groups/index.js';
 import { t, L } from '../i18n/index.js';
-import { practicePrefs, savePractice, levelCounts, countFor, PRACTICE_KINDS } from '../core/session.js';
+import { practicePrefs, savePractice, levelCounts, countFor, myLevel, PRACTICE_KINDS } from '../core/session.js';
+import { progress } from '../core/store.js';
 import { Screen, Title, Button, IconButton, cx } from '../ui/kit.js';
 
 // Aura/Chip: не выбран — белый с обводкой, выбран — чёрный, без галочки
-// off — неактивен (уровень без слов этого типа): бледный, не нажимается; выбор при этом не теряется
+// off — неактивен (уровень без слов этого типа): бледный, не нажимается; выбранным такой уровень не бывает (fitLevels)
 // count — число в кружке справа (у добірок — сколько слів): серый кружок, у выбранного чипа — белый
 const Chip = ({ on, off, label, count, onClick }) => html`<button class=${cx('choice-chip t-label-15-medium', on && 'is-on', count != null && 'choice-chip--count')}
   aria-pressed=${on} disabled=${off} onClick=${onClick}>${label}${count != null && html`<span class="choice-chip__count t-label-11">${count}</span>`}</button>`;
@@ -34,9 +36,28 @@ function defaultGroup(course) {
   return hit ? hit.g.id : null;
 }
 
+// Уровни под выбранный тип: с уровней без слов этого типа выбор снимается. Если при открытии экрана или смене типа не осталось
+// ни одного — выбирается доступный уровень, ближайший к «моему» (при равенстве — тот, что ниже); снять все уровни вручную
+// по-прежнему можно (тогда «Почати» неактивна). Для «Слова з добірок» уровни не трогаем.
+function fitLevels(course, p, pick = true) {
+  if (p.kind === 'groups') return p;
+  const counts = levelCounts(course, [p.kind]);
+  const levels = p.levels.filter((l) => counts[l]);
+  if (!levels.length && pick) {
+    const me = LEVELS.indexOf(myLevel(progress(course.id)) || p.levels[0] || LEVELS[0]);
+    const near = LEVELS.filter((l) => counts[l]).sort((a, b) => Math.abs(LEVELS.indexOf(a) - me) - Math.abs(LEVELS.indexOf(b) - me) || LEVELS.indexOf(a) - LEVELS.indexOf(b))[0];
+    if (near) levels.push(near);
+  }
+  return levels.length === p.levels.length && levels.every((l, i) => l === p.levels[i]) ? p : { ...p, levels };
+}
+
 export function Practice({ course, go, back }) {
-  const [prefs, setPrefs] = useState(() => { const p = practicePrefs(course); return { ...p, group: p.group || defaultGroup(course) }; });
-  const set = (patch) => { const n = { ...prefs, ...patch }; setPrefs(n); savePractice(course, n); };
+  const [prefs, setPrefs] = useState(() => {
+    const p = practicePrefs(course), n = fitLevels(course, { ...p, group: p.group || defaultGroup(course) });
+    if (n.levels !== p.levels) savePractice(course, n);
+    return n;
+  });
+  const set = (patch) => { const n = fitLevels(course, { ...prefs, ...patch }, 'kind' in patch); setPrefs(n); savePractice(course, n); };
   const flipLevel = (l) => set({ levels: prefs.levels.includes(l) ? prefs.levels.filter((x) => x !== l) : [...prefs.levels, l] });
   const groupsMode = prefs.kind === 'groups';
   const kinds = PRACTICE_KINDS.filter((k) => k !== 'groups' || course.groupList.length);
@@ -47,8 +68,7 @@ export function Practice({ course, go, back }) {
   const offLevels = LEVELS.filter(off);
   const showLevelCount = prefs.kind === 'hard' || prefs.kind === 'almost';
   const live = prefs.levels.filter((l) => !off(l));
-  const levelHint = groupsMode ? '' : prefs.levels.length > 0 && !live.length ? t('practice.pickOtherLevel')
-    : offLevels.length ? t('practice.noLevelWords', { lv: offLevels.join(', '), kind: t('practice.kind.' + prefs.kind) }) : '';
+  const levelHint = groupsMode || !offLevels.length ? '' : t('practice.noLevelWords', { lv: offLevels.join(', '), kind: t('practice.kind.' + prefs.kind) });
 
   const canStart = groupsMode ? !!prefs.group : live.length > 0 && countFor(course, { levels: live })[prefs.kind] > 0;
   const start = () => {
