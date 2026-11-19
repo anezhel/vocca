@@ -38,7 +38,8 @@ const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 // 2.3 · Нове слово / 2.4 · Повторення (макет 19.11.2026): серый фон с лавандовым и розовым пятнами. Белая карточка слова:
 // вверху тег уровня и «НОВЕ СЛОВО» / «ПОВТОРЕННЯ», слово Word/XL, транскрипция, озвучка в обводке, перевод; часть речи не показываем.
-// Если слово есть в добірках — их блоки (relatedOf ниже). Дальше «Приклади» и «Пояснення слова»; карточки через 16 px.
+// Если слово есть в добірках — их карточки сразу под словом (relatedOf ниже). Дальше «Приклади» и «Пояснення слова»,
+// в конце — «Порівняй» и «У чому різниця» из добірок; карточки через 16 px.
 function WordCard({ course, w, lesson, bar, item, onAnswer }) {
   const lang = ttsLang(course);
   const word = shown(course, w);
@@ -62,20 +63,20 @@ function WordCard({ course, w, lesson, bar, item, onAnswer }) {
         <div class="t-translation-l">${cap(L(w.tr))}</div>
       </div>
       ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbForms} verb=${verb} lang=${lang} />`}
-      ${rel[0] && html`<${RelCard} r=${rel[0]} lang=${lang} />`}
+      ${rel.map((r) => html`<${RelCard} r=${r} lang=${lang} />`)}
     </div>
-    ${rel.map((r, i) => html`${i > 0 && html`<div class="word-pair word-pair--next"><${RelCard} r=${r} lang=${lang} /></div>`}<${RelMore} r=${r} />`)}
     ${w.ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
       <div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div></div>`}
     ${w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
       ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`}
+    ${rel.length > 0 && html`<${RelMore} rel=${rel} w=${w} />`}
   </${Screen}>`;
 }
 
-// Слово занятия есть в добірках (19.11.2026): под карточкой слова — блок каждой добірки, как на 2.3 «≈ синоніми»:
-// чёрная плашка добірки («≈ синоніми», «↔ антоніми», «≠ не плутай», «+ частка», «+ make»…) и белая карточка со словами —
-// слово, транскрипция, перевод, озвучка. Сразу за ней — «Порівняй» (примеры с самим словом и связанными) и
-// «У чому різниця» / «Як запам’ятати» … (пояснение из добірки). Добірки — все, кроме «Спільнокореневі» (решено так)
+// Слово занятия есть в добірках (19.11.2026, порядок — по макету 2.3a): сразу под карточкой слова — карточки всех его добірок,
+// как на 2.3 «≈ синоніми»: чёрная плашка («≈ синоніми», «↔ антоніми», «≠ не плутай», «+ частка», «+ make»…) и белая карточка
+// со словами — слово, транскрипция, перевод, озвучка. Потом «Приклади» и «Пояснення слова» самого слова, а в самом низу —
+// общие «Порівняй» (примеры из добірок) и «У чому різниця» (пояснения из добірок), см. RelMore. Добірки — все, кроме «Спільнокореневі» (решено так)
 // и «3 форми дієслів» (у неё своя карточка выше). Несколько строк одной добірки для слова (look after, look for…) — в один блок.
 const REL_ORDER = ['synonyms', 'antonyms', 'confusing', 'false-friends', 'similar', 'phrasal', 'collocations', 'pronouns', 'idioms'];
 export function relatedOf(course, w) {
@@ -100,13 +101,30 @@ const RelCard = ({ r, lang }) => html`<span class="word-pair__link t-label-12-me
     ${s.w && s.tr && L(s.tr) && html`<span class="t-label-14 muted">${L(s.tr)}</span>`}</div>
     ${s.w && html`<${SpeakButton} text=${s.w} lang=${lang} kind="outline" />`}</div>`)}</div>`;
 
-// подпись примеров добірки; если она такая же, как у примеров самого слова («Приклади»), — с названием добірки
-const exLabel = (r) => { const x = L(r.g.examples, { link: r.link }); return x === t('lesson.examples') ? `${x} · ${L(r.g.title)}` : x; };
-const RelMore = ({ r }) => html`
-  ${r.ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${exLabel(r)}</${Overline}>
-    <div class="examples">${r.ex.map((ex) => html`<${Example} ex=${ex} hl=${r.hl} />`)}</div></div>`}
-  ${r.notes.length > 0 && html`<div class="card card--lesson card--def"><${Overline}>${L(r.g.note, { link: r.link })}</${Overline}>
-    ${r.notes.map((n) => html`<p class="t-body-15">${L(n)}</p>`)}</div>`}`;
+// «Порівняй» и «У чому різниця» — по одной карточке на все добірки слова, в самом низу (макет 2.3a, 19.11.2026).
+// Примеры всех добірок подряд; пример только с самим словом («They live in a big house», «This is a big box») — один раз.
+// Подписи: одна добірка — её собственные («Як запам’ятати», «Чому саме make»…; «Приклади» — с названием добірки,
+// чтобы не путать с примерами слова), несколько добірок — общие «Порівняй» и «У чому різниця».
+const marked = (en) => { const m = /\[([^\]]+)\]/.exec(en || ''); return m ? m[1].toLowerCase() : ''; };
+function RelMore({ rel, w }) {
+  const base = (w.w || '').toLowerCase();
+  let baseShown = false;
+  const ex = [];
+  for (const r of rel) for (const e of r.ex) {
+    if (marked(e.en) === base) { if (baseShown) continue; baseShown = true; }
+    ex.push(e);
+  }
+  const hl = [w.w, ...rel.flatMap((r) => r.targets.map((x) => x.w).filter(Boolean))];
+  const notes = rel.flatMap((r) => r.notes);
+  const one = rel.length === 1 ? rel[0] : null;
+  const exTitle = one ? (() => { const x = L(one.g.examples, { link: one.link }); return x === t('lesson.examples') ? `${x} · ${L(one.g.title)}` : x; })() : t('lesson.compare');
+  const noteTitle = one ? L(one.g.note, { link: one.link }) : t('lesson.difference');
+  return html`
+    ${ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${exTitle}</${Overline}>
+      <div class="examples">${ex.map((e) => html`<${Example} ex=${e} hl=${hl} />`)}</div></div>`}
+    ${notes.length > 0 && html`<div class="card card--lesson card--def"><${Overline}>${noteTitle}</${Overline}>
+      ${notes.map((n) => html`<p class="t-body-15">${L(n)}</p>`)}</div>`}`;
+}
 
 // 07v · Неправильне дієслово: карточка «3 форми дієслова» — у каждой формы транскрипция, озвучка и пример с переводом.
 // Глагол берётся из группы «3 форми дієслів» (groups/irregular.tsv), если слово занятия — глагол с тем же написанием.
