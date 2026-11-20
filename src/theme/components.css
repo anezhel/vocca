@@ -285,9 +285,10 @@ button.card { width: 100%; text-align: left; }
 /* 3.13 · Картка дієслова: те же карточки, что у 3.1, но текст сверху, внизу у белой место под чип; приклади — сразу под лаймовыми */
 /* 3.13 · картка дієслова (20.11.2026): три белые карточки через 4 — тег V1–V3, форма, транскрипция, озвучка; пример в сером блоке */
 .verb-forms { display: flex; flex-direction: column; gap: var(--space-4); }
-.verb-form { border-radius: var(--radius-28); padding: var(--space-20); display: flex; flex-direction: column; gap: var(--space-16); }
+.verb-form { border-radius: var(--radius-28); padding: var(--space-20); display: flex; flex-direction: column; gap: var(--space-12); }
 .verb-form__head { display: flex; align-items: flex-start; gap: var(--space-10); }
-.verb-form__tag { flex: none; padding: 4px var(--space-8); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); }
+.verb-form__tag { flex: none; margin-top: var(--space-6); padding: 4px var(--space-6); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); }   /* 20.11: сверху 6 — на уровне слова */
+.verb-form .verb-ex__box { padding: var(--space-8) var(--space-16); }
 .verb-form__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-4); overflow-wrap: anywhere; margin-right: 2px; }
 .verb-ex__box { display: flex; flex-direction: column; gap: var(--space-4); padding: 14px var(--space-16); border-radius: var(--radius-16); background: var(--bg-surface-2); }
 

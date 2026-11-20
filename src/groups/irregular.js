@@ -87,8 +87,8 @@ function Home({ course, group, route, go, back }) {
 }
 
 // 3.13 · Картка дієслова (макет обновлён 20.11.2026): заголовок — группа с 3.12 («2 форми однакові»), ниже три белые карточки через 4 —
-// по одной на форму. В карточке: лаймовый тег V1 / V2 / V3, форма (Word/L), транскрипция и озвучка в обводке,
-// под ними пример этой формы в сером блоке. Перевода глагола, подписей «теперішній час…» и пояснения в макете нет.
+// по одной на форму. В карточке: лаймовый тег V1 / V2 / V3 (Label/12 Semibold, сверху 6 — на уровне слова), форма (Word/L),
+// транскрипция и озвучка в обводке, через 12 — пример этой формы в сером блоке (поля 8 / 16). Перевода глагола, подписей «теперішній час…» и пояснения в макете нет.
 export const verbTitle = (v) => t('verbs.' + v.kind);
 function VerbCard({ v, lang }) {
   const form = (n) => v['v' + n];
@@ -96,7 +96,7 @@ function VerbCard({ v, lang }) {
     const ex = v.ex[n - 1];
     return html`<div key=${n} class="card verb-form">
       <div class="verb-form__head">
-        <span class="verb-form__tag t-label-14-medium">V${n}</span>
+        <span class="verb-form__tag t-label-12-strong">V${n}</span>
         <div class="verb-form__text"><div class="t-word-l">${form(n)}</div>
           ${v.ipa[n - 1] && html`<div class="t-label-16-regular muted">/${v.ipa[n - 1]}/</div>`}</div>
         <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />
