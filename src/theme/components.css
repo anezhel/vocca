@@ -122,6 +122,14 @@ button.card { width: 100%; text-align: left; }
 .sheet .card, .sheet .pick, .sheet .level-card--on { background: var(--bg-surface-2); box-shadow: none; }
 .sheet .level-cards, .sheet .pick-list, .sheet .opt-list { gap: var(--space-4); }
 .sheet .opt-toggle { margin-bottom: var(--space-4); }
+/* Кнопка и шапка листа не сжимаются; не влезает — прокручивается только список (.sheet__scroll), кнопка остаётся внизу */
+.sheet > * { flex-shrink: 0; }
+.sheet > .sheet__scroll { flex-shrink: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.sheet > div.sheet__scroll:not(.pick-list) { display: flex; flex-direction: column; gap: var(--space-14); }
+/* «Обери рівні» в листе: поля карточки 10, слева уровень и под ним число слов */
+.sheet .level-card { padding-top: var(--space-10); padding-bottom: var(--space-10); }
+.level-card__lvl { width: 64px; flex: none; display: flex; flex-direction: column; gap: 2px; white-space: nowrap; }
+.level-card__lvl .t-number-m { width: auto; line-height: 36px; }
 .modal-wrap { position: fixed; z-index: 50; inset: 0; background: var(--bg-dim); display: flex; align-items: center; justify-content: center; padding: var(--space-20); animation: fade .2s; }
 .modal { width: 100%; max-width: 390px; background: var(--bg-surface); border-radius: var(--radius-32); padding: var(--space-24); display: flex; flex-direction: column; align-items: center; gap: var(--space-16); text-align: center; animation: pop .2s ease-out; }
 .modal__actions { width: 100%; display: flex; flex-direction: column; gap: var(--space-10); }

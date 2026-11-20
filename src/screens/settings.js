@@ -86,7 +86,7 @@ function ReminderSheet({ onClose }) {
   const [value, setValue] = useState(() => ({ ...getState().reminder }));
   return html`<${Sheet} onClose=${onClose}>
     <${SheetHead} title=${t('settings.reminderTime')} onClose=${onClose} />
-    <${ReminderRows} value=${value} onChange=${setValue} />
+    <div class="sheet__scroll"><${ReminderRows} value=${value} onChange=${setValue} /></div>
     <${ApplyButton} onClick=${() => { update((s) => { s.reminder = value; }); onClose(); }} />
   </${Sheet}>`;
 }
