@@ -11,6 +11,7 @@ export const ICONS = {
   'chevron-down': S('M6 9.5L12 15.5L18 9.5'),
   'chevron-up': S('M6 15.5L12 9.5L18 15.5'),
   'chevron-right': S('M9.5 6L15.5 12L9.5 18'),
+  'chevron-left': S('M14.5 6L8.5 12L14.5 18'),
   'arrow-up-right': S('M7 17L17 7M17 15V7H9'),
   'arrow-right': S('M5 12H19M13 18L19 12L13 6'),
   'arrow-left': S('M19 12H5M11 18L5 12L11 6'),

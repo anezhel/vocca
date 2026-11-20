@@ -405,10 +405,12 @@ button.card { width: 100%; text-align: left; }
 .counter--dark { background: var(--bg-inverse); color: var(--text-on-inverse); border-color: transparent; }
 .done-actions { display: flex; flex-direction: column; gap: var(--space-8); }
 .link-btn { height: 52px; width: 100%; text-align: center; }
-/* 2.3 новое слово: «Пізніше» (текстовая) · «Знаю» · «Вчити» (чёрная без стрелки) — три в ряд поровну, через 8 */
-.row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
-.row-3 .btn { padding: 0 var(--space-8); white-space: nowrap; }
-.btn--ghost { background: transparent; color: var(--text-primary); }
+/* 2.3 новое слово (20.11.2026): ‹ · «Знаю» · «Вчити» · › — стрелки 40 × 40 без фона, кнопки поровну, через 8 */
+.row-arrows { display: grid; grid-template-columns: 40px 1fr 1fr 40px; gap: var(--space-8); align-items: center; }
+.row-arrows .btn { padding: 0 var(--space-8); white-space: nowrap; }
+.nav-arrow { width: 40px; height: 40px; display: grid; place-items: center; color: var(--text-primary); border-radius: var(--radius-full); }
+.nav-arrow:active:not(:disabled) { background: var(--bg-surface-3); }
+.nav-arrow:disabled { opacity: .3; }
 
 /* 04a · Вивчено: строка выученного слова раскрывается — примеры и «Повернути у вивчення» */
 .word-list--tight { gap: 6px; }
