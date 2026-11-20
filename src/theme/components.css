@@ -289,7 +289,6 @@ button.card { width: 100%; text-align: left; }
 .verb-form__head { display: flex; align-items: flex-start; gap: var(--space-10); }
 .verb-form__tag { flex: none; margin-top: var(--space-8); padding: 4px var(--space-6); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); }   /* 20.11: сверху 8 */
 .verb-form .verb-ex__box { padding: var(--space-6) var(--space-16); }
-.title--verb { margin: var(--space-4) 0 0; }   /* 3.13: заголовок Heading/H3, до карточек 16 */
 .verb-form__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-4); overflow-wrap: anywhere; margin-right: 2px; }
 .verb-ex__box { display: flex; flex-direction: column; gap: var(--space-4); padding: 14px var(--space-16); border-radius: var(--radius-16); background: var(--bg-surface-2); }
 

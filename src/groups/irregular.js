@@ -86,11 +86,10 @@ function Home({ course, group, route, go, back }) {
   </${Screen}>`;
 }
 
-// 3.13 · Картка дієслова (макет обновлён 20.11.2026): заголовок — группа с 3.12 («2 форми однакові»), ниже три белые карточки через 4 —
+// 3.13 · Картка дієслова (макет обновлён 20.11.2026): без заголовка — сразу под верхней строкой три белые карточки через 4 —
 // по одной на форму. В карточке: лаймовый тег V1 / V2 / V3 (Label/12 Semibold, сверху 8), форма (Word/L), транскрипция
 // (у V1 — Label/16, у V2 и V3 — Label/14), у V1 под ней перевод глагола; озвучка в обводке; через 12 — пример в сером блоке (поля 6 / 16).
-// Заголовок экрана — группа сложности, Heading/H3 (макет 20.11.2026). Перевода глагола, подписей «теперішній час…» и пояснения в макете нет.
-export const verbTitle = (v) => t('verbs.' + v.kind);
+// Заголовок (название группы) убран 20.11.2026. Подписей «теперішній час…» и пояснения в макете нет.
 function VerbCard({ v, lang }) {
   const form = (n) => v['v' + n];
   return html`<div class="verb-forms">${[1, 2, 3].map((n) => {
@@ -142,7 +141,6 @@ function VerbCards({ course, group, route, back }) {
   };
   return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
-    <h1 class="title title--verb t-heading-h3">${kindTitle}</h1>
     <${VerbCard} v=${v} lang=${lang} />
   </${Screen}>`;
 }
@@ -283,4 +281,4 @@ function GroupScreen(props) {
   return props.route.train ? html`<${Trainer} ...${props} />` : html`<${VerbCards} ...${props} />`;
 }
 
-export default { load, stats, queue, markSeen, progressOf, Item, itemTitle: verbTitle, Screen: GroupScreen, routes: ['verbs'] };
+export default { load, stats, queue, markSeen, progressOf, Item, noTitle: true, Screen: GroupScreen, routes: ['verbs'] };
