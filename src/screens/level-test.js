@@ -51,7 +51,7 @@ export function TestRun({ course, go, back }) {
   </${Screen}>`;
 }
 
-export function TestResult({ go, back }) {
+export function TestResult({ course, go, back }) {
   const p = progress();
   const lvl = p.testLevel || 'A1';
   const i = LEVELS.indexOf(lvl);
@@ -69,7 +69,7 @@ export function TestResult({ go, back }) {
     <p class="t-body-15 pad-x">${i > 0 ? t('test.startFrom', { lvl, prev: LEVELS.slice(0, i).join(', ') }) : t('test.startA1')}</p>
     <div class="card chosen"><span class="t-label-14 muted">${t('test.chosen')}</span>${levels.map((l) => html`<${Pill} cls="pill--level" key=${l}>${l}</${Pill}>`)}
       <button class="link t-label-14-strong" onClick=${() => setSheet(true)}>${t('common.change')}</button></div>
-    ${sheet && html`<${LevelsSheet} value=${levels} testLevel=${lvl} onApply=${saveLevels} onClose=${() => setSheet(false)}>${(draft) => {
+    ${sheet && html`<${LevelsSheet} course=${course} value=${levels} testLevel=${lvl} onApply=${saveLevels} onClose=${() => setSheet(false)}>${(draft) => {
       const hi = draft.find((l) => LEVELS.indexOf(l) > i);
       return hi && html`<p class="t-label-13 muted">${t('onboarding.above', { lvl: hi })}</p>`;
     }}</${LevelsSheet}>`}
