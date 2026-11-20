@@ -74,6 +74,7 @@ export function Practice({ course, go, back }) {
   const start = () => {
     if (!groupsMode) return go('lesson', { prefs: { kinds: [prefs.kind], levels: live, size: prefs.size } });
     const g = course.groupList.find((x) => x.id === prefs.group);
+    if (GROUP_TYPES[g.type].Screen) return go('group', { group: g.id, size: prefs.size });   // «3 форми дієслів» — сначала группы 3.12
     go('collection', { groups: [prefs.group], size: prefs.size, review: GROUP_TYPES[g.type].stats(course, g).status === 'done' });
   };
 
