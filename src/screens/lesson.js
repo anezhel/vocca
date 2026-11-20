@@ -10,6 +10,7 @@ import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
 import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx } from '../ui/kit.js';
 import { Ring } from '../groups/done.js';
+import { VerbCard } from '../groups/irregular.js';
 
 export function Lesson({ course, route, go, back }) {
   const [lesson] = useState(() => startLesson(course, route.prefs || practicePrefs(course)));
@@ -85,10 +86,10 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer }) {
           <${SpeakButton} text=${word} lang=${lang} kind="outline" size=${40} /></div>
         <div class="t-translation-l">${cap(L(w.tr))}</div>
       </div>
-      ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbForms} verb=${verb} lang=${lang} />`}
+      ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbCard} v=${verb} lang=${lang} noTr />`}
       ${rel.map((r) => html`<${RelCard} r=${r} lang=${lang} />`)}
     </div>
-    ${w.ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
+    ${!verb && w.ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
       <div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div></div>`}
     ${w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
       ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`}
@@ -149,29 +150,14 @@ function RelMore({ rel, w }) {
       ${notes.map((n) => html`<p class="t-body-15">${L(n)}</p>`)}</div>`}`;
 }
 
-// 07v · Неправильне дієслово: карточка «3 форми дієслова» — у каждой формы транскрипция, озвучка и пример с переводом.
+// 2.3b · Новое слово — неправильный глагол (макет 20.11.2026): под карточкой слова чип «3 форми дієслова» и три карточки V1–V3,
+// как на 3.13 (VerbCard из groups/irregular.js), но без перевода у V1 — он в карточке слова. «Приклади» самого слова не показываем:
+// примеры есть у каждой формы. Карточки других добірок слова, «Пояснення слова», «Порівняй» / «У чому різниця» — как обычно.
 // Глагол берётся из группы «3 форми дієслів» (groups/irregular.tsv), если слово занятия — глагол с тем же написанием.
 export function irregularOf(course, w) {
   if (w.pos !== 'verb') return null;
   const word = w.w.toLowerCase();
   return (course.groupList.find((g) => g.id === 'irregular')?.items || []).find((v) => v.v1.toLowerCase() === word) || null;
-}
-
-function VerbForms({ verb, lang }) {
-  const labels = [t('verbs.present'), t('verbs.past'), t('verbs.participle')];
-  return html`<div class="card forms-card">
-    ${[1, 2, 3].map((n) => {
-      const form = verb['v' + n];
-      const ex = verb.ex[n - 1];
-      return html`<div class="forms-card__row">
-        <div class="forms-card__head"><div class="forms-card__text"><${Overline}>${n} · ${labels[n - 1]}</${Overline}>
-          <span class="syn-row__line"><span class="t-label-17">${form}</span>${verb.ipa[n - 1] && html`<span class="t-label-14 muted">/${verb.ipa[n - 1]}/</span>`}</span></div>
-          <${SpeakButton} text=${form.replace(' / ', ', ')} lang=${lang} /></div>
-        ${ex && html`<div class="forms-card__ex"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form.split(' / ')} /></div><div class="t-label-14 muted">${L(ex)}</div></div>`}
-      </div>`;
-    })}
-    ${verb.note && html`<p class="forms-card__note t-label-14 muted">${L(verb.note)}</p>`}
-  </div>`;
 }
 
 // 2.5 · Підсумок заняття: полное лаймовое кольцо — сколько слов пройдено. «Продовжити» — ещё заход с тем же выбором,
