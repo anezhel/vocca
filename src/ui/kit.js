@@ -295,7 +295,7 @@ export function PickSheet({ title, sub, options, value, onPick, onClose, multi, 
   const toggle = (v) => (multi ? setSel(sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v]) : setSel(v));
   return html`<${Sheet} onClose=${onClose}>
     <${SheetHead} title=${title} sub=${sub} onClose=${onClose} />
-    <div class="pick-list">${options.map((o) => {
+    <div class="pick-list sheet__scroll">${options.map((o) => {
       const on = multi ? sel.includes(o.value) : sel === o.value;
       return html`<button key=${o.value} class=${cx('pick', on && 'pick--on')} onClick=${() => toggle(o.value)}>
         ${o.lead}<span class="pick__text"><span class="t-title-m">${o.label}</span>${o.sub && html`<span class="t-label-13 muted">${o.sub}</span>`}</span>

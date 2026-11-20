@@ -62,7 +62,7 @@ export function Course({ go, back }) {
 }
 
 // Карточки уровней с чекбоксами (1.3 и лист «Обери рівні»)
-// counts — число слов на уровне отдельной строкой (лист «Обери рівні», 20.11.2026)
+// counts — число слов на уровне отдельной строкой под пояснением (лист «Обери рівні», 20.11.2026)
 export function LevelCards({ value, onChange, testLevel, counts }) {
   return html`<div class="level-cards">${LEVELS.map((l) => {
     const on = value.includes(l);
@@ -187,8 +187,8 @@ export function LevelsSheet({ course, value, testLevel, onApply, onClose, childr
   const counts = course && course.words ? course.words.reduce((o, w) => { if (!w.custom) o[w.lvl] = (o[w.lvl] || 0) + 1; return o; }, {}) : null;
   return html`<${Sheet} onClose=${onClose}>
     <${SheetHead} title=${t('onboarding.pickLevels')} sub=${t('onboarding.many')} onClose=${onClose} />
-    <${LevelCards} value=${draft} testLevel=${testLevel} counts=${counts} onChange=${setDraft} />
-    ${children && children(draft)}
+    <div class="sheet__scroll"><${LevelCards} value=${draft} testLevel=${testLevel} counts=${counts} onChange=${setDraft} />
+    ${children && children(draft)}</div>
     <${ApplyButton} disabled=${!draft.length} onClick=${() => { onApply(draft); onClose(); }} />
   </${Sheet}>`;
 }
