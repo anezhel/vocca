@@ -8,7 +8,7 @@ import { getState } from '../core/store.js';
 import { startLesson, answer, reanswer, finishLesson, practicePrefs } from '../core/session.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx, Icon } from '../ui/kit.js';
 import { Ring } from '../groups/done.js';
 import { VerbCard } from '../groups/irregular.js';
 
@@ -37,14 +37,17 @@ export function Lesson({ course, route, go, back }) {
     const w = wordById(course, e.item.id);
     const onAnswer = (st) => { reanswer(course, lesson, e, st); show(view + 1 < hist.length ? view + 1 : null, null); };
     return html`<${WordCard} key=${'h' + view} course=${course} w=${w} lesson=${lesson} bar=${{ ...bar, done: view, count: `${view + 1} / ${lesson.total}` }}
-      item=${e.item} chosen=${e.st} enter=${enter} onAnswer=${onAnswer} />${exit}`;
+      item=${e.item} chosen=${e.st} enter=${enter} onAnswer=${onAnswer}
+      onPrev=${view > 0 ? () => show(view - 1, 'left') : null} onNext=${() => show(view + 1 < hist.length ? view + 1 : null, 'right')} />${exit}`;
   }
   if (!item) return html`<${Summary} lesson=${lesson} go=${go} enter=${enter} />`;
 
   const w = wordById(course, item.id);
   if (!w) { lesson.queue.shift(); lesson.total--; redraw((n) => n + 1); return null; }
-  const onAnswer = (st) => { answer(course, lesson, item, st); lesson.queue.shift(); setEnter(null); redraw((n) => n + 1); scrollTo(0, 0); };
-  return html`<${WordCard} key=${item.id} course=${course} w=${w} lesson=${lesson} bar=${{ ...bar, done: lesson.done }} item=${item} enter=${enter} onAnswer=${onAnswer} />
+  const onAnswer = (st, dir = null) => { answer(course, lesson, item, st); lesson.queue.shift(); setEnter(dir); redraw((n) => n + 1); scrollTo(0, 0); };
+  // › на новой карточке — дальше без ответа: слово остаётся новым («Пізніше»), ‹ — к предыдущей карточке
+  return html`<${WordCard} key=${item.id} course=${course} w=${w} lesson=${lesson} bar=${{ ...bar, done: lesson.done }} item=${item} enter=${enter} onAnswer=${onAnswer}
+    onPrev=${hist.length ? () => show(hist.length - 1, 'left') : null} onNext=${() => onAnswer('skip', 'right')} />
     ${exit}`;
 }
 
@@ -60,20 +63,24 @@ const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 // вверху тег уровня и «НОВЕ СЛОВО» / «ПОВТОРЕННЯ», слово Word/XL, транскрипция, озвучка в обводке, перевод; часть речи не показываем.
 // Если слово есть в добірках — их карточки сразу под словом (relatedOf ниже). Дальше «Приклади» и «Пояснення слова»,
 // в конце — «Порівняй» и «У чому різниця» из добірок; карточки через 16 px.
-function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer }) {
+function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPrev, onNext }) {
   const lang = ttsLang(course);
   const word = shown(course, w);
   useEffect(() => { if (getState().autoplay) tts.speak(word, lang); }, [w.id]);
   const isNew = item.kind === 'new';
   const rel = relatedOf(course, w);
   const verb = irregularOf(course, w);
-  // 2.3 новое слово, три в ряд: «Пізніше» (текстовая) — слово остаётся новым, «Знаю» → Вивчено, «Вчити» (чёрная без стрелки) → Важкі. 2.4 повторение: «Важко» · «Легко» · «Вивчено» (коралл · мята · чёрная)
+  // 2.3 новое слово (макет 20.11.2026): ‹ · «Знаю» · «Вчити» · › — стрелки листают слова назад и вперёд (› на новой карточке —
+  // дальше без ответа, слово остаётся новым, как раньше «Пізніше»), «Знаю» → Вивчено, «Вчити» (чёрная) → Важкі.
+  // 2.4 повторение: «Важко» · «Легко» · «Вивчено» (коралл · мята · чёрная)
   // chosen — карточка уже пройдена (вернулись свайпом): выбранный тогда ответ как обычно, остальные бледнее (is-other)
   const other = (st) => chosen && chosen !== st && 'is-other';
   const bottom = isNew
-    ? html`<div class="row-3"><${Button} variant="ghost" cls=${other('skip')} label=${t('lesson.skip')} onClick=${() => onAnswer('skip')} />
+    ? html`<div class="row-arrows">
+        <button class="nav-arrow" disabled=${!onPrev} onClick=${onPrev} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
         <${Button} variant="secondary" cls=${other('learned')} label=${t('common.iKnow')} onClick=${() => onAnswer('learned')} />
-        <${Button} variant="dark" cls=${other('hard')} label=${t('common.learn')} onClick=${() => onAnswer('hard')} /></div>`
+        <${Button} variant="dark" cls=${other('hard')} label=${t('common.learn')} onClick=${() => onAnswer('hard')} />
+        <button class="nav-arrow" onClick=${onNext} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`
     : html`<div class="rate3">${[['hard', 'hard'], ['almost', 'easy'], ['learned', 'learned']].map(([st, k]) => html`<button class=${cx('rate3__btn rate3__btn--' + st + ' t-title-m', other(st))} onClick=${() => onAnswer(st)}>${t('lesson.mark.' + k)}</button>`)}</div>`;
   return html`<${Screen} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="today" bottom=${bottom}>
     <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} />
