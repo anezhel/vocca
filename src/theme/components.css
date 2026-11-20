@@ -283,13 +283,12 @@ button.card { width: 100%; text-align: left; }
 .rel__row { display: flex; align-items: flex-start; gap: var(--space-12); }
 .rel__sub { color: var(--text-on-pastel); opacity: .75; }
 /* 3.13 · Картка дієслова: те же карточки, что у 3.1, но текст сверху, внизу у белой место под чип; приклади — сразу под лаймовыми */
-.rel--verb { gap: var(--space-8); }
-.rel--verb .rel__base { align-items: flex-start; padding: var(--space-20) var(--space-20) var(--space-28); }
-.rel--verb .rel__text { gap: var(--space-4); }
-.verb-ex { padding: var(--space-24) var(--space-20) var(--space-20); border-radius: var(--radius-28); box-shadow: none; display: flex; flex-direction: column; gap: var(--space-16); }
-.verb-ex__row { display: flex; flex-direction: column; gap: var(--space-12); }
-.verb-ex__row + .verb-ex__row { border-top: 1px solid var(--border-muted); padding-top: var(--space-16); }
-.verb-ex .overline { margin: 0; }
+/* 3.13 · картка дієслова (20.11.2026): три белые карточки через 4 — тег V1–V3, форма, транскрипция, озвучка; пример в сером блоке */
+.verb-forms { display: flex; flex-direction: column; gap: var(--space-4); }
+.verb-form { border-radius: var(--radius-28); padding: var(--space-20); display: flex; flex-direction: column; gap: var(--space-16); }
+.verb-form__head { display: flex; align-items: flex-start; gap: var(--space-10); }
+.verb-form__tag { flex: none; padding: 4px var(--space-8); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); }
+.verb-form__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-4); overflow-wrap: anywhere; margin-right: 2px; }
 .verb-ex__box { display: flex; flex-direction: column; gap: var(--space-4); padding: 14px var(--space-16); border-radius: var(--radius-16); background: var(--bg-surface-2); }
 
 /* ── Неправильные глаголы: экран 12 (как до 16.11.2026, карточки сложности — лаймовые) ── */
