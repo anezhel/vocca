@@ -87,8 +87,9 @@ function Home({ course, group, route, go, back }) {
 }
 
 // 3.13 · Картка дієслова (макет обновлён 20.11.2026): заголовок — группа с 3.12 («2 форми однакові»), ниже три белые карточки через 4 —
-// по одной на форму. В карточке: лаймовый тег V1 / V2 / V3 (Label/12 Semibold, сверху 6 — на уровне слова), форма (Word/L),
-// транскрипция и озвучка в обводке, через 12 — пример этой формы в сером блоке (поля 8 / 16). Перевода глагола, подписей «теперішній час…» и пояснения в макете нет.
+// по одной на форму. В карточке: лаймовый тег V1 / V2 / V3 (Label/12 Semibold, сверху 8), форма (Word/L), транскрипция
+// (у V1 — Label/16, у V2 и V3 — Label/14), у V1 под ней перевод глагола; озвучка в обводке; через 12 — пример в сером блоке (поля 6 / 16).
+// Заголовок экрана — группа сложности, Heading/H3 (макет 20.11.2026). Перевода глагола, подписей «теперішній час…» и пояснения в макете нет.
 export const verbTitle = (v) => t('verbs.' + v.kind);
 function VerbCard({ v, lang }) {
   const form = (n) => v['v' + n];
@@ -98,7 +99,8 @@ function VerbCard({ v, lang }) {
       <div class="verb-form__head">
         <span class="verb-form__tag t-label-12-strong">V${n}</span>
         <div class="verb-form__text"><div class="t-word-l">${form(n)}</div>
-          ${v.ipa[n - 1] && html`<div class="t-label-16-regular muted">/${v.ipa[n - 1]}/</div>`}</div>
+          ${v.ipa[n - 1] && html`<div class=${n === 1 ? 't-label-16-regular muted' : 't-label-14 muted'}>/${v.ipa[n - 1]}/</div>`}
+          ${n === 1 && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
         <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />
       </div>
       ${ex && html`<div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>
@@ -140,7 +142,7 @@ function VerbCards({ course, group, route, back }) {
   };
   return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
-    <${Title} main=${kindTitle} cls="title--group" />
+    <h1 class="title title--verb t-heading-h3">${kindTitle}</h1>
     <${VerbCard} v=${v} lang=${lang} />
   </${Screen}>`;
 }
