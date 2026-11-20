@@ -89,32 +89,25 @@ function Home({ course, group, go, back }) {
 }
 
 
-// 3.13 · Картка дієслова (макет 19.11.2026, устроена как 3.1 «Синоніми»): белая карточка — 1-я форма,
-// под чипом «3 форми дієслова» лаймовые — 2-я и 3-я. В каждой — форма, транскрипция и озвучка в обводке;
-// перевод — только в белой (с 19.11.2026: на лаймовых он повторялся).
-// Ниже белая карточка без тени: к каждой форме подпись («1 · теперішній час») и пример в сером блоке.
+// 3.13 · Картка дієслова (макет обновлён 20.11.2026): заголовок «3 форми дієслова», ниже три белые карточки через 4 —
+// по одной на форму. В карточке: лаймовый тег V1 / V2 / V3, форма (Word/L), транскрипция и озвучка в обводке,
+// под ними пример этой формы в сером блоке. Перевода глагола, подписей «теперішній час…» и пояснения в макете нет.
+export const verbTitle = () => t('lesson.formsLink');
 function VerbCard({ v, lang }) {
-  const tr = L(v.tr);
   const form = (n) => v['v' + n];
-  const labels = [t('verbs.present'), t('verbs.past'), t('verbs.participle')];
-  const text = (n, base) => html`<div class="rel__text"><div class="t-word-l">${form(n)}</div>
-    ${v.ipa[n - 1] && html`<div class=${base ? 't-label-16-regular muted' : 't-label-14 rel__sub'}>/${v.ipa[n - 1]}/</div>`}
-    ${base && tr && html`<div class="t-label-15 muted">${tr}</div>`}</div>`;
-  const speak = (n) => html`<${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />`;
-  return html`<div class="rel rel--verb">
-    <div class="rel__pair">
-      <div class="card rel__base">${text(1, true)}${speak(1)}</div>
-      <div class="rel__chip t-label-12-medium">${t('lesson.formsLink')}</div>
-      <div class="rel__targets">${[2, 3].map((n) => html`<div key=${n} class="card rel__target"><div class="rel__row">${text(n)}${speak(n)}</div></div>`)}</div>
-    </div>
-    <div class="card verb-ex">${[1, 2, 3].map((n) => {
-      const ex = v.ex[n - 1];
-      return ex && html`<div key=${n} class="verb-ex__row"><${Overline}>${n} · ${labels[n - 1]}</${Overline}>
-        <div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>
-          <div class="t-label-14 muted">${L(ex)}</div></div></div>`;
-    })}
-      ${v.note && html`<p class="t-label-14 muted">${L(v.note)}</p>`}</div>
-  </div>`;
+  return html`<div class="verb-forms">${[1, 2, 3].map((n) => {
+    const ex = v.ex[n - 1];
+    return html`<div key=${n} class="card verb-form">
+      <div class="verb-form__head">
+        <span class="verb-form__tag t-label-14-medium">V${n}</span>
+        <div class="verb-form__text"><div class="t-word-l">${form(n)}</div>
+          ${v.ipa[n - 1] && html`<div class="t-label-16-regular muted">/${v.ipa[n - 1]}/</div>`}</div>
+        <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />
+      </div>
+      ${ex && html`<div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>
+        <div class="t-label-14 muted">${L(ex)}</div></div>`}
+    </div>`;
+  })}</div>`;
 }
 
 // Экран 12b: карточка глагола, внизу «Далі». После порции — итог 19c. Свайп вправо — предыдущий глагол, влево — вперёд до уже просмотренного.
@@ -150,6 +143,7 @@ function VerbCards({ course, group, route, back }) {
   };
   return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
+    <${Title} main=${verbTitle()} cls="title--group" />
     <${VerbCard} v=${v} lang=${lang} />
   </${Screen}>`;
 }
@@ -290,4 +284,4 @@ function GroupScreen(props) {
   return props.route.train ? html`<${Trainer} ...${props} />` : html`<${VerbCards} ...${props} />`;
 }
 
-export default { load, stats, queue, markSeen, progressOf, Item, Screen: GroupScreen, routes: ['verbs'] };
+export default { load, stats, queue, markSeen, progressOf, Item, itemTitle: verbTitle, Screen: GroupScreen, routes: ['verbs'] };

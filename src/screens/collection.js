@@ -53,7 +53,7 @@ export function Collection({ course, route, go, back }) {
   const Item = T(cur.g).Item;
   return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
-    <${Title} main=${L(cur.g.title)} cls="title--group" />
+    <${Title} main=${T(cur.g).itemTitle ? T(cur.g).itemTitle() : L(cur.g.title)} cls="title--group" />
     <${Item} key=${cur.g.id + ':' + cur.item.id} course=${course} group=${cur.g} item=${cur.item} />
   </${Screen}>`;
 }
