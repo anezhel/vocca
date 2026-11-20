@@ -19,9 +19,7 @@ const SECTIONS = [
     { id: 'variant', icon: 'chat', sub: true, show: (c) => feature('englishVariant') && (c.variants || []).length > 1, value: (s, c) => L(variantOf(c).name),
       pick: (c) => c.variants.map((v) => ({ value: v.id, label: L(v.name) })), get: (s, p) => p.variant, put: (v) => set((s, p) => { p.variant = v; }) },
     { id: 'levels', icon: 'layers', value: (s, c, p) => p.levels.join(', ') || '—', sheet: 'levels' },
-    // цель на день (1.4, 1.5): новых слов и повторений
-    { id: 'newGoal', icon: 'plus', sub: true, value: (s, c, p) => p.newGoal, pick: () => CONFIG.newGoalOptions.map(([n, name]) => ({ value: n, label: `${n} · ${t('goal.' + name)}` })), get: (s, p) => p.newGoal, put: (v) => set((s, p) => { p.newGoal = v; }) },
-    { id: 'repeatGoal', icon: 'grid', sub: true, value: (s, c, p) => p.repeatGoal, pick: () => CONFIG.repeatGoalOptions.map(([n, name]) => ({ value: n, label: `${n} · ${t('goal.' + name)}` })), get: (s, p) => p.repeatGoal, put: (v) => set((s, p) => { p.repeatGoal = v; }) },
+    // «Нових слів на день» и «Повторень на день» убраны 20.11.2026 (решение дизайнера): цель выбирается только при первом запуске (1.4, 1.5)
   ]],
   ['sound', [
     { id: 'autoplay', icon: 'speaker', toggle: (s) => s.autoplay, put: (v) => set((s) => { s.autoplay = v; }) },
