@@ -90,17 +90,18 @@ function Home({ course, group, route, go, back }) {
 // по одной на форму. В карточке: лаймовый тег V1 / V2 / V3 (Label/12 Semibold, сверху 8), форма (Word/L), транскрипция
 // (у V1 — Label/16, у V2 и V3 — Label/14), у V1 под ней перевод глагола; озвучка в обводке; через 12 — пример в сером блоке (поля 6 / 16).
 // Заголовок (название группы) убран 20.11.2026. Подписей «теперішній час…» и пояснения в макете нет.
-// noTr — без перевода у V1: в занятии (2.3b) перевод уже в карточке слова над формами.
-export function VerbCard({ v, lang, noTr }) {
+// compact — в занятии (2.3b, макет 20.11.2026): без перевода у V1 (он в карточке слова над формами), форма мельче (Label/17 Medium),
+// транскрипция у всех трёх Label/14, тег ближе к слову (сверху 2, до формы 8).
+export function VerbCard({ v, lang, compact }) {
   const form = (n) => v['v' + n];
-  return html`<div class="verb-forms">${[1, 2, 3].map((n) => {
+  return html`<div class=${cx('verb-forms', compact && 'verb-forms--compact')}>${[1, 2, 3].map((n) => {
     const ex = v.ex[n - 1];
     return html`<div key=${n} class="card verb-form">
       <div class="verb-form__head">
         <span class="verb-form__tag t-label-12-strong">V${n}</span>
-        <div class="verb-form__text"><div class="t-word-l">${form(n)}</div>
-          ${v.ipa[n - 1] && html`<div class=${n === 1 ? 't-label-16-regular muted' : 't-label-14 muted'}>/${v.ipa[n - 1]}/</div>`}
-          ${n === 1 && !noTr && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
+        <div class="verb-form__text"><div class=${compact ? 't-label-17' : 't-word-l'}>${form(n)}</div>
+          ${v.ipa[n - 1] && html`<div class=${n === 1 && !compact ? 't-label-16-regular muted' : 't-label-14 muted'}>/${v.ipa[n - 1]}/</div>`}
+          ${n === 1 && !compact && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
         <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />
       </div>
       ${ex && html`<div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>

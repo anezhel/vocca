@@ -93,7 +93,7 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
           <${SpeakButton} text=${word} lang=${lang} kind="outline" size=${40} /></div>
         <div class="t-translation-l">${cap(L(w.tr))}</div>
       </div>
-      ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbCard} v=${verb} lang=${lang} noTr />`}
+      ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbCard} v=${verb} lang=${lang} compact />`}
       ${rel.map((r) => html`<${RelCard} r=${r} lang=${lang} />`)}
     </div>
     ${!verb && w.ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
@@ -158,7 +158,7 @@ function RelMore({ rel, w }) {
 }
 
 // 2.3b · Новое слово — неправильный глагол (макет 20.11.2026): под карточкой слова чип «3 форми дієслова» и три карточки V1–V3,
-// как на 3.13 (VerbCard из groups/irregular.js), но без перевода у V1 — он в карточке слова. «Приклади» самого слова не показываем:
+// как на 3.13 (VerbCard из groups/irregular.js), но компактнее: без перевода у V1 (он в карточке слова), форма Label/17, транскрипция 14. «Приклади» самого слова не показываем:
 // примеры есть у каждой формы. Карточки других добірок слова, «Пояснення слова», «Порівняй» / «У чому різниця» — как обычно.
 // Глагол берётся из группы «3 форми дієслів» (groups/irregular.tsv), если слово занятия — глагол с тем же написанием.
 export function irregularOf(course, w) {
