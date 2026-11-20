@@ -292,13 +292,16 @@ button.card { width: 100%; text-align: left; }
 .verb-ex__box { display: flex; flex-direction: column; gap: var(--space-4); padding: 14px var(--space-16); border-radius: var(--radius-16); background: var(--bg-surface-2); }
 
 /* ── Неправильные глаголы: экран 12 (как до 16.11.2026, карточки сложности — лаймовые) ── */
-.forms3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
-.forms3__cell { background: var(--bg-surface-2); border-radius: var(--radius-16); padding: var(--space-10) var(--space-12); }
-.diff-card { background: var(--bg-accent); color: var(--text-on-accent); box-shadow: none; padding: var(--space-16) 18px; display: flex; flex-direction: column; gap: var(--space-6); }
+/* 3.12 · групи (20.11.2026): белые карточки без тени через 8, лаймовые пилюли с формами, прогресс 6 px */
+.screen--verbs .screen__content { gap: var(--space-16); }
+.diff-cards { display: flex; flex-direction: column; gap: var(--space-8); }
+.diff-card { border-radius: var(--radius-28); box-shadow: none; padding: var(--space-16) 18px 18px; display: flex; flex-direction: column; gap: var(--space-8); }
 .diff-card__top { display: flex; align-items: center; gap: var(--space-8); }
 .diff-card__go { margin-left: auto; }
-.diff-card__forms { display: flex; gap: var(--space-6); flex-wrap: wrap; margin: var(--space-6) 0; }
-.diff-card .muted { color: var(--text-on-pastel); opacity: .7; }
+.diff-card__forms { display: flex; gap: var(--space-6); flex-wrap: wrap; padding: var(--space-6) 0; }
+.diff-card__forms .pill { background: var(--bg-accent); border: 0; color: var(--text-primary); font-size: 16px; font-weight: 400; }
+.diff-card__meter .meter { height: 6px; border-radius: var(--radius-full); background: var(--bg-surface-3); }
+.diff-card__meter .meter i { border-radius: var(--radius-full); background: var(--bg-inverse); }
 .dots { display: inline-flex; gap: 3px; }
 .dots i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--bg-inverse); }
 .dots i.on { background: var(--bg-inverse); }

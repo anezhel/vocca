@@ -59,40 +59,37 @@ function trainList(course, group, now = Date.now()) {
   return [...due, ...fresh];
 }
 
-// Экран 12: три уровня сложности (как было до 16.11.2026, карточки — лаймовые), внизу кнопка «Тренажер»
-function Home({ course, group, go, back }) {
+// 3.12 · Групи (макет обновлён 20.11.2026): заголовок «3 форми дієслів», три белые карточки сложности через 8 —
+// точки и «Легко / Середньо / Складно», чёрная стрелка, название группы, формы-пример в лаймовых пилюлях, прогресс.
+// Нажатие на карточку — 3.13 (картки дієслова этой группы), внизу «Тренажер» (3.14).
+// С 2.2 («Слова з добірок» → «3 форми дієслів») сюда же, с выбранной «Кількість слів» (route.size).
+function Home({ course, group, route, go, back }) {
   const cs = cards(course);
-  const sample = group.items.find((v) => v.v1 === 'go') || group.items.find((v) => v.kind === 'diff');
-  return html`<${Screen} bottom=${html`<${Button} label=${t('verbs.trainer')} onClick=${() => go('verbs', { group: group.id, train: true })} />`}>
+  return html`<${Screen} cls="screen--grey screen--verbs" tone="sky" bottom=${html`<${Button} label=${t('verbs.trainer')} onClick=${() => go('verbs', { group: group.id, train: true })} />`}>
     <${TopBar} onBack=${back} />
     <${Title} main=${L(group.title)} />
-    <div class="card card--pad">
-      <${Overline}>${t('verbs.threeForms')}</${Overline}>
-      <div class="forms3">${['v1', 'v2', 'v3'].map((k, i) => html`<div class="forms3__cell"><div class="t-word-m">${sample[k]}</div><div class="t-label-11 muted">${t('verbs.f' + (i + 1))}</div></div>`)}</div>
-    </div>
-    ${KINDS.map(([kind, diff, dots]) => {
+    <div class="diff-cards">${KINDS.map(([kind, diff, dots]) => {
       const list = group.items.filter((v) => v.kind === kind);
       const done = list.filter((v) => seen(cs[v.id])).length;
       const ex = list[0];
       if (!ex) return null;
-      return html`<button class="card diff-card" onClick=${() => go('verbs', { group: group.id, kind })}>
+      return html`<button key=${kind} class="card diff-card" onClick=${() => go('verbs', { group: group.id, kind, size: route.size })}>
         <div class="diff-card__top"><span class="dots">${[1, 2, 3].map((d) => html`<i class=${d <= dots ? 'on' : ''}></i>`)}</span>
           <span class="t-label-13">${t('verbs.' + diff)}</span><span class="ib ib--dark diff-card__go" style="--ib:36px"><${Icon} name="arrow-up-right" size=${16} /></span></div>
-        <div class="t-title-l">${t('verbs.' + kind)}</div><div class="t-label-13 muted">${t('verbs.' + kind + 'Sub')}</div>
+        <div class="t-title-l">${t('verbs.' + kind)}</div>
         <div class="diff-card__forms">${kind === 'same' ? html`<${Pill}>${ex.v1} — ${ex.v2} — ${ex.v3}</${Pill}>`
           : kind === 'two' ? html`<${Pill}>${ex.v1}</${Pill}><${Pill}>${ex.v2} — ${ex.v3}</${Pill}>`
           : html`<${Pill}>${ex.v1}</${Pill}><${Pill}>${ex.v2}</${Pill}><${Pill}>${ex.v3}</${Pill}>`}</div>
-        <div class="meter-row"><div class="meter"><i style=${`width:${(done / list.length) * 100}%`}></i></div><span class="t-label-12 muted">${done} / ${list.length}</span></div>
+        <div class="meter-row diff-card__meter"><div class="meter"><i style=${`width:${(done / list.length) * 100}%`}></i></div><span class="t-label-12 muted">${done} / ${list.length}</span></div>
       </button>`;
-    })}
+    })}</div>
   </${Screen}>`;
 }
 
-
-// 3.13 · Картка дієслова (макет обновлён 20.11.2026): заголовок «3 форми дієслова», ниже три белые карточки через 4 —
+// 3.13 · Картка дієслова (макет обновлён 20.11.2026): заголовок — группа с 3.12 («2 форми однакові»), ниже три белые карточки через 4 —
 // по одной на форму. В карточке: лаймовый тег V1 / V2 / V3, форма (Word/L), транскрипция и озвучка в обводке,
 // под ними пример этой формы в сером блоке. Перевода глагола, подписей «теперішній час…» и пояснения в макете нет.
-export const verbTitle = () => t('lesson.formsLink');
+export const verbTitle = (v) => t('verbs.' + v.kind);
 function VerbCard({ v, lang }) {
   const form = (n) => v['v' + n];
   return html`<div class="verb-forms">${[1, 2, 3].map((n) => {
@@ -113,7 +110,7 @@ function VerbCard({ v, lang }) {
 // Экран 12b: карточка глагола, внизу «Далі». После порции — итог 19c. Свайп вправо — предыдущий глагол, влево — вперёд до уже просмотренного.
 function VerbCards({ course, group, route, back }) {
   const lang = ttsLang(course);
-  const N = CONFIG.verbSessionSize;
+  const N = route.size === 'all' ? Infinity : route.size || CONFIG.verbSessionSize;   // «Кількість слів» с 2.2
   const kind = route.kind || 'two';
   const of = group.items.filter((v) => v.kind === kind);
   // сначала непросмотренные; если просмотрены все — вся подгруппа заново
@@ -143,7 +140,7 @@ function VerbCards({ course, group, route, back }) {
   };
   return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
-    <${Title} main=${verbTitle()} cls="title--group" />
+    <${Title} main=${kindTitle} cls="title--group" />
     <${VerbCard} v=${v} lang=${lang} />
   </${Screen}>`;
 }
