@@ -70,6 +70,9 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
   const isNew = item.kind === 'new';
   const rel = relatedOf(course, w);
   const verb = irregularOf(course, w);
+  // Есть и свои примеры слова, и примеры добірок — отдельного «Приклади» нет: свои примеры идут первыми в «Приклади · Порівняй» (20.11.2026)
+  const ownEx = !verb && w.ex.length > 0;
+  const relEx = rel.some((r) => r.ex.length > 0);
   // 2.3 новое слово (макет 20.11.2026): ‹ · «Знаю» · «Вчити» · › — стрелки листают слова назад и вперёд (› на новой карточке —
   // дальше без ответа, слово остаётся новым, как раньше «Пізніше»), «Знаю» → Вивчено, «Вчити» (чёрная) → Важкі.
   // 2.4 повторение: «Важко» · «Легко» · «Вивчено» (коралл · мята · чёрная)
@@ -96,11 +99,11 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
       ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbCard} v=${verb} lang=${lang} compact />`}
       ${rel.map((r) => html`<${RelCard} r=${r} lang=${lang} />`)}
     </div>
-    ${!verb && w.ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
+    ${ownEx && !relEx && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
       <div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div></div>`}
     ${w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
       ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`}
-    ${rel.length > 0 && html`<${RelMore} rel=${rel} w=${w} />`}
+    ${rel.length > 0 && html`<${RelMore} rel=${rel} w=${w} own=${ownEx && relEx ? w.ex : null} />`}
   </${Screen}>`;
 }
 
@@ -137,18 +140,24 @@ const RelCard = ({ r, lang }) => html`<span class="word-pair__link t-label-12-me
 // Подписи: одна добірка — её собственные («Як запам’ятати», «Чому саме make»…; «Приклади» — с названием добірки,
 // чтобы не путать с примерами слова), несколько добірок — общие «Порівняй» и «У чому різниця».
 const marked = (en) => { const m = /\[([^\]]+)\]/.exec(en || ''); return m ? m[1].toLowerCase() : ''; };
-function RelMore({ rel, w }) {
+// own — свои примеры слова (когда есть и примеры добірок): идут первыми, одинаковые предложения — один раз,
+// заголовок — «Приклади · Порівняй» (одна добірка: «Приклади · <её подпись>», а если подпись и так «Приклади» — «Приклади · <добірка>»).
+const plain = (en) => (en || '').replace(/[[\]]/g, '').trim().toLowerCase();
+function RelMore({ rel, w, own }) {
   const base = (w.w || '').toLowerCase();
   let baseShown = false;
-  const ex = [];
+  const ex = [], seen = new Set();
+  for (const e of own || []) if (!seen.has(plain(e.en))) { seen.add(plain(e.en)); ex.push(e); }
   for (const r of rel) for (const e of r.ex) {
+    if (seen.has(plain(e.en))) continue;
     if (marked(e.en) === base) { if (baseShown) continue; baseShown = true; }
-    ex.push(e);
+    seen.add(plain(e.en)); ex.push(e);
   }
   const hl = [w.w, ...rel.flatMap((r) => r.targets.map((x) => x.w).filter(Boolean))];
   const notes = rel.flatMap((r) => r.notes);
   const one = rel.length === 1 ? rel[0] : null;
-  const exTitle = one ? (() => { const x = L(one.g.examples, { link: one.link }); return x === t('lesson.examples') ? `${x} · ${L(one.g.title)}` : x; })() : t('lesson.compare');
+  const exLabel = one ? L(one.g.examples, { link: one.link }) : t('lesson.compare');
+  const exTitle = one && exLabel === t('lesson.examples') ? `${exLabel} · ${L(one.g.title)}` : own ? `${t('lesson.examples')} · ${exLabel}` : exLabel;
   const noteTitle = one ? L(one.g.note, { link: one.link }) : t('lesson.difference');
   return html`
     ${ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${exTitle}</${Overline}>
