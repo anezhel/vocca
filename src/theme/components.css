@@ -460,14 +460,6 @@ button.card { width: 100%; text-align: left; }
 /* транскрипция рядом со словом в строке (синонимы, формы глагола, список слов) */
 .syn-row__line { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--space-8); row-gap: 2px; }
 /* 07v · «3 форми дієслова»: форма, транскрипция, озвучка; под ней пример на сером */
-.forms-card { padding: var(--space-20); border-radius: var(--radius-28); display: flex; flex-direction: column; }
-.forms-card__row { display: flex; flex-direction: column; gap: var(--space-12); }
-.forms-card__row + .forms-card__row { border-top: 1px solid var(--border-muted); margin-top: var(--space-16); padding-top: var(--space-16); }
-.forms-card__head { display: flex; align-items: center; gap: var(--space-12); }
-.forms-card__text { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.forms-card__text .overline { margin: 0; }
-.forms-card__ex { display: flex; flex-direction: column; gap: 4px; padding: var(--space-12) 14px; border-radius: 14px; background: var(--bg-canvas); }
-.forms-card__note { margin: var(--space-16) 0 0; }
 .card--lesson { padding: var(--space-20); border-radius: var(--radius-28); }
 .card--lesson .overline { margin-bottom: var(--space-12); }
 .card--lesson .example { gap: 4px; }
