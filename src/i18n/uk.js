@@ -31,7 +31,7 @@ export default {
     noLevelWords: '{lv} — поки немає слів «{kind}»', size: 'Кількість слів', all: 'Всі', start: 'Почати', change: 'Змінити налаштування', finish: 'Закінчити',
   },
   onboarding: {
-    uiHint: 'Визначили за мовою телефона. Змінити можна в налаштуваннях.', courseTitle: 'Яку мову', courseTitle2: 'будемо вчити?', levelHint: 'Можна буде змінити в налаштуваннях', newGoalTitle: 'Скільки нових слів', repeatGoalTitle: 'Скільки повторень', perDay: 'на день?', wordsPerDay: 'слів на день', goalHint: 'Повторення додаються самі. Ціль можна змінити в налаштуваннях.',
+    uiHint: 'Визначили за мовою телефона. Змінити можна в налаштуваннях.', courseTitle: 'Яку мову', courseTitle2: 'будемо вчити?', levelHint: 'Можна буде змінити в налаштуваннях', newGoalTitle: 'Скільки нових слів', repeatGoalTitle: 'Скільки повторень', perDay: 'на день?', wordsPerDay: 'слів на день', goalHint: 'Повторення додаються самі.',
     step: '{n} / 2', hello: 'Привіт!', setup: 'Налаштуймо Vocca', uiLang: 'Мова інтерфейсу', course: 'Що вивчаємо?',
     terms: 'Продовжуючи, ти приймаєш {terms} та {privacy}', termsLink: 'Умови використання', privacyLink: 'Політику конфіденційності',
     levelTitle: 'Слова з яких рівнів', levelTitle2: 'будемо вчити?', test: 'Визначити свій рівень', testSub: 'Тест · ≈3 хв',
