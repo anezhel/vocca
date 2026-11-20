@@ -37,16 +37,21 @@ function defaultGroup(course) {
   return hit ? hit.g.id : null;
 }
 
-// Уровни под выбранный тип: с уровней без слов этого типа выбор снимается. Если при открытии экрана или смене типа не осталось
+// Уровни на 2.2 — только те, что выбраны в настройках («Рівні»), по порядку A1 → C2 (решение дизайнера, 20.11.2026).
+// Если в настройках пусто — все.
+const shownLevels = (course) => { const s = progress(course.id).levels; return LEVELS.filter((l) => !s.length || s.includes(l)); };
+
+// Уровни под выбранный тип: с уровней без слов этого типа и с уровней, которых нет в настройках, выбор снимается. Если при открытии экрана или смене типа не осталось
 // ни одного — выбирается доступный уровень, ближайший к «моему» (при равенстве — тот, что ниже); снять все уровни вручную
 // по-прежнему можно (тогда «Почати» неактивна). Для «Слова з добірок» уровни не трогаем.
 function fitLevels(course, p, pick = true) {
   if (p.kind === 'groups') return p;
   const counts = levelCounts(course, [p.kind]);
-  const levels = p.levels.filter((l) => counts[l]);
+  const shown = shownLevels(course);
+  const levels = p.levels.filter((l) => counts[l] && shown.includes(l));
   if (!levels.length && pick) {
     const me = LEVELS.indexOf(myLevel(progress(course.id)) || p.levels[0] || LEVELS[0]);
-    const near = LEVELS.filter((l) => counts[l]).sort((a, b) => Math.abs(LEVELS.indexOf(a) - me) - Math.abs(LEVELS.indexOf(b) - me) || LEVELS.indexOf(a) - LEVELS.indexOf(b))[0];
+    const near = shown.filter((l) => counts[l]).sort((a, b) => Math.abs(LEVELS.indexOf(a) - me) - Math.abs(LEVELS.indexOf(b) - me) || LEVELS.indexOf(a) - LEVELS.indexOf(b))[0];
     if (near) levels.push(near);
   }
   return levels.length === p.levels.length && levels.every((l, i) => l === p.levels[i]) ? p : { ...p, levels };
@@ -66,7 +71,8 @@ export function Practice({ course, go, back }) {
   // Обычные типы: уровни без слов этого типа неактивны, в занятие идут только выбранные и доступные
   const counts = groupsMode ? {} : levelCounts(course, [prefs.kind]);
   const off = (l) => !groupsMode && !counts[l];
-  const offLevels = LEVELS.filter(off);
+  const shown = shownLevels(course);
+  const offLevels = shown.filter(off);
   const live = prefs.levels.filter((l) => !off(l));
   const levelHint = groupsMode || !offLevels.length ? '' : t('practice.noLevelWords', { lv: offLevels.join(', '), kind: t('practice.kind.' + prefs.kind) });
 
@@ -95,7 +101,7 @@ export function Practice({ course, go, back }) {
         </${Section}>
         ${size}` : html`
         <${Section} title=${t('practice.level')}>
-          <div class="choice-wrap">${LEVELS.map((l) => html`<${Chip} on=${prefs.levels.includes(l)} off=${off(l)} label=${l}
+          <div class="choice-wrap">${shown.map((l) => html`<${Chip} on=${prefs.levels.includes(l)} off=${off(l)} label=${l}
             count=${counts[l] || 0} onClick=${() => flipLevel(l)} />`)}</div>
           ${levelHint && html`<p class="t-label-13 muted">${levelHint}</p>`}
         </${Section}>
