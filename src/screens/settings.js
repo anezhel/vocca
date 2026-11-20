@@ -71,7 +71,7 @@ export function Settings({ course, route, go }) {
     <p class="t-label-12 muted center version">${t('settings.version', { v: CONFIG.version })}</p>
 
     ${picker && html`<${PickSheet} title=${t('settings.' + picker.id)} options=${picker.pick(course)} value=${picker.get(s, p)} onPick=${picker.put} onClose=${close} />`}
-    ${open === 'levels' && html`<${LevelsSheet} value=${p.levels} testLevel=${p.testLevel} onClose=${close}
+    ${open === 'levels' && html`<${LevelsSheet} course=${course} value=${p.levels} testLevel=${p.testLevel} onClose=${close}
       onApply=${(v) => set((st, c) => { c.levels = LEVELS.filter((l) => v.includes(l)); })} />`}
     ${open === 'reminder' && html`<${ReminderSheet} onClose=${close} />`}
     ${open === 'how' && html`<${Sheet} onClose=${close}><div class="sheet__head"><div class="t-heading-h2">${t('settings.howTitle')}</div></div>

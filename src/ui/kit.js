@@ -286,7 +286,7 @@ export function Modal({ onClose, children, cls }) {
 // Шапка листа выбора: заголовок (+ подпись) и крестик — закрыть без изменений
 export const SheetHead = ({ title, sub, onClose }) => html`<div class="sheet__head sheet__head--row">
   <div class="sheet__titles"><div class="t-heading-h2">${title}</div>${sub && html`<div class="t-label-14 muted">${sub}</div>`}</div>
-  <${IconButton} icon="close" onClick=${onClose} label=${t('common.close')} /></div>`;
+  <${IconButton} icon="close" kind="grey" onClick=${onClose} label=${t('common.close')} /></div>`;
 
 // Лист выбора (настройки, уровни, режим): выбор применяется только кнопкой «Застосувати» —
 // чёрная, без стрелки (Aura/Button primary). Крестик или тап мимо листа — закрыть без изменений.

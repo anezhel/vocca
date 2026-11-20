@@ -5,7 +5,7 @@
 import { html, useState, useEffect, useRef } from '../../lib/preact-htm.js';
 import { CONFIG, feature } from '../config.js';
 import { COURSES, PREVIEW, LEVELS } from '../content/index.js';
-import { t, UI_NAMES, num } from '../i18n/index.js';
+import { t, UI_NAMES, num, pn } from '../i18n/index.js';
 import { getState, update, progress } from '../core/store.js';
 import { Screen, Title, Button, Icon, IconButton, Counter, Sheet, SheetHead, ApplyButton, Toggle, cx } from '../ui/kit.js';
 
@@ -62,13 +62,15 @@ export function Course({ go, back }) {
 }
 
 // Карточки уровней с чекбоксами (1.3 и лист «Обери рівні»)
-export function LevelCards({ value, onChange, testLevel }) {
+// counts — число слов на уровне отдельной строкой (лист «Обери рівні», 20.11.2026)
+export function LevelCards({ value, onChange, testLevel, counts }) {
   return html`<div class="level-cards">${LEVELS.map((l) => {
     const on = value.includes(l);
     return html`<button class=${cx('level-card', 'card', on && 'level-card--on')} onClick=${() => onChange(on ? value.filter((x) => x !== l) : [...value, l])}>
       <span class="t-number-m">${l}</span>
       <span class="level-card__text"><span class="t-title-l">${t('levels.' + l)}</span>
-        <span class="t-label-13 muted">${testLevel === l ? t('onboarding.byTest') : t('levels.desc.' + l)}</span></span>
+        <span class="t-label-13 muted">${testLevel === l ? t('onboarding.byTest') : t('levels.desc.' + l)}</span>
+        ${counts && html`<span class="t-label-13-medium muted">${pn(counts[l] || 0, 'words')}</span>`}</span>
       <${Check} on=${on} /></button>`;
   })}</div>`;
 }
@@ -178,12 +180,14 @@ export function Paywall({ go, toast }) {
 // Последний шаг: сохранить и открыть «Практика»
 export const finishOnboarding = (go) => { update((s) => { s.onboarded = true; }); go('today', {}, true); };
 
-// Лист «Обери рівні» (настройки, «Практика») — выбор применяется кнопкой «Застосувати»
-export function LevelsSheet({ value, testLevel, onApply, onClose, children }) {
+// Лист «Обери рівні» (настройки, «Практика») — выбор применяется кнопкой «Застосувати».
+// У каждого уровня — сколько в нём слов курса (свои слова не считаем).
+export function LevelsSheet({ course, value, testLevel, onApply, onClose, children }) {
   const [draft, setDraft] = useState(value);
+  const counts = course && course.words ? course.words.reduce((o, w) => { if (!w.custom) o[w.lvl] = (o[w.lvl] || 0) + 1; return o; }, {}) : null;
   return html`<${Sheet} onClose=${onClose}>
     <${SheetHead} title=${t('onboarding.pickLevels')} sub=${t('onboarding.many')} onClose=${onClose} />
-    <${LevelCards} value=${draft} testLevel=${testLevel} onChange=${setDraft} />
+    <${LevelCards} value=${draft} testLevel=${testLevel} counts=${counts} onChange=${setDraft} />
     ${children && children(draft)}
     <${ApplyButton} disabled=${!draft.length} onClick=${() => { onApply(draft); onClose(); }} />
   </${Sheet}>`;
