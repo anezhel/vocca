@@ -7,6 +7,8 @@ import { update, progress } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
 import { SpeakButton, Overline, Example } from '../ui/kit.js';
 
+const nl = (s) => s.replace(/¶/g, '\n');
+
 function load(rows) {
   const ids = new Set();
   return rows.filter((r) => r.word).map((r) => {
@@ -19,7 +21,8 @@ function load(rows) {
       literal: r.literal_uk || r.literal_ru ? { uk: r.literal_uk || r.literal_ru, ru: r.literal_ru || r.literal_uk } : null,
       hint: r.hint_uk || r.hint_ru ? { uk: r.hint_uk || r.hint_ru, ru: r.hint_ru || r.hint_uk } : null,
       targets, ex: [1, 2, 3, 4].map((i) => tri(r, 'ex' + i)).filter((x) => x && x.en),   // до 4 примеров: по одному на каждое слово экрана
-      note: r.note_uk || r.note_ru ? { uk: r.note_uk || r.note_ru, ru: r.note_ru || r.note_uk } : null,
+      // пояснение: ¶ в таблице — новая строка (каждое слово, о котором рассказываем, — с новой строки; 20.11.2026)
+      note: r.note_uk || r.note_ru ? { uk: nl(r.note_uk || r.note_ru), ru: nl(r.note_ru || r.note_uk) } : null,
     };
   });
 }
@@ -74,7 +77,7 @@ function Item({ course, group, item }) {
       </div>
       ${item.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${L(group.examples)}</${Overline}>
         <div class="examples">${item.ex.map((ex) => html`<${Example} ex=${ex} hl=${hl} />`)}</div></div>`}
-      ${item.note && html`<div class="card card--pad"><${Overline}>${L(group.note, { link: item.link })}</${Overline}><p class="t-body-15">${L(item.note)}</p></div>`}
+      ${item.note && html`<div class="card card--pad"><${Overline}>${L(group.note, { link: item.link })}</${Overline}><p class="t-body-15 pre-line">${L(item.note)}</p></div>`}
     </div>`;
 }
 

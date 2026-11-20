@@ -163,7 +163,7 @@ function RelMore({ rel, w, own }) {
     ${ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${exTitle}</${Overline}>
       <div class="examples">${ex.map((e) => html`<${Example} ex=${e} hl=${hl} />`)}</div></div>`}
     ${notes.length > 0 && html`<div class="card card--lesson card--def"><${Overline}>${noteTitle}</${Overline}>
-      ${notes.map((n) => html`<p class="t-body-15">${L(n)}</p>`)}</div>`}`;
+      ${notes.map((n) => html`<p class="t-body-15 pre-line">${L(n)}</p>`)}</div>`}`;
 }
 
 // 2.3b · Новое слово — неправильный глагол (макет 20.11.2026): под карточкой слова чип «3 форми дієслова» и три карточки V1–V3,
