@@ -145,9 +145,11 @@ const marked = (en) => { const m = /\[([^\]]+)\]/.exec(en || ''); return m ? m[1
 const plain = (en) => (en || '').replace(/[[\]]/g, '').trim().toLowerCase();
 function RelMore({ rel, w, own }) {
   const base = (w.w || '').toLowerCase();
-  let baseShown = false;
   const ex = [], seen = new Set();
   for (const e of own || []) if (!seen.has(plain(e.en))) { seen.add(plain(e.en)); ex.push(e); }
+  // Пример с самим словом — один на весь блок: есть свои примеры — примеры добірок с самим словом не показываем
+  // («New York is famous…» и без «He is a famous singer»; решение дизайнера, 25.11.2026)
+  let baseShown = ex.length > 0;
   for (const r of rel) for (const e of r.ex) {
     if (seen.has(plain(e.en))) continue;
     if (marked(e.en) === base) { if (baseShown) continue; baseShown = true; }
