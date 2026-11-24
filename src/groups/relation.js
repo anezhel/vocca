@@ -9,11 +9,14 @@ import { SpeakButton, Overline, Example } from '../ui/kit.js';
 
 const nl = (s) => s.replace(/¶/g, '\n');
 
-function load(rows) {
+// Уровень связанного слова (A1–C2) — для серой плашки в занятии (24.11.2026): колонка toN_level, иначе — из words.tsv
+const lvlOf = (r, i, w, course) => r[`to${i}_level`] || (w && course && course.byText && (course.byText.get(w.toLowerCase()) || {}).lvl) || '';
+
+function load(rows, g, course) {
   const ids = new Set();
   return rows.filter((r) => r.word).map((r) => {
     let id = r.word; while (ids.has(id)) id += '+'; ids.add(id);
-    const targets = [1, 2, 3].map((i) => ({ w: r[`to${i}`] || '', ipa: r[`to${i}_ipa`] || '', tr: tri(r, `to${i}`) }))
+    const targets = [1, 2, 3].map((i) => ({ w: r[`to${i}`] || '', ipa: r[`to${i}_ipa`] || '', lvl: lvlOf(r, i, r[`to${i}`], course), tr: tri(r, `to${i}`) }))
       .filter((x) => x.w || (x.tr && (x.tr.uk || x.tr.ru)));
     return {
       id, w: r.word, ipa: r.ipa || '', lvl: r.level || '', link: r.link || '',

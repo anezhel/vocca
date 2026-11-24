@@ -130,8 +130,8 @@ export function relatedOf(course, w) {
 }
 
 const RelCard = ({ r, lang }) => html`<span class="word-pair__link t-label-12-medium">${L(r.g.chip, { link: r.link })}</span>
-  <div class="card syn-card">${r.targets.map((s) => html`<div class="syn-row"><div class="syn-row__text">
-    <span class="syn-row__line"><span class="t-label-17">${s.w || L(s.tr)}</span>${s.w && s.ipa && html`<span class="t-label-14 muted">/${s.ipa}/</span>`}</span>
+  <div class="card syn-card">${r.targets.map((s) => html`<div class="syn-row">${s.w && s.lvl && html`<span class="syn-row__lvl t-label-12-strong">${s.lvl}</span>`}<div class="syn-row__text">
+    <span class="syn-row__line"><span class="t-word-m">${s.w || L(s.tr)}</span>${s.w && s.ipa && html`<span class="t-label-14 muted">/${s.ipa}/</span>`}</span>
     ${s.w && s.tr && L(s.tr) && html`<span class="t-label-14 muted">${L(s.tr)}</span>`}</div>
     ${s.w && html`<${SpeakButton} text=${s.w} lang=${lang} kind="outline" />`}</div>`)}</div>`;
 
