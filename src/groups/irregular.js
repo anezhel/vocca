@@ -15,6 +15,7 @@ import { ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
 import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Pill, cx, useSwipe, enterCls } from '../ui/kit.js';
 import { GroupDone } from './done.js';
+import { addIrregular } from '../core/forms.js';
 
 const DAY = 86400000;
 const norm = (s) => s.toLowerCase().replace(/\s+/g, ' ').trim();
@@ -31,6 +32,7 @@ function load(rows) {
       note: r.note_uk || r.note_ru ? { uk: r.note_uk || r.note_ru, ru: r.note_ru || r.note_uk } : null,
       ex: [1, 2, 3].map((i) => tri(r, 'ex' + i)).filter((x) => x && x.en) };
     v.kind = kindOf(v);
+    addIrregular(r.v1, [r.v2, r.v3].flatMap((f) => f.split('/')).map((f) => f.trim()).filter(Boolean));   // go → went, gone — для выделения в примерах
     return v;
   });
 }

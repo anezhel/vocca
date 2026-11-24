@@ -3,6 +3,7 @@ import { html, useEffect, useLayoutEffect, useState, useRef } from '../../lib/pr
 import { ICONS } from './icons.js';
 import { t, L } from '../i18n/index.js';
 import { tts } from '../core/tts.js';
+import { phraseForms } from '../core/forms.js';
 
 export { html };
 export const cx = (...a) => a.filter(Boolean).join(' ');
@@ -315,14 +316,24 @@ export const ConfirmSheet = ({ title, text, yes, no, danger, onYes, onNo }) => h
 </${Sheet}>`;
 
 // Пример с выделением: «Can I [borrow] your pen?» → borrow подчёркнуто. Без скобок выделяются слова из hl.
+// Слово выделяется и в изменённой форме: smiles, decided, went (см. core/forms.js; 25.11.2026)
+const markRe = new Map();
+function markRegExp(hl) {
+  const key = hl.join('|');
+  if (!markRe.has(key)) {
+    const words = [...new Set(hl.flatMap((w) => [...phraseForms(w)]))].sort((a, b) => b.length - a.length)
+      .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/'/g, "['’]"));
+    markRe.set(key, words.length ? new RegExp(`\\b(${words.join('|')})\\b`, 'gi') : null);
+  }
+  return markRe.get(key);
+}
 export function Mark({ text, hl = [] }) {
   if (!text) return null;
   let parts;
   if (text.includes('[')) parts = text.split(/(\[[^\]]+\])/).map((p) => (p.startsWith('[') ? { b: p.slice(1, -1) } : p));
   else {
-    const words = hl.filter(Boolean).sort((a, b) => b.length - a.length).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-    if (!words.length) return text;
-    const re = new RegExp(`\\b(${words.join('|')})\\b`, 'gi');
+    const re = markRegExp(hl.filter(Boolean));
+    if (!re) return text;
     parts = text.split(re).map((p, i) => (i % 2 ? { b: p } : p));
   }
   return parts.map((p) => (typeof p === 'string' ? p : html`<b class="mark">${p.b}</b>`));
