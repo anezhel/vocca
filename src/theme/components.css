@@ -466,11 +466,14 @@ button.card { width: 100%; text-align: left; }
 .word-pair__link { position: relative; z-index: 2; align-self: center; margin: -18px 0; height: 28px; padding: 0 12px; display: inline-flex; align-items: center;
   border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
 .syn-card { padding: var(--space-20); border-radius: var(--radius-28); }
-.syn-row { display: flex; align-items: center; gap: var(--space-12); }
+.syn-row { display: flex; align-items: flex-start; gap: var(--space-8); }   /* макет 2.3a (24.11.2026): уровень · слово · озвучка, всё по верху */
 .syn-row + .syn-row { border-top: 1px solid var(--border-muted); margin-top: var(--space-12); padding-top: var(--space-12); }
 .syn-row__text { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 /* транскрипция рядом со словом в строке (синонимы, формы глагола, список слов) */
-.syn-row__line { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--space-8); row-gap: 2px; }
+.syn-row__line { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-4); row-gap: 2px; }
+/* Уровень связанного слова: серая плашка с чёрным текстом (Label/12 Semibold, поля 4 / 6, ширина не меньше 30 — слова в столбик ровно).
+   Цвет из макета — #e3e3e3, без переменной */
+.syn-row__lvl { flex: none; min-width: 30px; display: inline-flex; align-items: center; justify-content: center; padding: var(--space-4) var(--space-6); border-radius: var(--radius-full); background: #e3e3e3; color: var(--text-primary); line-height: 14px; }
 /* 07v · «3 форми дієслова»: форма, транскрипция, озвучка; под ней пример на сером */
 .card--lesson { padding: var(--space-20); border-radius: var(--radius-28); }
 .card--lesson .overline { margin-bottom: var(--space-12); }
