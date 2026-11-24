@@ -94,9 +94,10 @@ function Home({ course, group, route, go, back }) {
 // транскрипция у всех трёх Label/14, тег ближе к слову (сверху 2, до формы 8).
 export function VerbCard({ v, lang, compact }) {
   const form = (n) => v['v' + n];
-  return html`<div class=${cx('verb-forms', compact && 'verb-forms--compact')}>${[1, 2, 3].map((n) => {
+  // compact (занятие, 2.3b): одна белая карточка, формы через линию — как синонимы (25.11.2026); на 3.13 — три карточки
+  return html`<div class=${cx('verb-forms', compact && 'card verb-forms--compact')}>${[1, 2, 3].map((n) => {
     const ex = v.ex[n - 1];
-    return html`<div key=${n} class="card verb-form">
+    return html`<div key=${n} class=${cx('verb-form', !compact && 'card')}>
       <div class="verb-form__head">
         <span class="verb-form__tag t-label-12-strong">V${n}</span>
         <div class="verb-form__text"><div class="t-word-m">${form(n)}</div>
