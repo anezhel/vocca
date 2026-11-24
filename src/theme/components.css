@@ -299,10 +299,10 @@ button.card { width: 100%; text-align: left; }
 .verb-form__head { display: flex; align-items: flex-start; gap: var(--space-8); }
 .verb-form__tag { flex: none; min-width: 30px; text-align: center; padding: 4px var(--space-6); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); line-height: 14px; }
 .verb-form .verb-ex__box { padding: var(--space-6) var(--space-16); }
-/* 2.3b (занятие): формы V1–V3 в одной белой карточке, между формами линия — как строки синонимов (25.11.2026) */
+/* 2.3b (занятие): формы V1–V3 в одной белой карточке, между формами линия — как строки синонимов, отступы 16 (25.11.2026) */
 .verb-forms--compact { padding: var(--space-20); border-radius: var(--radius-28); gap: 0; }
 .verb-forms--compact .verb-form { padding: 0; border-radius: 0; }
-.verb-forms--compact .verb-form + .verb-form { border-top: 1px solid var(--border-muted); margin-top: var(--space-12); padding-top: var(--space-12); }
+.verb-forms--compact .verb-form + .verb-form { border-top: 1px solid var(--border-muted); margin-top: var(--space-16); padding-top: var(--space-16); }   /* 16 вокруг линии (у синонимов 12) */
 .verb-form__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; margin-right: 2px; }
 .verb-ex__box { display: flex; flex-direction: column; gap: var(--space-4); padding: 14px var(--space-16); border-radius: var(--radius-16); background: var(--bg-surface-2); }
 
