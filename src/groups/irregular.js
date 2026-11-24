@@ -99,8 +99,8 @@ export function VerbCard({ v, lang, compact }) {
     return html`<div key=${n} class="card verb-form">
       <div class="verb-form__head">
         <span class="verb-form__tag t-label-12-strong">V${n}</span>
-        <div class="verb-form__text"><div class=${compact ? 't-label-17' : 't-word-l'}>${form(n)}</div>
-          ${v.ipa[n - 1] && html`<div class=${n === 1 && !compact ? 't-label-16-regular muted' : 't-label-14 muted'}>/${v.ipa[n - 1]}/</div>`}
+        <div class="verb-form__text"><div class="t-word-m">${form(n)}</div>
+          ${v.ipa[n - 1] && html`<div class="t-label-14 muted">/${v.ipa[n - 1]}/</div>`}
           ${n === 1 && !compact && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
         <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />
       </div>
