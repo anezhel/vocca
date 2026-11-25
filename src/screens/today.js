@@ -11,7 +11,7 @@ import { dayGoal, practicePrefs } from '../core/session.js';
 const LEVEL_DONE = 0.8;   // доля выученных слов уровня, с которой он показывается в чипе
 import { GROUP_TYPES } from '../groups/index.js';
 import { learnedStats, streak, todayStats } from '../core/stats.js';
-import { Screen, Title, Button, Icon, Stat, cx } from '../ui/kit.js';
+import { Screen, Title, Button, Icon, Stat, Modal, cx } from '../ui/kit.js';
 
 function greeting() {
   const h = new Date().getHours();
@@ -39,13 +39,19 @@ export function Today({ course, go, toast }) {
   // Чип «🔥 A2» (решение дизайнера, 25.11.2026): самый высокий уровень, где в «Вивчено» не меньше 80 % слов уровня
   // (A1 100 % и A2 80 % → A2). Ни один уровень не дошёл до 80 % — «0». Раньше: уровень по тесту или самый высокий из выбранных, по нажатию — лист «Обери рівні».
   const me = [...LEVELS].reverse().find((l) => perLevel[l] && learned.byLevel[l] / perLevel[l] >= LEVEL_DONE) || null;
-  // По нажатию — тост: «Твій рівень — A2: вивчено 86 % слів цього рівня» / «Рівень ще не визначено…» (25.11.2026)
-  const chipText = me ? t('today.levelToast', { lvl: me, p: Math.floor((learned.byLevel[me] / perLevel[me]) * 100) }) : t('today.noLevelYet');
+  // По нажатию — модальное окно по центру, фон затемнён (макеты 2.1d / 2.1e, 25.11.2026): заголовок и текст по центру,
+  // белый фон, чёрный текст; закрывается нажатием мимо окна или Esc. Процент — вниз, чтобы при 79,6 % не показать 80.
+  const [info, setInfo] = useState(false);
+  const pct = me ? Math.floor((learned.byLevel[me] / perLevel[me]) * 100) : 0;
+  const infoTitle = me ? t('today.levelTitle', { lvl: me }) : t('today.noLevelTitle');
+  const infoText = me ? t('today.levelText', { p: pct }) : t('today.noLevelText');
   return html`<${Screen} cls="screen--tab screen--today" tone="today">
     ${html`<div class=${cx('today-head', noLevels && 'today-head--title')}>
       ${noLevels && html`<${Title} main=${greeting()} accent=${t('today.noLevels')} />`}
-      <button class="level-chip t-label-13" onClick=${() => toast && toast(chipText)} aria-label=${chipText}><${Icon} name="flame" size=${18} /><b>${me || '0'}</b></button>
+      <button class="level-chip t-label-13" onClick=${() => setInfo(true)} aria-label=${infoTitle}><${Icon} name="flame" size=${18} /><b>${me || '0'}</b></button>
     </div>`}
+    ${info && html`<${Modal} cls="level-modal" onClose=${() => setInfo(false)}>
+      <div class="t-heading-h2">${infoTitle}</div><p class="t-body-16">${infoText}</p></${Modal}>`}
     <div class="hero hero--today"><div class="t-number-hero">${num(day.words)}</div>
       <div class="hero__label"><div class="t-label-16 hero__text">${t('today.passed')}</div>
         <div class="t-label-15 muted">${t('today.about', { n: day.minutes, u: plural(day.minutes, 'minutes') })}</div></div></div>
