@@ -54,7 +54,7 @@ export function Collection({ course, route, go, back }) {
     if (pos + 1 < list.length) { step(pos + 1, dir); setFar(Math.max(far, pos + 1)); } else { setFar(Math.max(far, pos)); setEnter(dir); setDone(true); }
   }
   const Item = T(cur.g).Item;
-  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${html`<div class="row-arrows row-arrows--56">
+  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${html`<div class="row-arrows row-arrows--compact">
       <button class="nav-arrow" disabled=${pos === 0} onClick=${() => step(pos - 1, 'left')} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
       <${Button} variant="secondary" label=${t('lesson.alreadyKnow')} onClick=${() => { knowWords(course, (T(cur.g).knownWords || (() => []))(cur.item)); pos < far ? step(pos + 1, 'right') : next('right'); }} />
       <button class="nav-arrow" onClick=${() => (pos < far ? step(pos + 1, 'right') : next('right'))} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`}>
