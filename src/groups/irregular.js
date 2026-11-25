@@ -110,7 +110,7 @@ export function VerbCard({ v, lang, compact, tr }) {
         <div class="verb-form__text"><div class="t-word-m">${form(n)}</div>
           ${v.ipa[n - 1] && html`<div class="t-label-14 muted">/${v.ipa[n - 1]}/</div>`}
           ${n === 1 && (!compact || tr) && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
-        <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />
+        <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} />
       </div>
       ${ex && !compact && html`<div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>
         <div class="t-label-14 muted">${L(ex)}</div></div>`}
@@ -258,7 +258,7 @@ function Trainer({ course, group, back, toast }) {
     <div class="card drill-card" aria-label=${t('drill.task')}>
       <div class="drill-card__head"><div class="drill-card__text">
         <span class="t-word-xl">${v[FORMS[given]]}</span><span class="t-translation-m muted">${L(v.tr)}</span></div>
-        <${SpeakButton} text=${v[FORMS[given]].replace(' / ', ', ')} lang=${lang} kind="outline" size=${40} /></div>
+        <${SpeakButton} text=${v[FORMS[given]].replace(' / ', ', ')} lang=${lang} /></div>
       <div class="drill-slots">${['V1', 'V2 · Past', 'V3'].map((head, f) => {
         const k = blanks.indexOf(f);
         return html`<div class="drill-slots__col" key=${head}>

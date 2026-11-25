@@ -70,7 +70,7 @@ const counter = (lesson) => `${Math.min(lesson.done + 1, lesson.total)} / ${less
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 // 2.3 · Нове слово / 2.4 · Повторення (макет 19.11.2026): серый фон с лавандовым и розовым пятнами. Белая карточка слова:
-// вверху тег уровня и «НОВЕ СЛОВО» / «ПОВТОРЕННЯ», слово Word/XL, транскрипция, озвучка в обводке, перевод; часть речи не показываем.
+// вверху тег уровня и «НОВЕ СЛОВО» / «ПОВТОРЕННЯ», слово Word/XL, транскрипция, озвучка (серый круг), перевод; часть речи не показываем.
 // Если слово есть в добірках — их карточки сразу под словом (relatedOf ниже). Дальше «Приклади» и «Пояснення слова»,
 // в конце — «Порівняй» и «У чому різниця» из добірок; карточки через 16 px.
 function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPrev, onNext }) {
@@ -102,7 +102,7 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
         <div class="new-head"><div class="new-head__text">
           <div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>
           ${ipaOf(course, w) && html`<div class="t-label-16-regular muted">/${ipaOf(course, w)}/</div>`}</div>
-          <${SpeakButton} text=${word} lang=${lang} kind="outline" size=${40} /></div>
+          <${SpeakButton} text=${word} lang=${lang} /></div>
         <div class="t-translation-m">${cap(L(w.tr))}</div>
       </div>
       ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbCard} v=${verb} lang=${lang} compact />`}
@@ -141,7 +141,7 @@ const RelCard = ({ r, lang }) => html`<span class="word-pair__link t-label-12-me
   <div class="card syn-card">${r.targets.map((s) => html`<div class="syn-row">${s.w && s.lvl && html`<span class="syn-row__lvl t-label-12-strong" data-level=${s.lvl}>${s.lvl}</span>`}<div class="syn-row__text">
     <span class="t-word-m">${s.w || L(s.tr)}</span>${s.w && s.ipa && html`<span class="t-label-14 muted">/${s.ipa}/</span>`}
     ${s.w && s.tr && L(s.tr) && html`<span class="t-label-14 muted">${L(s.tr)}</span>`}</div>
-    ${s.w && html`<${SpeakButton} text=${s.w} lang=${lang} kind="outline" />`}</div>`)}</div>`;
+    ${s.w && html`<${SpeakButton} text=${s.w} lang=${lang} />`}</div>`)}</div>`;
 
 // «Порівняй» и «У чому різниця» — по одной карточке на все добірки слова, в самом низу (макет 2.3a, 19.11.2026).
 // Примеры всех добірок подряд; пример только с самим словом («They live in a big house», «This is a big box») — один раз.
