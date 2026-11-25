@@ -9,7 +9,7 @@ import { bucket } from '../core/srs.js';
 import { startLesson, answer, reanswer, finishLesson, practicePrefs } from '../core/session.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx, Icon, Note } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, markRegExp, ConfirmSheet, useSwipe, enterCls, cx, Icon, Note } from '../ui/kit.js';
 import { Ring } from '../groups/done.js';
 import { VerbCard, VerbExamples } from '../groups/irregular.js';
 import { LEVELS } from '../content/index.js';
@@ -130,8 +130,9 @@ const REL_ORDER = ['synonyms', 'antonyms', 'confusing', 'false-friends', 'simila
 // не нашли — по месту в строке (ex1 ↔ to1 или ex1 — само слово, ex2 ↔ to1). Примеры с самим словом — первыми.
 const LVL_RANK = (l) => { const i = LEVELS.indexOf(l); return i < 0 ? LEVELS.length : i; };
 const exTarget = (e, j, it) => {
-  const m = /\[([^\]]+)\]/.exec(e.en || '');
-  const key = m ? m[1].toLowerCase().replace(/’/g, "'") : null;
+  // разорванный фразовый глагол: «[put] the milk [back]» → put back (все выделенные куски через пробел; 25.11.2026)
+  const parts = [...(e.en || '').matchAll(/\[([^\]]+)\]/g)].map((x) => x[1]);
+  const key = parts.length ? parts.join(' ').toLowerCase().replace(/’/g, "'") : null;
   const hit = key ? it.targets.find((tg) => tg.w && phraseForms(tg.w.toLowerCase()).has(key)) : null;
   if (hit || key === (it.w || '').toLowerCase()) return hit || null;
   if (it.ex.length === it.targets.length) return it.targets[j];
@@ -155,7 +156,7 @@ export function relatedOf(course, w) {
       (slot ? slot.ex : baseEx).push(e);
     });
     const sorted = targets.map((x, i) => ({ ...x, i })).sort((a, b) => LVL_RANK(a.tg.lvl) - LVL_RANK(b.tg.lvl) || a.i - b.i);
-    return { g, link: items[0].link, targets: sorted.map((x) => x.tg), ex: [...baseEx, ...sorted.flatMap((x) => x.ex)],
+    return { g, link: items[0].link, targets: sorted.map((x) => x.tg), ex: [...baseEx, ...sorted.flatMap((x) => x.ex)], baseEx, slots: sorted,
       notes: items.map((it) => it.note).filter(Boolean), hl: [w.w, ...sorted.map((x) => x.tg.w).filter(Boolean)] };
   }).filter(Boolean);
 }
@@ -174,18 +175,32 @@ const marked = (en) => { const m = /\[([^\]]+)\]/.exec(en || ''); return m ? m[1
 // own — свои примеры слова (когда есть и примеры добірок): идут первыми, одинаковые предложения — один раз,
 // заголовок — «Приклади · Порівняй» (одна добірка: «Приклади · <её подпись>», а если подпись и так «Приклади» — «Приклади · <добірка>»).
 const plain = (en) => (en || '').replace(/[[\]]/g, '').trim().toLowerCase();
-function RelMore({ rel, w, own, skipBase, def }) {
+// Примеры (решение дизайнера, 25.11.2026): ровно одно предложение с самим словом — первым, и по одному на каждое связанное
+// слово (синоним, антоним, сталий вираз…) — в том порядке, что и слова в карточках. Предложение для самого слова — своё
+// из words.tsv, где нет связанных слов (photo: не «Can you take a photo of us?» — это пример к take a photo); своего нет —
+// пример добірки, где выделено само слово. В предложении самого слова выделено только оно. Раньше шли все свои примеры
+// и все примеры добірок (у photo — два примера к take a photo и ни одного просто к photo).
+export function lessonExamples(rel, w, own, skipBase) {
   const base = (w.w || '').toLowerCase();
+  const tws = rel.flatMap((r) => r.targets.map((x) => x.w).filter(Boolean));
+  const tre = markRegExp(tws);
+  const hasTarget = (e) => { if (!tre) return false; tre.lastIndex = 0; const hit = tre.test(plain(e.en)); tre.lastIndex = 0; return hit; };
   const ex = [], seen = new Set();
-  for (const e of own || []) if (!seen.has(plain(e.en))) { seen.add(plain(e.en)); ex.push(e); }
-  // Пример с самим словом — один на весь блок: есть свои примеры — примеры добірок с самим словом не показываем
-  // («New York is famous…» и без «He is a famous singer»; решение дизайнера, 25.11.2026)
-  let baseShown = ex.length > 0 || !!skipBase;   // skipBase: у глагола свой блок «Приклади · 3 форми дієслова» — сам глагол в «Порівняй» не повторяем
-  for (const r of rel) for (const e of r.ex) {
-    if (seen.has(plain(e.en))) continue;
-    if (marked(e.en) === base) { if (baseShown) continue; baseShown = true; }
-    seen.add(plain(e.en)); ex.push(e);
+  const add = (e, main) => { seen.add(plain(e.en)); ex.push({ e, main }); };
+  if (!skipBase) {   // у глагола свой блок «Приклади · 3 форми дієслова» — сам глагол в «Порівняй» не повторяем
+    const mine = own || [];
+    const fromGroups = rel.flatMap((r) => r.baseEx).concat(rel.flatMap((r) => r.ex).filter((e) => marked(e.en) === base));
+    const pick = mine.find((e) => !hasTarget(e)) || fromGroups.find((e) => !hasTarget(e)) || mine[0] || fromGroups[0];
+    if (pick) add(pick, true);
   }
+  for (const r of rel) for (const s of r.slots) {
+    const e = s.ex.find((x) => !seen.has(plain(x.en)));
+    if (e) add(e, false);
+  }
+  return ex;
+}
+function RelMore({ rel, w, own, skipBase, def }) {
+  const ex = lessonExamples(rel, w, own, skipBase);
   const hl = [w.w, ...rel.flatMap((r) => r.targets.map((x) => x.w).filter(Boolean))];
   const notes = rel.flatMap((r) => r.notes);
   const one = rel.length === 1 ? rel[0] : null;
@@ -194,7 +209,7 @@ function RelMore({ rel, w, own, skipBase, def }) {
   const noteTitle = one ? L(one.g.note, { link: one.link }) : t('lesson.difference');
   return html`
     ${ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${exTitle}</${Overline}>
-      <div class="examples">${ex.map((e) => html`<${Example} ex=${e} hl=${hl} />`)}</div></div>`}
+      <div class="examples">${ex.map(({ e, main }) => html`<${Example} ex=${e} hl=${main ? [w.w] : hl} />`)}</div></div>`}
     ${def}
     ${notes.length > 0 && html`<div class="card card--lesson card--def"><${Overline}>${noteTitle}</${Overline}>
       ${notes.map((n) => html`<${Note} text=${L(n)} />`)}</div>`}`;
