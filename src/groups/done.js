@@ -26,12 +26,12 @@ export function Ring({ value, total, caption, size = 240, stroke = 10, cls }) {
 export function GroupDone({ title, many, seen, total, left, next, onMore, onRepeat, onFinish, unit = 'words' }) {
   return html`<${Screen} cls="screen--done screen--center" tone="none" bottom=${html`<div class="done-actions">
       ${left > 0 && html`<${Button} label=${t('groups.nextN', { x: pn(next, unit) })} onClick=${onMore} />`}
-      <${Button} variant="secondary" label=${t('groups.repeatSame')} onClick=${onRepeat} />
+      <${Button} variant="secondary" label=${t(unit === 'rules' ? 'groups.repeatRules' : 'groups.repeatSame')} onClick=${onRepeat} />
       <button class="link-btn t-title-m" onClick=${onFinish}>${t('practice.finish')}</button></div>`}>
     <div class="done">
       <${Ring} value=${seen} total=${total} />
       <div class="done__head"><h1 class="t-heading-h1">${t('groups.wellDone')}</h1>
-        <p class="t-body-16 muted">${left > 0 ? t(many ? 'groups.portionLeftMany' : 'groups.portionLeft', { title, x: pn(left, unit) }) : t(many ? 'groups.allPassedMany' : 'groups.allPassed', { title })}</p></div>
+        <p class="t-body-16 muted">${left > 0 ? t(many ? 'groups.portionLeftMany' : 'groups.portionLeft', { title, x: pn(left, unit) }) : t(many ? 'groups.allPassedMany' : unit === 'rules' ? 'groups.allPassedRules' : 'groups.allPassed', { title })}</p></div>
     </div>
   </${Screen}>`;
 }
