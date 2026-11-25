@@ -103,7 +103,7 @@ function topicsOf(course, section) {
 // Только времена — конструкции (be going to, у правила свой kind) в список не входят. «Вчити» открывает добірку на этом правиле.
 function ruleRows(list, tp) {
   return list.filter(({ g }) => g.topic === tp.id).flatMap(({ g, s, k }) => (g.items || []).filter((it) => !it.kind)
-    .map((it) => { const [head, ...rest] = it.name.split(' '); return { g, s, k, rule: tp.heads ? { ...it, head, short: rest.join(' ') || it.name } : { ...it, head: null, short: it.name } }; }));
+    .map((it) => { const [head, ...rest] = it.name.split(' '); return { g, s, k, rule: { ...it, head: tp.heads ? head : null, short: tp.heads || tp.short ? rest.join(' ') || it.name : it.name } }; }));
 }
 
 // Строка «Добірки слів» / «Граматика» с раскрывающимися темами. Тем нет — строка показывает тост (soon), если он задан.
