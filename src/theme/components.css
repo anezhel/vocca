@@ -192,7 +192,7 @@ button.card { width: 100%; text-align: left; }
 .word-row__text--ipa { gap: var(--space-8); }
 .word-row__top { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
 .more { width: 100%; padding: var(--space-14); border-radius: var(--radius-full); background: var(--bg-surface); }
-.level-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-6); } /* шесть уровней в ряд: на плитке уровень и число слов */
+.level-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-6); } /* шесть уровней в ряд: на плитке только уровень (число слов убрано — решение дизайнера, 25.11.2026); в подписи для экранного диктора число осталось */
 .level-tile { position: relative; min-width: 0; border-radius: var(--radius-16); padding: var(--space-10) var(--space-4) var(--space-10) var(--space-10); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); color: var(--text-on-pastel); }
 .level-tile .t-number-xs { color: var(--text-primary); }
 .level-tile--on { box-shadow: inset 0 0 0 2px var(--bg-inverse); }
