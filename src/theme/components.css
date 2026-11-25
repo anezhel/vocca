@@ -659,3 +659,7 @@ button.card { width: 100%; text-align: left; }
 .rule-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .rule-chip { padding: 6px 12px; border-radius: var(--radius-full); background: var(--bg-surface-2); color: var(--text-primary); }
 .rule .word-main .t-word-xl { overflow-wrap: anywhere; }
+
+/* Модальное окно уровня на «Практика» (2.1d / 2.1e, 25.11.2026): заголовок Heading/H2 и текст Body/16 по центру, через 8, чёрные */
+.level-modal { gap: var(--space-8); }
+.level-modal p { margin: 0; color: var(--text-primary); }

@@ -57,7 +57,7 @@ export default {
   today: {
     morning: 'Доброе утро!', day: 'Добрый день!', evening: 'Добрый вечер!', night: 'Доброй ночи!',
     timeTo: 'Пора повторить слова', allDone: 'На сегодня всё', noLevels: 'Выбери уровни слов',
-    levelToast: 'Твой уровень — {lvl}: выучено {p}% слов этого уровня', noLevelYet: 'Уровень ещё не определён: выученных слов пока мало', yourLevel: 'твой уровень', statLearned: 'выучено слов', passed: 'Слов сегодня\nпройдено', statStreak: '{d} подряд', statCourse: 'курса',
+    levelTitle: 'Твой уровень — {lvl}', levelText: 'Выучено {p}% слов этого уровня.', noLevelTitle: 'Уровень ещё не определён', noLevelText: 'Выученных слов пока мало. Уровень появится, когда будет выучено 80% слов одного из уровней.', yourLevel: 'твой уровень', statLearned: 'выучено слов', passed: 'Слов сегодня\nпройдено', statStreak: '{d} подряд', statCourse: 'курса',
     groupsSub: 'Подборки слов и тренажёры', learnedShort: 'Выучено',
     about: '≈ {n} {u}', review: '{n} повторить', fresh: '+{n} новых',
     learnNew: 'Учить новые слова', learnWords: 'Учить слова', myLevel: 'Мой уровень', repeatWords: 'Повторить слова', groupsLearning: 'В процессе', groupsNew: 'Новые', groupsDone: 'Пройденные', groupsOther: 'Другие подборки', statsRepeated: 'Повторено слов', statsLearned: 'Добавлено в выученные', statsSub: 'Статистика по дням',
