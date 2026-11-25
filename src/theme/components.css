@@ -649,3 +649,5 @@ button.card { width: 100%; text-align: left; }
 .danger-btn { display: flex; align-items: center; gap: var(--space-12); text-align: left; padding: var(--space-12) var(--space-16); }
 
 .note-text b { font-weight: 600; }   /* слово в начале строки пояснення (25.11.2026) */
+.note-head { font-weight: 600; margin-bottom: var(--space-8); }   /* «Протилежне до …» — заголовок, отступ вниз 8 (25.11.2026) */
+.note + .note { border-top: 1px solid var(--border-muted); margin-top: var(--space-8); padding-top: var(--space-16); }   /* синонимы | антонимы — разделены линией */

@@ -346,11 +346,20 @@ export const Example = ({ ex, hl, pre }) => html`<div class="example"><div class
 
 // Пояснення («У чому різниця», «Як це працює»…): строка «word — пояснение» — слово до тире жирным
 // (решение дизайнера, 25.11.2026). Жирным — только если до тире есть латиница и это короткий кусок (слово, фраза, «huge і enormous»).
-export const Note = ({ text }) => html`<p class="t-body-15 pre-line note-text">${(text || '').split('\n').map((line, i) => {
-  const m = /^(.{1,40}?) — /.exec(line);
-  const head = m && /[A-Za-z]/.test(m[1]) ? m[1] : null;
-  return html`${i ? '\n' : ''}${head ? html`<b>${head}</b>${line.slice(head.length)}` : line}`;
-})}</p>`;
+// Первая строка «Протилежне до …» / «Противоположное к …» (антонимы) — заголовок: жирный, отдельным абзацем,
+// под ним отступ чуть больше обычного (решение дизайнера, 25.11.2026).
+const NOTE_HEAD = /^(Протилежне до|Противоположное к) /;
+export const Note = ({ text }) => {
+  let lines = (text || '').split('\n');
+  const head = NOTE_HEAD.test(lines[0]) ? lines[0] : null;
+  if (head) lines = lines.slice(1);
+  return html`<div class="note">${head && html`<p class="t-body-15 note-head">${head}</p>`}
+    <p class="t-body-15 pre-line note-text">${lines.map((line, i) => {
+      const m = /^(.{1,40}?) — /.exec(line);
+      const b = m && /[A-Za-z]/.test(m[1]) ? m[1] : null;
+      return html`${i ? '\n' : ''}${b ? html`<b>${b}</b>${line.slice(b.length)}` : line}`;
+    })}</p></div>`;
+};
 
 // Aura/Tab bar — стеклянная капсула. За активной вкладкой — светло-розовый пузырёк (nav/active-bg),
 // иконка и подпись в нём красно-розовые. При смене вкладки пузырёк переезжает с лёгкой пружинкой, не увеличиваясь;
