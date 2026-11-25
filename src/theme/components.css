@@ -420,10 +420,10 @@ button.card { width: 100%; text-align: left; }
 .done-actions { display: flex; flex-direction: column; gap: var(--space-8); }
 .link-btn { height: 52px; width: 100%; text-align: center; }
 /* 2.3 новое слово (20.11.2026): ‹ · «Знаю» · «Вчити» · › — стрелки 40 × 40 без фона, кнопки поровну, через 8 */
-.row-arrows { display: grid; grid-template-columns: 40px 1fr 1fr 40px; gap: var(--space-8); align-items: center; }
+.row-arrows { display: grid; grid-template-columns: 56px 1fr 56px; gap: var(--space-8); align-items: center; }   /* ‹ · «Уже знаю» · › (25.11.2026) */
 .row-arrows .btn { padding: 0 var(--space-8); white-space: nowrap; }
-.nav-arrow { width: 40px; height: 40px; display: grid; place-items: center; color: var(--text-primary); border-radius: var(--radius-full); }
-.nav-arrow:active:not(:disabled) { background: var(--bg-surface-3); }
+.nav-arrow { width: 56px; height: 56px; display: grid; place-items: center; color: var(--text-primary); border-radius: var(--radius-full); background: var(--bg-surface-3); transition: transform .12s; }   /* серый круг, как настройки в меню */
+.nav-arrow:active:not(:disabled) { transform: scale(.94); }
 .nav-arrow:disabled { opacity: .3; }
 
 /* 04a · Вивчено: строка выученного слова раскрывается — примеры и «Повернути у вивчення» */
