@@ -1,10 +1,12 @@
-// 2.2 «Що тренуємо?» (новый макет дизайнера, 25.11.2026): открывается по «Вчити слова» на «Практика». Выбор запоминается.
-//   Сверху — три плитки (как радио): «Слова за рівнями» · «Добірки слів» · «Повторити вивчене».
-//   Под ними — плитки уровней «Слова A1» … «Слова C2» (можно несколько; уровень без слов этого типа бледный и не нажимается;
-//   если выбор не остался ни на одном — выбирается доступный, ближайший к «моему»), а для «Добірки слів» — плитки добірок (одна).
-//   Плитки 3 в ряд, 70 высотой, скругление 10: невыбранная белая с обводкой, выбранная чёрная.
-//   Сколько слов за заход — всегда 20 (выбора «Кількість слів» больше нет). Подсказок и кружков с числом нет.
-//   Раньше (19–25.11.2026): секции «Слова» / «Рівень» / «Добірки» / «Кількість слів» с чипами.
+// 2.2 «Що тренуємо?» (макеты 2.2 / 2.2a / 2.2b): открывается по «Вчити слова» на «Практика». Сразу выбрано то,
+// что человек выбрал в прошлый раз (в первый раз — «Нові слова», «твій рівень»). Выбор запоминается сразу.
+//   Слова — один из «Нові слова / Добірки слів / Повторити вивчені» (как радио).
+//   «Нові слова» и «Повторити вивчені»: Рівень (можно несколько; только уровни из настроек). Уровень, на котором нет слов
+//     этого типа, бледный и не нажимается, а если был выбран — выбор с него снимается; если так не осталось ни одного
+//     выбранного уровня — выбирается доступный, ближайший к «моему». На уровне кружок — сколько слов этого типа (у пустого — 0).
+//   «Добірки слів»: вместо уровней — «Добірки» (все добірки курса, одна; в кружке — сколько в ней карточок).
+//   За заход — всегда 20 слов (25.11.2026: «Кількість слів» убрана, подсказки под уровнями нет — макет 2.2a дизайнера).
+//   25.11.2026 пробовали плитки 3 в ряд (PR #132) — дизайнер вернула чипы.
 import { html, useState } from '../../lib/preact-htm.js';
 import { LEVELS } from '../content/index.js';
 import { GROUP_TYPES } from '../groups/index.js';
@@ -13,9 +15,18 @@ import { practicePrefs, savePractice, levelCounts, countFor, myLevel, PRACTICE_K
 import { progress } from '../core/store.js';
 import { Screen, Title, Button, IconButton, cx } from '../ui/kit.js';
 
-// Плитка: не выбрана — белая с обводкой, выбрана — чёрная; off — уровень без слов этого типа: бледная, не нажимается
-const Tile = ({ on, off, label, onClick }) => html`<button class=${cx('pick-tile t-label-15-medium', on && 'is-on')} aria-pressed=${on} disabled=${off} onClick=${onClick}>${label}</button>`;
-const SIZE = 20;   // слов (экранов) за заход — всегда 20 (решение дизайнера, 25.11.2026; раньше «Кількість слів» 10 / 20 / 30 / 40 / «Всі»)
+// Aura/Chip: не выбран — белый с обводкой, выбран — чёрный, без галочки
+// off — неактивен (уровень без слов этого типа): бледный, не нажимается; выбранным такой уровень не бывает (fitLevels)
+// count — число в кружке справа: у добірок — сколько карточек, у уровней — сколько слов выбранного типа (у неактивных — 0);
+// серый кружок, у выбранного чипа — серый на чёрном
+const Chip = ({ on, off, label, count, onClick }) => html`<button class=${cx('choice-chip t-label-15-medium', on && 'is-on', count != null && 'choice-chip--count')}
+  aria-pressed=${on} disabled=${off} onClick=${onClick}>${label}${count != null && html`<span class="choice-chip__count t-label-11">${count}</span>`}</button>`;
+
+const SIZE = 20;   // слов (экранов) за заход — всегда 20 (25.11.2026; раньше «Кількість слів» 10 / 20 / 30 / 40 / «Всі»)
+
+const Section = ({ title, children }) => html`<section class="practice-sec">
+  <div class="practice-sec__head"><span class="t-title-m">${title}</span></div>
+  ${children}</section>`;
 
 // Добірка по умолчанию: та, что в процессе, иначе первая новая, иначе первая
 function defaultGroup(course) {
@@ -26,7 +37,7 @@ function defaultGroup(course) {
 
 // Уровни на 2.2 — только те, что выбраны в настройках («Рівні»), по порядку A1 → C2 (решение дизайнера, 20.11.2026).
 // Если в настройках пусто — все.
-const shownLevels = () => LEVELS;   // с 25.11.2026 (новый макет 2.2) — все шесть уровней
+const shownLevels = (course) => { const s = progress(course.id).levels; return LEVELS.filter((l) => !s.length || s.includes(l)); };
 
 // Уровни под выбранный тип: с уровней без слов этого типа и с уровней, которых нет в настройках, выбор снимается. Если при открытии экрана или смене типа не осталось
 // ни одного — выбирается доступный уровень, ближайший к «моему» (при равенстве — тот, что ниже); снять все уровни вручную
@@ -34,7 +45,7 @@ const shownLevels = () => LEVELS;   // с 25.11.2026 (новый макет 2.2)
 function fitLevels(course, p, pick = true) {
   if (p.kind === 'groups') return p;
   const counts = levelCounts(course, KIND_BUCKETS[p.kind]);
-  const shown = shownLevels();
+  const shown = shownLevels(course);
   const levels = p.levels.filter((l) => counts[l] && shown.includes(l));
   if (!levels.length && pick) {
     const me = LEVELS.indexOf(myLevel(progress(course.id)) || p.levels[0] || LEVELS[0]);
@@ -55,10 +66,12 @@ export function Practice({ course, go, back }) {
   const groupsMode = prefs.kind === 'groups';
   const kinds = PRACTICE_KINDS.filter((k) => k !== 'groups' || course.groupList.length);
 
-  // Уровни без слов этого типа неактивны, в занятие идут только выбранные и доступные
+  // Обычные типы: уровни без слов этого типа неактивны, в занятие идут только выбранные и доступные
   const counts = groupsMode ? {} : levelCounts(course, KIND_BUCKETS[prefs.kind]);
   const off = (l) => !groupsMode && !counts[l];
+  const shown = shownLevels(course);
   const live = prefs.levels.filter((l) => !off(l));
+
   const found = countFor(course, { levels: live });
   const canStart = groupsMode ? !!prefs.group : live.length > 0 && KIND_BUCKETS[prefs.kind].some((b) => found[b] > 0);
   const start = () => {
@@ -72,10 +85,18 @@ export function Practice({ course, go, back }) {
     <div class="top-bar"><${IconButton} icon="arrow-left" size=${48} onClick=${back} label=${t('common.back')} /></div>
     <${Title} main=${t('practice.title')} accent=${t('practice.titleAccent')} />
     <div class="practice-secs">
-      <div class="pick-grid">${kinds.map((k) => html`<${Tile} on=${prefs.kind === k} label=${t('practice.kind.' + k)} onClick=${() => set({ kind: k })} />`)}</div>
-      ${groupsMode
-        ? html`<div class="pick-grid">${course.groupList.map((g) => html`<${Tile} on=${prefs.group === g.id} label=${L(g.title)} onClick=${() => set({ group: g.id })} />`)}</div>`
-        : html`<div class="pick-grid">${LEVELS.map((l) => html`<${Tile} on=${prefs.levels.includes(l)} off=${off(l)} label=${t('practice.levelTile', { lv: l })} onClick=${() => flipLevel(l)} />`)}</div>`}
+      <${Section} title=${t('practice.words')}>
+        <div class="choice-wrap">${kinds.map((k) => html`<${Chip} on=${prefs.kind === k} label=${t('practice.kind.' + k)} onClick=${() => set({ kind: k })} />`)}</div>
+      </${Section}>
+      ${groupsMode ? html`
+        <${Section} title=${t('practice.groups')}>
+          <div class="choice-wrap">${course.groupList.map((g) => html`<${Chip} on=${prefs.group === g.id} label=${L(g.title)}
+            count=${GROUP_TYPES[g.type].stats(course, g).total} onClick=${() => set({ group: g.id })} />`)}</div>
+        </${Section}>` : html`
+        <${Section} title=${t('practice.level')}>
+          <div class="choice-wrap">${shown.map((l) => html`<${Chip} on=${prefs.levels.includes(l)} off=${off(l)} label=${l}
+            count=${counts[l] || 0} onClick=${() => flipLevel(l)} />`)}</div>
+        </${Section}>`}
     </div>
   </${Screen}>`;
 }
