@@ -629,6 +629,8 @@ button.card { width: 100%; text-align: left; }
 /* 2.1a: «Добірки слів» → раскрытые блоки — 2 px; блоки «В процесі / Нові / Пройдені» друг от друга — 4 px */
 .colls-wrap { display: flex; flex-direction: column; gap: 2px; }
 .colls { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-16); border-radius: var(--radius-24); background: var(--tint-lavender); }
+.trainer-btn { height: 48px; display: grid; place-items: center; width: 100%; margin-top: var(--space-8); border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); transition: transform .12s; }   /* «Тренажер» под темами (2.1c, 25.11.2026): чёрная, 48, через 12 от карточек */
+.trainer-btn:active { transform: scale(.97); }
 .colls--mint { background: var(--level-a1); } /* «Граматика» раскрыта — мятная, как её строка */
 /* блоки «В процесі / Нові / Пройдені» — белые, без тени, скругление 28 (как в 2.1a / 2.1b) */
 .coll-block { padding: 0; border-radius: var(--radius-28); overflow: hidden; box-shadow: none; }

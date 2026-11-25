@@ -50,7 +50,7 @@ export function Today({ course, go, toast }) {
     </div>
     <div class="cta-wrap">${main}</div>
     <div class="practice-rows">
-      ${feature('groups') && course.groupList?.length > 0 && html`<${Topics} course=${course} go=${go} section="words" icon="grid" title="today.collections" sub="today.groupsSub" />`}
+      ${feature('groups') && course.groupList?.length > 0 && html`<${Topics} course=${course} go=${go} section="words" icon="grid" title="today.collections" sub="today.groupsSub" toast=${toast} />`}
       <${Topics} course=${course} go=${go} section="grammar" icon="doc" title="today.grammar" sub="today.grammarSub" mint soon="today.grammarSoon" toast=${toast} />
     </div>
     <div class="card learned-levels">
@@ -84,6 +84,7 @@ function topicsOf(course, section) {
 }
 
 // Строка «Добірки слів» / «Граматика» с раскрывающимися темами. Тем нет — строка показывает тост (soon), если он задан.
+// Под темами — чёрная кнопка «Тренажер» (решение дизайнера, 25.11.2026, макет 2.1c); пока тренажёра нет — тост «незабаром».
 function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState({});
@@ -112,7 +113,9 @@ function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
           ${k === 'learning' && html`<div class="meter"><i style=${`width:${Math.round((s.learned / s.total) * 100)}%`}></i></div>`}
         </div>`)}
       </div>`;
-    })}</div>`}</div>`;
+    })}
+      <button class="trainer-btn t-label-16-strong" onClick=${() => toast && toast(t('today.trainerSoon'))}>${t('today.trainer')}</button>
+    </div>`}</div>`;
 }
 
 // Линейный график с точками: прогноз на главной и неделя в итоге занятия
