@@ -92,7 +92,7 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
     <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} />
     <div class="word-pair">
       <div class="card word-main">
-        <div class="word-main__top"><${LevelTag} lvl=${w.lvl} size="m" />${!isNew && html`<${Overline}>${t('lesson.cardReview')}</${Overline}>`}</div>
+        <div class="word-main__top"><${LevelTag} lvl=${w.lvl} size="m" /><${Overline}>${t(isNew ? 'lesson.cardNew' : 'lesson.cardReview')}</${Overline}></div>
         <div class="new-head"><div class="new-head__text">
           <div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>
           ${ipaOf(course, w) && html`<div class="t-label-16-regular muted">/${ipaOf(course, w)}/</div>`}</div>

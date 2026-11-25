@@ -460,7 +460,7 @@ button.card { width: 100%; text-align: left; }
 .word-pair { display: flex; flex-direction: column; gap: var(--space-8); }
 .word-main { padding: var(--space-20) var(--space-20) var(--space-32); border-radius: var(--radius-28); display: flex; flex-direction: column; gap: var(--space-16); }
 .word-main__top { display: flex; align-items: center; gap: var(--space-14); }
-.word-main__top .overline { margin: 0; }
+.word-main__top .overline { margin: 0; letter-spacing: 0.02em; }   /* «НОВЕ СЛОВО» / «ПОВТОРЕННЯ» — интервал 2 % (у Overline 4 %; 25.11.2026) */
 .word-main .new-head__text { gap: 2px; }
 .word-main .new-head { margin-top: 0; align-items: flex-start; }
 .new-head__text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
