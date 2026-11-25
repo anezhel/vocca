@@ -80,8 +80,9 @@ export function Today({ course, go, toast }) {
 // «Добірки слів» и «Граматика» (2.1–2.1c): строка раскрывается на месте, внутри — блоки-темы (course.topics в pack.js:
 // «Дієслова», «Зв’язки слів», «Вирази», «Не плутай»; в «Граматиці» — «Граматичні слова»). Каждый блок тоже свёрнут, пока
 // не нажать; рядом с названием — сколько в теме добірок. Свёрнуто — шеврон вниз, развёрнуто — вверх.
-// В теме сначала добірки в процессе, потом новые, потом пройденные. Кнопка у добірки: «Вчити» (в процесі),
-// «Почати» (нова), «Повторити» (пройдена) — занятие по этой добірці; у в процессе — полоска прогресса.
+// В теме сначала добірки в процессе, потом новые, потом пройденные. Все темы — в одной белой карточке, без линий
+// (решение дизайнера, 25.11.2026); у каждой добірки — «Вивчено: 20 / 34» и жёлтая «Вчити» (раньше «Почати» / «Повторити»
+// и полоска прогресса у тех, что в процессе). Пройденная добірка по «Вчити» начинается заново, как раньше «Повторити».
 const STATUS = { learning: ['learning', 'learn'], due: ['learning', 'learn'], fresh: ['fresh', 'start'], done: ['done', 'repeat'] };
 const RANK = { learning: 0, fresh: 1, done: 2 };
 function topicsOf(course, section) {
@@ -116,20 +117,19 @@ function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
       <span class="ib ib--white" style="--ib:48px"><${Icon} name=${icon} size=${22} /></span>
       <span class="choice-row__text"><span class="t-title-l">${t(title)}</span><span class="t-label-13">${t(sub)}</span></span>
       <span class="ib ib--outline" style="--ib:40px">${chev(open)}</span></button>
-    ${open && html`<div class=${cx('colls', mint && 'colls--mint')}>${blocks.map((b) => {
+    ${open && html`<div class=${cx('colls', mint && 'colls--mint')}><div class="card coll-list">${blocks.map((b) => {
       const on = !!shown[b.id];
-      return html`<div key=${b.id} class="card coll-block">
+      return html`<div key=${b.id} class="coll-block">
         <button class="coll-block__head" aria-expanded=${on} onClick=${() => setShown({ ...shown, [b.id]: !on })}>
           <span class="t-title-m">${b.title}</span><span class="count-pill t-label-13-medium">${b.items.length}</span><span class="grow"></span>
           <span class="ib ib--grey" style="--ib:40px">${chev(on)}</span></button>
-        ${on && b.items.map(({ g, s, k, btn }) => html`<div key=${g.id} class="coll-row">
-          <div class="coll-row__head"><div class="coll-row__text"><span class="t-title-m">${L(g.title)}</span><span class="t-label-13 muted">${s.subtitle}</span></div>
-            <button class=${'pill-btn pill-btn--' + k + ' t-label-15-medium'} onClick=${() => open3(g, k)}>
-              ${k === 'done' && html`<${Icon} name="refresh" size=${16} />`}${t('groups.' + btn)}</button></div>
-          ${k === 'learning' && html`<div class="meter"><i style=${`width:${Math.round((s.learned / s.total) * 100)}%`}></i></div>`}
+        ${on && b.items.map(({ g, s, k }) => html`<div key=${g.id} class="coll-row">
+          <div class="coll-row__head"><div class="coll-row__text"><span class="t-title-m">${L(g.title)}</span>
+            <span class="t-label-13 muted">${t('groups.learnedOf', { a: s.learned, b: s.total })}</span></div>
+            <button class="pill-btn pill-btn--learning t-label-15-medium" onClick=${() => open3(g, k)}>${t('groups.learn')}</button></div>
         </div>`)}
       </div>`;
-    })}
+    })}</div>
       <button class="trainer-btn t-label-16-strong" onClick=${trainer}>${t('today.trainer')}</button>
     </div>`}</div>`;
 }
