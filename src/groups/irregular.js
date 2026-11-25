@@ -99,7 +99,7 @@ function Home({ course, group, route, go, back }) {
 export const VerbExamples = ({ v }) => html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')} · ${t('lesson.formsLink')}</${Overline}>
   <div class="examples">${v.ex.map((ex, i) => html`<${Example} ex=${ex} hl=${(v['v' + (i + 1)] || '').split(' / ')} />`)}</div></div>`;
 
-export function VerbCard({ v, lang, compact }) {
+export function VerbCard({ v, lang, compact, tr }) {
   const form = (n) => v['v' + n];
   // compact (занятие, 2.3b): одна белая карточка, формы через линию — как синонимы (25.11.2026); на 3.13 — три карточки
   return html`<div class=${cx('verb-forms', compact && 'card verb-forms--compact')}>${[1, 2, 3].map((n) => {
@@ -109,7 +109,7 @@ export function VerbCard({ v, lang, compact }) {
         <span class="verb-form__tag t-label-12-strong">V${n}</span>
         <div class="verb-form__text"><div class="t-word-m">${form(n)}</div>
           ${v.ipa[n - 1] && html`<div class="t-label-14 muted">/${v.ipa[n - 1]}/</div>`}
-          ${n === 1 && !compact && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
+          ${n === 1 && (!compact || tr) && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
         <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />
       </div>
       ${ex && !compact && html`<div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>
@@ -117,6 +117,10 @@ export function VerbCard({ v, lang, compact }) {
     </div>`;
   })}</div>`;
 }
+
+// 3.13 (решение дизайнера, 25.11.2026): как в занятии (2.3b) — одна карточка форм с линиями (у V1 перевод — здесь нет карточки
+// слова над формами) и под ней «Приклади · 3 форми дієслова». Раньше — три карточки с примером под каждой формой.
+const VerbForms = ({ v, lang }) => html`<div class="verb-stack"><${VerbCard} v=${v} lang=${lang} compact tr /><${VerbExamples} v=${v} /></div>`;
 
 // Экран 12b: карточка глагола, внизу «Далі». После порции — итог 19c. Свайп вправо — предыдущий глагол, влево — вперёд до уже просмотренного.
 function VerbCards({ course, group, route, back }) {
@@ -151,7 +155,7 @@ function VerbCards({ course, group, route, back }) {
   };
   return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
-    <${VerbCard} v=${v} lang=${lang} />
+    <${VerbForms} v=${v} lang=${lang} />
   </${Screen}>`;
 }
 
@@ -283,7 +287,7 @@ function queue(course, g, review) {
 function markSeen(course, g, v) { update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; }); }
 function progressOf(course, g) { const cs = cards(course); return { seen: g.items.filter((v) => seen(cs[v.id])).length, total: g.items.length }; }
 function Item({ course, item }) {
-  return html`<${VerbCard} v=${item} lang=${ttsLang(course)} />`;
+  return html`<${VerbForms} v=${item} lang=${ttsLang(course)} />`;
 }
 
 function GroupScreen(props) {
