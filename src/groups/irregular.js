@@ -141,7 +141,7 @@ function VerbCards({ course, group, route, back }) {
   const [enter, setEnter] = useState(null);
   const step = (p, dir) => { setPos(p); setEnter(dir); scrollTo(0, 0); };
   useSwipe(done ? () => { setDone(false); setEnter('left'); scrollTo(0, 0); } : pos > 0 ? () => step(pos - 1, 'left') : null,
-    !done && pos < far ? () => step(pos + 1, 'right') : null);
+    done ? null : () => (pos < far ? step(pos + 1, 'right') : next('right')));   // вперёд — всегда, как «Далі» (25.11.2026)
   const restart = (s) => { setStart(s); setPos(0); setFar(0); setEnter(null); setDone(false); scrollTo(0, 0); };
 
   if (done || !v) {
@@ -149,11 +149,11 @@ function VerbCards({ course, group, route, back }) {
     return html`<${GroupDone} title=${kindTitle} seen=${of.filter((x) => seen(cs[x.id])).length} total=${of.length}
       left=${left} next=${Math.min(N, left)} unit="verbs" onFinish=${back} onMore=${() => restart(start + N)} onRepeat=${() => restart(start)} />`;
   }
-  const next = () => {
+  function next(dir = null) {
     update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; });
-    if (pos + 1 < list.length) { step(pos + 1, null); setFar(Math.max(far, pos + 1)); } else { setFar(Math.max(far, pos)); setDone(true); }
-  };
-  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
+    if (pos + 1 < list.length) { step(pos + 1, dir); setFar(Math.max(far, pos + 1)); } else { setFar(Math.max(far, pos)); setEnter(dir); setDone(true); }
+  }
+  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${() => next()} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
     <${VerbForms} v=${v} lang=${lang} />
   </${Screen}>`;

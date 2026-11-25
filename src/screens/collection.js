@@ -32,7 +32,7 @@ export function Collection({ course, route, go, back }) {
   const [enter, setEnter] = useState(null);
   const step = (p, dir) => { setPos(p); setEnter(dir); scrollTo(0, 0); };
   useSwipe(done ? () => { setDone(false); setEnter('left'); scrollTo(0, 0); } : pos > 0 ? () => step(pos - 1, 'left') : null,
-    !done && pos < far ? () => step(pos + 1, 'right') : null);
+    done ? null : () => (pos < far ? step(pos + 1, 'right') : next('right')));   // вперёд — всегда, как «Далі» (25.11.2026)
   if (!groups.length) return null;
   const list = queue.slice(start, size === Infinity ? undefined : start + size);
   const left = Math.max(0, queue.length - start - list.length);
@@ -46,12 +46,12 @@ export function Collection({ course, route, go, back }) {
       onRepeat=${() => { setPos(0); setFar(0); setEnter(null); setDone(false); scrollTo(0, 0); }}
       onFinish=${() => go('today', {}, true)} />`;
   }
-  const next = () => {
+  function next(dir = null) {
     T(cur.g).markSeen(course, cur.g, cur.item);
-    if (pos + 1 < list.length) { step(pos + 1, null); setFar(Math.max(far, pos + 1)); } else { setFar(Math.max(far, pos)); setDone(true); }
-  };
+    if (pos + 1 < list.length) { step(pos + 1, dir); setFar(Math.max(far, pos + 1)); } else { setFar(Math.max(far, pos)); setEnter(dir); setDone(true); }
+  }
   const Item = T(cur.g).Item;
-  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${next} />`}>
+  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${() => next()} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
     ${!T(cur.g).noTitle && html`<${Title} main=${L(cur.g.title)} cls="title--group" />`}
     <${Item} key=${cur.g.id + ':' + cur.item.id} course=${course} group=${cur.g} item=${cur.item} />
