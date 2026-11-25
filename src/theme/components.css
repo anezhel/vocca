@@ -641,9 +641,8 @@ button.card { width: 100%; text-align: left; }
 .coll-block { padding: 0; }
 .coll-block + .coll-block { position: relative; }
 .coll-block + .coll-block::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--border-muted); }   /* темы разделены линией во всю ширину (макет 2.1c) */
-/* раскрытая тема: под заголовком линия с отступами 20 слева и 16 справа, до первой добірки 18, между добірками 24, снизу 24 */
-.coll-rows { position: relative; padding: var(--space-6) 0 var(--space-12); }
-.coll-rows::before { content: ''; position: absolute; top: 0; left: var(--space-20); right: var(--space-16); height: 1px; background: var(--border-muted); }
+/* раскрытая тема: под заголовком линии нет (25.11.2026), отступ сохранён — до первой добірки 18 (12 + 6), между добірками 24, снизу 24 */
+.coll-rows { padding: calc(var(--space-6) + 1px) 0 var(--space-12); }
 .coll-block__head { width: 100%; min-height: 64px; display: flex; align-items: center; gap: var(--space-8); padding: var(--space-12) var(--space-14) var(--space-12) var(--space-20); text-align: left; }
 .count-pill { padding: 2px 8px; border-radius: var(--radius-full); background: var(--bg-surface-3); color: var(--text-secondary); }
 .coll-row { padding: var(--space-12) var(--space-16) var(--space-12) var(--space-20); }   /* без линий; справа от «Вчити» 16 (макет 2.1c, 25.11.2026) */
