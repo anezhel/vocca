@@ -14,6 +14,9 @@ TARGETS_ONLY = {'phrasal.tsv', 'collocations.tsv'}
 MAX_EX = 4  # src/groups/relation.js читает ex1–ex4
 # Пояснение обязательно: у синонимов — всегда, у остальных добірок — когда на экране 2–3 связанных слова
 NOTE_ALWAYS = {'synonyms.tsv'}
+# Пояснение не нужно, если в нём был бы только перевод (решение дизайнера, 25.11.2026): у фразовых дієслів — только там,
+# где есть что-то кроме перевода (разница, грамматика, «звучить грубо»…)
+NOTE_OPTIONAL = {'phrasal.tsv'}
 problems = 0
 
 
@@ -92,7 +95,7 @@ for lang in sorted(os.listdir(CONTENT)):
                 # пояснение: называет все слова экрана (на украинском и на русском)
                 words = targets + ([] if f in TARGETS_ONLY else [r['word']])
                 if targets and not (r.get('note_uk') or r.get('note_ru')):
-                    if f in NOTE_ALWAYS or len(targets) >= 2:
+                    if f in NOTE_ALWAYS or (len(targets) >= 2 and f not in NOTE_OPTIONAL):
                         warn(path, n, f'«{r.get("word")}»: нет пояснення (note_uk / note_ru)')
                 elif targets:
                     for col in ('note_uk', 'note_ru'):
