@@ -54,4 +54,4 @@ function Item({ group, item }) {
   </div>`;
 }
 
-export default { ...relation, load, stats, Item, unit: 'rules' };
+export default { ...relation, load, stats, Item, unit: 'rules', knownWords: () => [] };   // у правила слов нет — «Уже знаю» просто дальше
