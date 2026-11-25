@@ -72,6 +72,9 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
   const verb = irregularOf(course, w);
   // Есть и свои примеры слова, и примеры добірок — отдельного «Приклади» нет: свои примеры идут первыми в «Приклади · Порівняй» (20.11.2026)
   const ownEx = !verb && w.ex.length > 0;
+  // «Пояснення слова» — после всех примеров, перед «У чому різниця» (решение дизайнера, 25.11.2026; раньше — сразу после карточек слова)
+  const def = w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
+      ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`;
   const relEx = rel.some((r) => r.ex.length > 0);
   // 2.3 новое слово (макет 20.11.2026): ‹ · «Знаю» · «Вчити» · › — стрелки листают слова назад и вперёд (› на новой карточке —
   // дальше без ответа, слово остаётся новым, как раньше «Пізніше»), «Знаю» → Вивчено, «Вчити» (чёрная) → Важкі.
@@ -101,10 +104,8 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
     </div>
     ${ownEx && !relEx && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
       <div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div></div>`}
-    ${w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
-      ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`}
     ${verb && verb.ex.length > 0 && html`<${VerbExamples} v=${verb} />`}
-    ${rel.length > 0 && html`<${RelMore} rel=${rel} w=${w} own=${ownEx && relEx ? w.ex : null} skipBase=${verb && verb.ex.length > 0} />`}
+    ${rel.length > 0 ? html`<${RelMore} rel=${rel} w=${w} own=${ownEx && relEx ? w.ex : null} skipBase=${verb && verb.ex.length > 0} def=${def} />` : def}
   </${Screen}>`;
 }
 
@@ -144,7 +145,7 @@ const marked = (en) => { const m = /\[([^\]]+)\]/.exec(en || ''); return m ? m[1
 // own — свои примеры слова (когда есть и примеры добірок): идут первыми, одинаковые предложения — один раз,
 // заголовок — «Приклади · Порівняй» (одна добірка: «Приклади · <её подпись>», а если подпись и так «Приклади» — «Приклади · <добірка>»).
 const plain = (en) => (en || '').replace(/[[\]]/g, '').trim().toLowerCase();
-function RelMore({ rel, w, own, skipBase }) {
+function RelMore({ rel, w, own, skipBase, def }) {
   const base = (w.w || '').toLowerCase();
   const ex = [], seen = new Set();
   for (const e of own || []) if (!seen.has(plain(e.en))) { seen.add(plain(e.en)); ex.push(e); }
@@ -165,6 +166,7 @@ function RelMore({ rel, w, own, skipBase }) {
   return html`
     ${ex.length > 0 && html`<div class="card card--lesson"><${Overline}>${exTitle}</${Overline}>
       <div class="examples">${ex.map((e) => html`<${Example} ex=${e} hl=${hl} />`)}</div></div>`}
+    ${def}
     ${notes.length > 0 && html`<div class="card card--lesson card--def"><${Overline}>${noteTitle}</${Overline}>
       ${notes.map((n) => html`<p class="t-body-15 pre-line">${L(n)}</p>`)}</div>`}`;
 }
