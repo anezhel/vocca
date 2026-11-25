@@ -4,7 +4,8 @@
 // ответ ярче, остальные бледнее; другой ответ меняет статус слова (reanswer) и ведёт к следующей карточке.
 import { html, useState, useEffect } from '../../lib/preact-htm.js';
 import { t, L, plural } from '../i18n/index.js';
-import { getState } from '../core/store.js';
+import { getState, progress } from '../core/store.js';
+import { bucket } from '../core/srs.js';
 import { startLesson, answer, reanswer, finishLesson, practicePrefs } from '../core/session.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
@@ -47,9 +48,12 @@ export function Lesson({ course, route, go, back }) {
   const onAnswer = (st, dir = null) => { answer(course, lesson, item, st); lesson.queue.shift(); setEnter(dir); redraw((n) => n + 1); scrollTo(0, 0); };
   // › на новой карточке — начать учить слово (→ Важкі; с 25.11.2026, раньше — дальше без ответа), ‹ — к предыдущей карточке
   return html`<${WordCard} key=${item.id} course=${course} w=${w} lesson=${lesson} bar=${{ ...bar, done: lesson.done }} item=${item} enter=${enter} onAnswer=${onAnswer}
-    onPrev=${hist.length ? () => show(hist.length - 1, 'left') : null} onNext=${() => onAnswer('hard', 'right')} />
+    onPrev=${hist.length ? () => show(hist.length - 1, 'left') : null} onNext=${() => onAnswer(item.kind === 'new' ? 'hard' : stepUp(course, item.id), 'right')} />
     ${exit}`;
 }
+
+// › на повторении — «помню»: статус на ступень выше (Важкі → Майже вивчені → Вивчено)
+const stepUp = (course, id) => (bucket(progress(course.id).cards[id]) === 'hard' ? 'almost' : 'learned');
 
 // Под выбор на «Що тренуємо» слов не нашлось
 const Empty = ({ go }) => html`<${Screen} bottom=${html`<div class="done-actions"><${Button} label=${t('practice.change')} onClick=${() => go('practice', {}, true)} />
@@ -76,23 +80,19 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
   const def = w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
       ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`;
   const relEx = rel.some((r) => r.ex.length > 0);
-  // 2.3 новое слово (макет 20.11.2026): ‹ · «Знаю» · «Вчити» · › — стрелки листают слова назад и вперёд (› на новой карточке —
-  // дальше без ответа, слово остаётся новым, как раньше «Пізніше»), «Знаю» → Вивчено, «Вчити» (чёрная) → Важкі.
-  // 2.4 повторение: «Важко» · «Легко» · «Вивчено» (коралл · мята · чёрная)
-  // chosen — карточка уже пройдена (вернулись свайпом): выбранный тогда ответ как обычно, остальные бледнее (is-other)
-  const other = (st) => chosen && chosen !== st && 'is-other';
-  const bottom = isNew
-    // Новое слово (25.11.2026): ‹ · «Уже знаю» · › — кнопки «Вчити» нет; › на новом слове = начать учить (→ Важкі), «Уже знаю» → Вивчено
-    ? html`<div class="row-arrows">
-        <button class="nav-arrow" disabled=${!onPrev} onClick=${onPrev} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
-        <${Button} variant="secondary" cls=${other('learned')} label=${t('lesson.alreadyKnow')} onClick=${() => onAnswer('learned')} />
-        <button class="nav-arrow" onClick=${onNext} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`
-    : html`<div class="rate3">${[['hard', 'hard'], ['almost', 'easy'], ['learned', 'learned']].map(([st, k]) => html`<button class=${cx('rate3__btn rate3__btn--' + st + ' t-title-m', other(st))} onClick=${() => onAnswer(st)}>${t('lesson.mark.' + k)}</button>`)}</div>`;
+  // Нижний ряд (25.11.2026): ‹ · кнопка · › — стрелки 72 × 56, серые. Новое слово: «Уже знаю» → Вивчено, › = начать учить (→ Важкі).
+  // Повторение: «Повернути у вивчення» → Важкі, › = помню (Важкі → Майже вивчені → Вивчено). Раньше: «Важко» · «Легко» · «Вивчено».
+  // На пройденной карточке (вернулись назад) все кнопки активные, как обычно (решение дизайнера, 25.11.2026; раньше невыбранные бледнели).
+  const bottom = html`<div class="row-arrows">
+      <button class="nav-arrow" disabled=${!onPrev} onClick=${onPrev} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
+      ${isNew ? html`<${Button} variant="secondary" label=${t('lesson.alreadyKnow')} onClick=${() => onAnswer('learned')} />`
+        : html`<${Button} variant="secondary" cls="btn--long" label=${t('lesson.backToLearning')} onClick=${() => onAnswer('hard')} />`}
+      <button class="nav-arrow" onClick=${onNext} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`;
   return html`<${Screen} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="today" bottom=${bottom}>
     <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} />
     <div class="word-pair">
       <div class="card word-main">
-        <div class="word-main__top"><${LevelTag} lvl=${w.lvl} size="m" /><${Overline}>${t(isNew ? 'lesson.cardNew' : 'lesson.cardReview')}</${Overline}></div>
+        <div class="word-main__top"><${LevelTag} lvl=${w.lvl} size="m" />${!isNew && html`<${Overline}>${t('lesson.cardReview')}</${Overline}>`}</div>
         <div class="new-head"><div class="new-head__text">
           <div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>
           ${ipaOf(course, w) && html`<div class="t-label-16-regular muted">/${ipaOf(course, w)}/</div>`}</div>
