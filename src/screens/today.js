@@ -84,7 +84,7 @@ function topicsOf(course, section) {
 }
 
 // Строка «Добірки слів» / «Граматика» с раскрывающимися темами. Тем нет — строка показывает тост (soon), если он задан.
-// Под темами — чёрная кнопка «Тренажер» (решение дизайнера, 25.11.2026, макет 2.1c); пока тренажёра нет — тост «незабаром».
+// Под темами — чёрная кнопка «Тренажер» (решение дизайнера, 25.11.2026, макет 2.1c).
 function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState({});
@@ -95,6 +95,10 @@ function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
     : go('collection', { groups: [g.id], size, review: k === 'done' }));
   const chev = (on) => html`<${Icon} name=${on ? 'chevron-up' : 'chevron-down'} size=${20} />`;
   const tap = () => (blocks.length ? setOpen(!open) : soon && toast && toast(t(soon)));
+  // «Тренажер»: в «Добірках слів» — тренажёр «3 форми дієслів» (3.14; решение дизайнера, 25.11.2026 — раньше открывался с 3.12),
+  // в «Граматиці» (и если добірки глаголов нет) — пока тост «незабаром»
+  const verbs = section === 'words' && course.groupList.find((g) => g.type === 'irregular');
+  const trainer = () => (verbs ? go('verbs', { group: verbs.id, train: true }) : toast && toast(t('today.trainerSoon')));
   // строка и раскрытые темы — одной группой: между ними 2 px, как в макете 2.1a (а не 20, как между блоками экрана)
   return html`<div class="colls-wrap"><button class=${cx('choice-row', mint && 'choice-row--mint', open && 'is-open')} aria-expanded=${open} onClick=${tap}>
       <span class="ib ib--white" style="--ib:48px"><${Icon} name=${icon} size=${22} /></span>
@@ -114,7 +118,7 @@ function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
         </div>`)}
       </div>`;
     })}
-      <button class="trainer-btn t-label-16-strong" onClick=${() => toast && toast(t('today.trainerSoon'))}>${t('today.trainer')}</button>
+      <button class="trainer-btn t-label-16-strong" onClick=${trainer}>${t('today.trainer')}</button>
     </div>`}</div>`;
 }
 
