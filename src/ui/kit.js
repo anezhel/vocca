@@ -318,7 +318,7 @@ export const ConfirmSheet = ({ title, text, yes, no, danger, onYes, onNo }) => h
 // Пример с выделением: «Can I [borrow] your pen?» → borrow подчёркнуто. Без скобок выделяются слова из hl.
 // Слово выделяется и в изменённой форме: smiles, decided, went (см. core/forms.js; 25.11.2026)
 const markRe = new Map();
-function markRegExp(hl) {
+export function markRegExp(hl) {
   const key = hl.join('|');
   if (!markRe.has(key)) {
     const words = [...new Set(hl.flatMap((w) => [...phraseForms(w)]))].sort((a, b) => b.length - a.length)

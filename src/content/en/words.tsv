@@ -38,7 +38,7 @@ drink	drɪŋk	verb	A1	food	пити	пить	Drink more water.	Пий більш
 city	ˈsɪti	noun	A1	city	місто	город	I live in a big city.	Я живу у великому місті.	Я живу в большом городе.										
 street	striːt	noun	A1	city	вулиця	улица	Our street is very quiet.	Наша вулиця дуже тиха.	Наша улица очень тихая.										
 store	stɔːr	noun	A1	city	магазин	магазин	The store opens at nine.	Магазин відчиняється о дев’ятій.	Магазин открывается в девять.										
-bus	bʌs	noun	A1	city	автобус	автобус	I take the bus to work.	Я їжджу на роботу автобусом.	Я езжу на работу на автобусе.										
+bus	bʌs	noun	A1	city	автобус	автобус	The bus is late again.	Автобус знову запізнюється.	Автобус снова опаздывает.	I take the bus to work.	Я їжджу на роботу автобусом.	Я езжу на работу на автобусе.							
 car	kɑːr	noun	A1	city	машина	машина	Her car is red.	Її машина червона.	Её машина красная.										
 school	skuːl	noun	A1	study	школа	школа	My son goes to school.	Мій син ходить до школи.	Мой сын ходит в школу.										
 book	bʊk	noun	A1	study	книжка	книга	This book is interesting.	Ця книжка цікава.	Эта книга интересная.										
@@ -216,7 +216,7 @@ class	klæs	noun	A1	study	урок, заняття; клас	урок, заня�
 idea	aɪˈdiːə	noun	A1	communication	ідея, думка	идея, мысль	That's a great idea!	Чудова ідея!	Отличная идея!										
 before	bɪˈfɔːr	prep	A1	basics	до, перед	до, перед	Wash your hands before lunch.	Помий руки перед обідом.	Помой руки перед обедом.										
 close	kloʊz	verb	A1	actions	зачиняти, закривати	закрывать	Please close the door.	Будь ласка, зачини двері.	Пожалуйста, закрой дверь.										
-question	ˈkwestʃən	noun	A1	study	питання	вопрос	Can I ask a question?	Можна поставити запитання?	Можно задать вопрос?										
+question	ˈkwestʃən	noun	A1	study	питання	вопрос	That’s a good question.	Це гарне запитання.	Это хороший вопрос.	Can I ask a question?	Можна поставити запитання?	Можно задать вопрос?							
 wait	weɪt	verb	A1	actions	чекати	ждать	Wait for me!	Зачекай на мене!	Подожди меня!										
 watch	wɑːtʃ	verb	A1	actions	дивитися (фільм, гру); годинник (наручний)	смотреть (фильм, игру); часы (наручные)	We watch TV in the evening.	Увечері ми дивимося телевізор.	Вечером мы смотрим телевизор.										
 many	ˈmeni	det	A1	basics	багато (того, що можна полічити)	много (тех, что можно сосчитать)	There are many cafés here.	Тут багато кав’ярень.	Здесь много кафе.										
@@ -312,7 +312,7 @@ welcome	ˈwelkəm	int	A1	communication	ласкаво просимо	добро 
 minute	ˈmɪnɪt	noun	A1	time	хвилина	минута	I'll be there in ten minutes.	Я буду там за десять хвилин.	Я буду там через десять минут.										
 sell	sel	verb	A1	shopping	продавати	продавать	They sell fresh bread here.	Тут продають свіжий хліб.	Здесь продают свежий хлеб.										
 clean	kliːn	adj	A1	home	чистий; прибирати	чистый; убирать	My room is clean.	Моя кімната чиста.	Моя комната чистая.										
-photo	ˈfoʊtoʊ	noun	A1	tech	фото	фотография	Can you take a photo of us?	Можете нас сфотографувати?	Можете нас сфотографировать?										
+photo	ˈfoʊtoʊ	noun	A1	tech	фото	фотография	This is a photo of my family.	Це фото моєї родини.	Это фото моей семьи.	Can you take a photo of us?	Можете нас сфотографувати?	Можете нас сфотографировать?							
 train	treɪn	noun	A1	travel	потяг	поезд	The train leaves at seven.	Потяг відправляється о сьомій.	Поезд отправляется в семь.										
 Friday	ˈfraɪdi	noun	A1	time	п’ятниця	пятница	Let's go out on Friday.	Сходімо кудись у п’ятницю.	Давай сходим куда-нибудь в пятницу.										
 sister	ˈsɪstər	noun	A1	people	сестра	сестра	My sister is a teacher.	Моя сестра — вчителька.	Моя сестра — учительница.										
@@ -401,7 +401,7 @@ hat	hæt	noun	A1	clothes	капелюх, шапка	шляпа, шапка	Don't
 pink	pɪŋk	adj	A1	basics	рожевий	розовый	She has a pink bag.	У неї рожева сумка.	У неё розовая сумка.										
 tall	tɔːl	adj	A1	qualities	високий (про зріст, будівлю)	высокий (о росте, здании)	He is very tall.	Він дуже високий.	Он очень высокий.										
 nose	noʊz	noun	A1	health	ніс	нос	The baby has a small nose.	У малюка маленький носик.	У малыша маленький нос.										
-shower	ˈʃaʊər	noun	A1	home	душ	душ	I take a shower every morning.	Я приймаю душ щоранку.	Я принимаю душ каждое утро.										
+shower	ˈʃaʊər	noun	A1	home	душ	душ	The shower is broken.	Душ зламаний.	Душ сломан.	I take a shower every morning.	Я приймаю душ щоранку.	Я принимаю душ каждое утро.							
 chocolate	ˈtʃɔːklət	noun	A1	food	шоколад	шоколад	I love dark chocolate.	Я люблю чорний шоколад.	Я люблю тёмный шоколад.										
 finger	ˈfɪŋɡər	noun	A1	health	палець	палец	She cut her finger.	Вона порізала палець.	Она порезала палец.										
 lesson	ˈlesən	noun	A1	study	урок	урок	The lesson starts at nine.	Урок починається о дев’ятій.	Урок начинается в девять.										
@@ -790,7 +790,7 @@ ship	ʃɪp	noun	A2	travel	корабель	корабль	The ship leaves at six
 cash	kæʃ	noun	A2	shopping	готівка	наличные	I don't have any cash.	У мене немає готівки.	У меня нет наличных.										
 band	bænd	noun	A2	leisure	гурт	группа (музыкальная)	What's your favorite band?	Який твій улюблений гурт?	Какая твоя любимая группа?										
 fan	fæn	noun	A2	leisure	уболівальник, фанат; вентилятор	болельщик, фанат; вентилятор	I'm a big fan of this band.	Я велика фанатка цього гурту.	Я большая поклонница этой группы.										
-secret	ˈsiːkrət	noun	A2	communication	секрет, таємниця	секрет, тайна	Can you keep a secret?	Ти вмієш зберігати таємниці?	Ты умеешь хранить секреты?										
+secret	ˈsiːkrət	noun	A2	communication	секрет, таємниця	секрет, тайна	It’s a secret.	Це секрет.	Это секрет.	Can you keep a secret?	Ти вмієш зберігати таємниці?	Ты умеешь хранить секреты?							
 rich	rɪtʃ	adj	A2	shopping	багатий	богатый	He is very rich.	Він дуже багатий.	Он очень богатый.										
 skin	skɪn	noun	A2	health	шкіра	кожа	She has very soft skin.	У неї дуже ніжна шкіра.	У неё очень нежная кожа.										
 dream	driːm	noun	A2	feelings	сон; мрія; мріяти	сон; мечта; мечтать	It's my dream to visit Japan.	Моя мрія — побувати в Японії.	Моя мечта — побывать в Японии.										
@@ -892,7 +892,7 @@ writer	ˈraɪtər	noun	A2	work	письменник	писатель	Mark Twain 
 jump	dʒʌmp	verb	A2	actions	стрибати	прыгать	The kids are jumping in the pool.	Діти стрибають у басейн.	Дети прыгают в бассейн.										
 surprised	sərˈpraɪzd	adj	A2	feelings	здивований	удивлённый	She was surprised by the gift.	Подарунок її здивував.	Подарок её удивил.										
 planet	ˈplænət	noun	A2	nature	планета	планета	Mars is a red planet.	Марс — червона планета.	Марс — красная планета.										
-exercise	ˈeksərsaɪz	noun	A2	study	вправа; фізичні вправи	упражнение; физкультура	Do exercise three on page ten.	Зробіть третю вправу на десятій сторінці.	Сделайте третье упражнение на десятой странице.										
+exercise	ˈeksərsaɪz	noun	A2	study	вправа; фізичні вправи	упражнение; физкультура	Exercise is good for your health.	Фізичні вправи корисні для здоров’я.	Физические упражнения полезны для здоровья.	Do exercise three on page ten.	Зробіть третю вправу на десятій сторінці.	Сделайте третье упражнение на десятой странице.							
 soft	sɑːft	adj	A2	qualities	м’який	мягкий	This pillow is very soft.	Ця подушка дуже м’яка.	Эта подушка очень мягкая.										
 pool	puːl	noun	A2	city	басейн	бассейн	The hotel has a pool.	У готелі є басейн.	В отеле есть бассейн.										
 platform	ˈplætfɔːrm	noun	A2	travel	платформа, перон	платформа, перрон	The train leaves from platform three.	Потяг відправляється з третьої платформи.	Поезд отправляется с третьей платформы.										
@@ -1493,7 +1493,7 @@ neither	ˈniːðər	det	B1	basics	жоден (із двох); теж не	ни �
 various	ˈveriəs	adj	B1	qualities	різний, різноманітний	различный, разнообразный	The store sells various kinds of tea.	У магазині продаються різні сорти чаю.	В магазине продаются разные сорта чая.										
 character	ˈkerɪktər	noun	B1	feelings	характер; персонаж	характер; персонаж	Who is the main character in the book?	Хто головний герой книжки?	Кто главный герой книги?										
 quality	ˈkwɑːləti	noun	B1	shopping	якість	качество	The quality is very good.	Якість дуже хороша.	Качество очень хорошее.										
-attention	əˈtenʃən	noun	B1	study	увага	внимание	Pay attention, please.	Будьте уважні, будь ласка.	Будьте внимательны, пожалуйста.										
+attention	əˈtenʃən	noun	B1	study	увага	внимание	The film got a lot of attention.	Фільм привернув багато уваги.	Фильм привлёк много внимания.	Pay attention, please.	Будьте уважні, будь ласка.	Будьте внимательны, пожалуйста.							
 whenever	weˈnevər	conj	B1	basics	коли б не, щоразу коли	когда бы ни, всякий раз когда	Call me whenever you want.	Дзвони мені коли захочеш.	Звони мне когда захочешь.										
 natural	ˈnætʃərəl	adj	B1	nature	природний, натуральний	естественный, природный	This juice is 100% natural.	Цей сік на 100% натуральний.	Этот сок на 100% натуральный.										
 stage	steɪdʒ	noun	B1	leisure	сцена; етап	сцена; этап	The singer walked onto the stage.	Співачка вийшла на сцену.	Певица вышла на сцену.										
