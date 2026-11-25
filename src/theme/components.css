@@ -643,10 +643,11 @@ button.card { width: 100%; text-align: left; }
 .trainer-btn:active { transform: scale(.97); }
 .colls--mint { background: var(--level-a1); } /* «Граматика» раскрыта — мятная, как её строка */
 /* блоки «В процесі / Нові / Пройдені» — белые, без тени, скругление 28 (как в 2.1a / 2.1b) */
-.coll-block { padding: 0; border-radius: var(--radius-28); overflow: hidden; box-shadow: none; }
+.coll-list { padding: var(--space-12) 0; border-radius: var(--radius-28); overflow: hidden; box-shadow: none; }   /* все темы на одной белой карточке (25.11.2026) */
+.coll-block { padding: 0; }
 .coll-block__head { width: 100%; min-height: 64px; display: flex; align-items: center; gap: var(--space-8); padding: var(--space-12) var(--space-14) var(--space-12) var(--space-20); text-align: left; }
 .count-pill { padding: 2px 8px; border-radius: var(--radius-full); background: var(--bg-surface-3); color: var(--text-secondary); }
-.coll-row { padding: var(--space-16) var(--space-20); border-top: 1px solid var(--border-muted); }
+.coll-row { padding: var(--space-12) var(--space-20); }   /* без линий (25.11.2026) */
 .coll-row__head { display: flex; align-items: center; gap: var(--space-12); }
 .coll-row__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .coll-row .meter { height: 4px; border-radius: 2px; }
