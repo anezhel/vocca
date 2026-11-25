@@ -33,8 +33,11 @@ export default {
     { id: 'links', section: 'words', title: { uk: 'Зв’язки слів', ru: 'Связи слов' } },
     { id: 'phrases', section: 'words', title: { uk: 'Вирази', ru: 'Выражения' } },
     { id: 'confusing', section: 'words', title: { uk: 'Не плутай', ru: 'Не путай' } },
-    // list: 'items' — на «Практика» список правил, а не добірок; heads: true — подзаголовки по первому слову (PRESENT / PAST / FUTURE)
-    { id: 'tenses', section: 'grammar', title: { uk: 'Часи', ru: 'Времена' }, list: 'items', heads: true },
+    // list: 'items' — на «Практика» список правил, а не добірок; short: true — без первого слова (Present Simple → Simple)
+    // Времена — три темы Present / Past / Future Tense (решение дизайнера, 26.11.2026; раньше одна тема «Часи» с подзаголовками)
+    { id: 'tense-present', section: 'grammar', title: { uk: 'Present Tense', ru: 'Present Tense' }, list: 'items', short: true },
+    { id: 'tense-past', section: 'grammar', title: { uk: 'Past Tense', ru: 'Past Tense' }, list: 'items', short: true },
+    { id: 'tense-future', section: 'grammar', title: { uk: 'Future Tense', ru: 'Future Tense' }, list: 'items', short: true },
     { id: 'conditionals', section: 'grammar', title: { uk: 'Умовні речення', ru: 'Условные предложения' }, list: 'items' },   // Zero … Mixed Conditional (26.11.2026)
     { id: 'grammar', section: 'grammar', title: { uk: 'Граматичні слова', ru: 'Грамматические слова' } },
   ],
@@ -74,11 +77,11 @@ export default {
       title: { uk: 'Схожі слова', ru: 'Похожие слова' }, chip: { uk: '≈ звучить схоже', ru: '≈ звучит похоже' },
       examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Як розрізнити', ru: 'Как различить' } },
     // ── tenses / conditionals (25.11.2026): экраны правил 3.15 / 3.16
-    { id: 'tenses-present', topic: 'tenses', type: 'rule', file: 'groups/tenses-present.tsv',
+    { id: 'tenses-present', topic: 'tense-present', type: 'rule', file: 'groups/tenses-present.tsv',
       title: { uk: 'Теперішні часи', ru: 'Настоящие времена' }, kind: { uk: 'Час', ru: 'Время' } },
-    { id: 'tenses-past', topic: 'tenses', type: 'rule', file: 'groups/tenses-past.tsv',
+    { id: 'tenses-past', topic: 'tense-past', type: 'rule', file: 'groups/tenses-past.tsv',
       title: { uk: 'Минулі часи', ru: 'Прошедшие времена' }, kind: { uk: 'Час', ru: 'Время' } },
-    { id: 'tenses-future', topic: 'tenses', type: 'rule', file: 'groups/tenses-future.tsv',
+    { id: 'tenses-future', topic: 'tense-future', type: 'rule', file: 'groups/tenses-future.tsv',
       title: { uk: 'Майбутні часи', ru: 'Будущие времена' }, kind: { uk: 'Час', ru: 'Время' } },
     { id: 'conditionals', topic: 'conditionals', type: 'rule', file: 'groups/conditionals.tsv',
       title: { uk: 'Умовні речення', ru: 'Условные предложения' }, kind: { uk: 'Умовне речення', ru: 'Условное предложение' } },
