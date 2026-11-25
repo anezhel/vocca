@@ -97,13 +97,13 @@ function topicsOf(course, section) {
 }
 
 // Названия тем и добірок — Label/16 Semibold (решение дизайнера, 26.11.2026; было Title/L 18 и Title/M 17).
-// Тема со списком правил (tp.list === 'items', «Часи»; решение дизайнера, 26.11.2026): вместо добірок — сами правила по порядку,
+// Тема со списком правил (tp.list === 'items': «Часи», «Умовні речення» — Zero … Mixed Conditional, без «Вивчено»; решение дизайнера, 26.11.2026): вместо добірок — сами правила по порядку,
 // по-английски, без перевода и без «Вивчено»; подзаголовки PRESENT / PAST / FUTURE (первое слово названия), в строке —
 // остальное: Simple, Continuous, Perfect, Perfect Continuous (решение дизайнера, 26.11.2026).
 // Только времена — конструкции (be going to, у правила свой kind) в список не входят. «Вчити» открывает добірку на этом правиле.
 function ruleRows(list, tp) {
   return list.filter(({ g }) => g.topic === tp.id).flatMap(({ g, s, k }) => (g.items || []).filter((it) => !it.kind)
-    .map((it) => { const [head, ...rest] = it.name.split(' '); return { g, s, k, rule: { ...it, head, short: rest.join(' ') || it.name } }; }));
+    .map((it) => { const [head, ...rest] = it.name.split(' '); return { g, s, k, rule: tp.heads ? { ...it, head, short: rest.join(' ') || it.name } : { ...it, head: null, short: it.name } }; }));
 }
 
 // Строка «Добірки слів» / «Граматика» с раскрывающимися темами. Тем нет — строка показывает тост (soon), если он задан.
@@ -133,7 +133,7 @@ function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
         <button class="coll-block__head" aria-expanded=${on} onClick=${() => setShown({ ...shown, [b.id]: !on })}>
           <span class="t-label-16-strong">${b.title}</span><span class="count-pill t-label-13-medium">${b.items.length}</span><span class="grow"></span>
           <span class="ib ib--grey" style="--ib:40px">${chev(on)}</span></button>
-        ${on && html`<div class="coll-rows">${b.items.map(({ g, s, k, rule }, i) => html`${rule && rule.head !== (b.items[i - 1] || {}).rule?.head && html`<div key=${'h' + rule.head} class="coll-sub t-overline">${rule.head}</div>`}<div key=${rule ? rule.id : g.id} class="coll-row">
+        ${on && html`<div class="coll-rows">${b.items.map(({ g, s, k, rule }, i) => html`${rule && rule.head && rule.head !== (b.items[i - 1] || {}).rule?.head && html`<div key=${'h' + rule.head} class="coll-sub t-overline">${rule.head}</div>`}<div key=${rule ? rule.id : g.id} class="coll-row">
           <div class="coll-row__head"><div class="coll-row__text"><span class="t-label-16-strong">${rule ? rule.short : L(g.title)}</span>
             ${!rule && html`<span class="t-label-12-medium muted">${t('groups.learnedOf', { a: s.learned, b: s.total })}</span>`}</div>
             <button class="pill-btn pill-btn--learning t-label-14-strong" onClick=${() => (rule ? go('collection', { groups: [g.id], from: rule.id, review: true }) : open3(g, k))}>${t('groups.learn')}</button></div>
