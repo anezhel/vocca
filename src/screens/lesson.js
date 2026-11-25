@@ -81,12 +81,12 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
       ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`;
   const relEx = rel.some((r) => r.ex.length > 0);
   // Нижний ряд (25.11.2026): ‹ · кнопка · › — стрелки 72 × 56, серые. Новое слово: «Уже знаю» → Вивчено, › = начать учить (→ Важкі).
-  // Повторение: «Повернути у вивчення» → Важкі, › = помню (Важкі → Майже вивчені → Вивчено). Раньше: «Важко» · «Легко» · «Вивчено».
+  // Повторение: «Вивчати знов» (RU «Учить снова»; было «Повернути у вивчення») → Важкі, › = помню (Важкі → Майже вивчені → Вивчено). Раньше: «Важко» · «Легко» · «Вивчено».
   // На пройденной карточке (вернулись назад) все кнопки активные, как обычно (решение дизайнера, 25.11.2026; раньше невыбранные бледнели).
   const bottom = html`<div class="row-arrows">
       <button class="nav-arrow" disabled=${!onPrev} onClick=${onPrev} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
       ${isNew ? html`<${Button} variant="secondary" label=${t('lesson.alreadyKnow')} onClick=${() => onAnswer('learned')} />`
-        : html`<${Button} variant="secondary" cls="btn--long" label=${t('lesson.backToLearning')} onClick=${() => onAnswer('hard')} />`}
+        : html`<${Button} variant="secondary" label=${t('lesson.backToLearning')} onClick=${() => onAnswer('hard')} />`}
       <button class="nav-arrow" onClick=${onNext} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`;
   return html`<${Screen} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="today" bottom=${bottom}>
     <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} />
