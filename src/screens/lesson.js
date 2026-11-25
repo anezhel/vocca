@@ -103,7 +103,7 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
           <div class="t-word-xl">${word.charAt(0).toUpperCase() + word.slice(1)}</div>
           ${ipaOf(course, w) && html`<div class="t-label-16-regular muted">/${ipaOf(course, w)}/</div>`}</div>
           <${SpeakButton} text=${word} lang=${lang} kind="outline" size=${40} /></div>
-        <div class="t-translation-l">${cap(L(w.tr))}</div>
+        <div class="t-translation-m">${cap(L(w.tr))}</div>
       </div>
       ${verb && html`<span class="word-pair__link t-label-12-medium">${t('lesson.formsLink')}</span><${VerbCard} v=${verb} lang=${lang} compact />`}
       ${rel.map((r) => html`<${RelCard} r=${r} lang=${lang} />`)}
