@@ -600,7 +600,13 @@ button.card { width: 100%; text-align: left; }
 /* 2.2 «Що тренуємо / цього разу?» (макеты 2.2 / 2.2a / 2.2b, 19.11.2026): секции через 32, заголовок секции → чипы 12;
    Aura/Chip 40 px, скругление 10, поля 16; выбранный — чёрный без галочки; между чипами 6 по горизонтали и вертикали */
 .screen--practice .screen__content { gap: var(--space-16); }
-.practice-secs { display: flex; flex-direction: column; gap: var(--space-32); margin-top: var(--space-16); }
+.practice-secs { display: flex; flex-direction: column; gap: var(--space-40, 40px); margin-top: var(--space-16); }   /* 2.2: плитки типов → плитки уровней / добірок, 40 (25.11.2026) */
+.pick-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-8); }
+.pick-tile { height: 70px; padding: 0 var(--space-8); border-radius: var(--radius-10); background: var(--bg-surface); border: 1px solid var(--border-default);
+  color: var(--text-primary); display: grid; place-items: center; text-align: center; white-space: pre-line; overflow-wrap: anywhere; hyphens: auto; transition: transform .12s; }
+.pick-tile.is-on { background: var(--bg-chip-selected); color: var(--text-on-chip-selected); border-color: var(--bg-chip-selected); }
+.pick-tile:active:not(:disabled) { transform: scale(.97); }
+.pick-tile:disabled { opacity: .35; }
 .practice-sec { display: flex; flex-direction: column; gap: var(--space-12); }
 .practice-sec__head { display: flex; align-items: baseline; gap: var(--space-8); }
 .choice-wrap { display: flex; flex-wrap: wrap; gap: var(--space-6); }
