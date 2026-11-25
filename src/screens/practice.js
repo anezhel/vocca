@@ -1,12 +1,13 @@
 // 2.2 «Що тренуємо?» (макеты 2.2 / 2.2a / 2.2b, 19.11.2026): открывается по «Вчити слова» на «Практика». Сразу выбрано то,
 // что человек выбрал в прошлый раз (в первый раз — «Нові слова», «твій рівень», 20 слів). Выбор запоминается сразу.
-//   Типи слів — один из «Нові слова / Важко згадати / Легко згадати / Слова з добірок» (как радио).
+//   Слова — один из «Нові слова / Добірки / Повторити вивчені» (как радио; макет 2.2a, 25.11.2026).
+//     «Повторити вивчені» = прежние «Важко згадати» + «Легко згадати» вместе.
 //   Обычные типы: Рівень (можно несколько), под ним Кількість слів. Уровень, на котором нет слов этого типа, бледный и
 //     не нажимается, а если был выбран — выбор с него снимается (решение дизайнера 19.11.2026; раньше выбор сохранялся).
 //     Если так не осталось ни одного выбранного уровня — выбирается доступный, ближайший к «моему» (2.2a).
-//     У «Важко згадати» и «Легко згадати» на уровне кружок — сколько карточек этого типа можно повторить (у «Нові слова» нет);
+//     На уровне кружок — сколько слов этого типа есть на уровне;
 //     у уровня без таких карточек — 0 (сам чип бледный, а под уровнями подсказка).
-//   «Слова з добірок»: уровней нет, под типами — «Добірки» (все добірки курса, одна; в кружке — сколько в ней карточок,
+//   «Добірки»: уровней нет, под типами — «Добірки» (все добірки курса, одна; в кружке — сколько в ней карточок,
 //     как на «Практика» и в счётчике занятия), потом Кількість слів (2.2b).
 //     «Почати» — экраны добірки 3.1–3.10 (для «3 форми дієслів» — карточки 3.13) по «Кількість слів» за раз, итог 3.11.
 //   Кількість слів — одно из 10 / 20 / 30 / 40 / «Всі», снять нельзя.
@@ -15,7 +16,7 @@ import { CONFIG } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { GROUP_TYPES } from '../groups/index.js';
 import { t, L } from '../i18n/index.js';
-import { practicePrefs, savePractice, levelCounts, countFor, myLevel, PRACTICE_KINDS } from '../core/session.js';
+import { practicePrefs, savePractice, levelCounts, countFor, myLevel, PRACTICE_KINDS, KIND_BUCKETS } from '../core/session.js';
 import { progress } from '../core/store.js';
 import { Screen, Title, Button, IconButton, cx } from '../ui/kit.js';
 
@@ -46,7 +47,7 @@ const shownLevels = (course) => { const s = progress(course.id).levels; return L
 // по-прежнему можно (тогда «Почати» неактивна). Для «Слова з добірок» уровни не трогаем.
 function fitLevels(course, p, pick = true) {
   if (p.kind === 'groups') return p;
-  const counts = levelCounts(course, [p.kind]);
+  const counts = levelCounts(course, KIND_BUCKETS[p.kind]);
   const shown = shownLevels(course);
   const levels = p.levels.filter((l) => counts[l] && shown.includes(l));
   if (!levels.length && pick) {
@@ -69,16 +70,17 @@ export function Practice({ course, go, back }) {
   const kinds = PRACTICE_KINDS.filter((k) => k !== 'groups' || course.groupList.length);
 
   // Обычные типы: уровни без слов этого типа неактивны, в занятие идут только выбранные и доступные
-  const counts = groupsMode ? {} : levelCounts(course, [prefs.kind]);
+  const counts = groupsMode ? {} : levelCounts(course, KIND_BUCKETS[prefs.kind]);
   const off = (l) => !groupsMode && !counts[l];
   const shown = shownLevels(course);
   const offLevels = shown.filter(off);
   const live = prefs.levels.filter((l) => !off(l));
-  const levelHint = groupsMode || !offLevels.length ? '' : t('practice.noLevelWords', { lv: offLevels.join(', '), kind: t('practice.kind.' + prefs.kind) });
+  const levelHint = groupsMode || !offLevels.length ? '' : t('practice.noLevelWords.' + prefs.kind, { lv: offLevels.join(', ') });
 
-  const canStart = groupsMode ? !!prefs.group : live.length > 0 && countFor(course, { levels: live })[prefs.kind] > 0;
+  const found = countFor(course, { levels: live });
+  const canStart = groupsMode ? !!prefs.group : live.length > 0 && KIND_BUCKETS[prefs.kind].some((b) => found[b] > 0);
   const start = () => {
-    if (!groupsMode) return go('lesson', { prefs: { kinds: [prefs.kind], levels: live, size: prefs.size } });
+    if (!groupsMode) return go('lesson', { prefs: { kinds: KIND_BUCKETS[prefs.kind], levels: live, size: prefs.size } });
     const g = course.groupList.find((x) => x.id === prefs.group);
     if (GROUP_TYPES[g.type].Screen) return go('group', { group: g.id, size: prefs.size });   // «3 форми дієслів» — сначала группы 3.12
     go('collection', { groups: [prefs.group], size: prefs.size, review: GROUP_TYPES[g.type].stats(course, g).status === 'done' });

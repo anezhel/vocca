@@ -18,15 +18,20 @@ export function myLevel(p) {
 }
 
 // ── 2.2 «Що тренуємо»: выбор человека запоминается; по умолчанию — «Нові слова», «твій рівень», 20 слів ──
-// kind — один тип слов (с 19.11.2026 типы работают как радио): 'new' | 'hard' | 'almost' | 'groups' («Слова з добірок»).
-// group — выбранная добірка (для 'groups'); null — выберет экран 2.2. Старый выбор из нескольких типов (kinds) → первый из них.
-export const PRACTICE_KINDS = ['new', 'hard', 'almost', 'groups'];
+// kind — один тип слов (как радио): 'new' «Нові слова» | 'groups' «Добірки» | 'review' «Повторити вивчені»
+// (с 25.11.2026, макет 2.2a: «Важко згадати» и «Легко згадати» объединены в «Повторити вивчені»).
+// group — выбранная добірка (для 'groups'); null — выберет экран 2.2. Старый выбор из нескольких типов (kinds) → первый из них,
+// старые 'hard' / 'almost' → 'review'.
+export const PRACTICE_KINDS = ['new', 'groups', 'review'];
+// Какие статусы слов входят в тип
+export const KIND_BUCKETS = { new: ['new'], review: ['hard', 'almost'] };
+const OLD_KINDS = { hard: 'review', almost: 'review' };
 export function practicePrefs(course) {
   const p = progress(course.id);
   const base = { ...CONFIG.practiceDefault, levels: [myLevel(p) || p.levels[0] || LEVELS[0]] };
   const saved = p.practice || {};
   const legacy = Array.isArray(saved.kinds) ? saved.kinds[0] : null;
-  const kind = [saved.kind, legacy].find((k) => PRACTICE_KINDS.includes(k)) || base.kind;
+  const kind = [saved.kind, legacy].map((k) => OLD_KINDS[k] || k).find((k) => PRACTICE_KINDS.includes(k)) || base.kind;
   return {
     kind: kind === 'groups' && !course.groupList.length ? base.kind : kind,
     levels: (saved.levels || base.levels).filter((l) => LEVELS.includes(l)),
