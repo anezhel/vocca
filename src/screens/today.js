@@ -121,13 +121,13 @@ function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
       const on = !!shown[b.id];
       return html`<div key=${b.id} class="coll-block">
         <button class="coll-block__head" aria-expanded=${on} onClick=${() => setShown({ ...shown, [b.id]: !on })}>
-          <span class="t-title-m">${b.title}</span><span class="count-pill t-label-13-medium">${b.items.length}</span><span class="grow"></span>
+          <span class="t-title-l">${b.title}</span><span class="count-pill t-label-13-medium">${b.items.length}</span><span class="grow"></span>
           <span class="ib ib--grey" style="--ib:40px">${chev(on)}</span></button>
-        ${on && b.items.map(({ g, s, k }) => html`<div key=${g.id} class="coll-row">
+        ${on && html`<div class="coll-rows">${b.items.map(({ g, s, k }) => html`<div key=${g.id} class="coll-row">
           <div class="coll-row__head"><div class="coll-row__text"><span class="t-title-m">${L(g.title)}</span>
-            <span class="t-label-13 muted">${t('groups.learnedOf', { a: s.learned, b: s.total })}</span></div>
-            <button class="pill-btn pill-btn--learning t-label-15-medium" onClick=${() => open3(g, k)}>${t('groups.learn')}</button></div>
-        </div>`)}
+            <span class="t-label-12-medium muted">${t('groups.learnedOf', { a: s.learned, b: s.total })}</span></div>
+            <button class="pill-btn pill-btn--learning t-label-14-strong" onClick=${() => open3(g, k)}>${t('groups.learn')}</button></div>
+        </div>`)}</div>`}
       </div>`;
     })}</div>
       <button class="trainer-btn t-label-16-strong" onClick=${trainer}>${t('today.trainer')}</button>
