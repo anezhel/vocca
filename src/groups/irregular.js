@@ -97,7 +97,7 @@ function Home({ course, group, route, go, back }) {
 // Примеры трёх форм отдельной карточкой «Приклади · 3 форми дієслова» — в занятии (2.3b), перед «Порівняй» (25.11.2026).
 // В компактной карточке форм (compact) примеров нет; на 3.13 они по-прежнему под каждой формой.
 export const VerbExamples = ({ v }) => html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')} · ${t('lesson.formsLink')}</${Overline}>
-  <div class="examples">${v.ex.map((ex, i) => html`<${Example} ex=${ex} hl=${(v['v' + (i + 1)] || '').split(' / ')} />`)}</div></div>`;
+  <div class="examples">${v.ex.map((ex, i) => html`<${Example} ex=${ex} pre=${'V' + (i + 1)} hl=${(v['v' + (i + 1)] || '').split(' / ')} />`)}</div></div>`;
 
 export function VerbCard({ v, lang, compact, tr }) {
   const form = (n) => v['v' + n];
