@@ -1,5 +1,5 @@
 // Тип группы «irregular»: неправильные глаголы. Глаголы учатся только здесь, в ежедневное занятие не попадают.
-// 12  — три карточки сложности («Усі форми однакові», «Дві форми однакові», «Усі форми різні»), внизу кнопка «Тренажер».
+// 12  — три карточки сложности («Усі форми однакові», «2 форми однакові», «3 форми різні»); кнопки «Тренажер» с 25.11.2026 нет.
 //       Вид экрана — как до 16.11.2026, только карточки лаймовые (bg/accent).
 // 12b — карточки глаголов одной сложности (вид — 3.13 из Figma v2, см. VerbCard): «Далі», по CONFIG.verbSessionSize за заход, в конце итог (done.js).
 // 12e — тренажёр трёх форм из Vocca (репозиторий Slova-2, src/screens/verbs.js → Drill), в стиле Vocca2:
@@ -13,7 +13,7 @@ import { t, L, pn } from '../i18n/index.js';
 import { update, progress, getState } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Example, Pill, cx, useSwipe, enterCls } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Example, Pill, LevelTag, cx, useSwipe, enterCls } from '../ui/kit.js';
 import { GroupDone } from './done.js';
 import { addIrregular } from '../core/forms.js';
 
@@ -63,11 +63,11 @@ function trainList(course, group, now = Date.now()) {
 
 // 3.12 · Групи (макет обновлён 20.11.2026): заголовок «3 форми дієслів», три белые карточки сложности через 8 —
 // точки и «Легко / Середньо / Складно», чёрная стрелка, название группы, формы-пример в лаймовых пилюлях, прогресс.
-// Нажатие на карточку — 3.13 (картки дієслова этой группы), внизу «Тренажер» (3.14).
+// Нажатие на карточку — 3.13 (картки дієслова этой группы). Кнопку «Тренажер» (3.14) убрали 25.11.2026 (решение дизайнера).
 // С 2.2 («Слова з добірок» → «3 форми дієслів») сюда же, с выбранной «Кількість слів» (route.size).
 function Home({ course, group, route, go, back }) {
   const cs = cards(course);
-  return html`<${Screen} cls="screen--grey screen--verbs" tone="sky" bottom=${html`<${Button} label=${t('verbs.trainer')} onClick=${() => go('verbs', { group: group.id, train: true })} />`}>
+  return html`<${Screen} cls="screen--grey screen--verbs" tone="sky">
     <${TopBar} onBack=${back} />
     <${Title} main=${L(group.title)} />
     <div class="diff-cards">${KINDS.map(([kind, diff, dots]) => {
@@ -120,7 +120,24 @@ export function VerbCard({ v, lang, compact, tr }) {
 
 // 3.13 (решение дизайнера, 25.11.2026): как в занятии (2.3b) — одна карточка форм с линиями (у V1 перевод — здесь нет карточки
 // слова над формами) и под ней «Приклади · 3 форми дієслова». Раньше — три карточки с примером под каждой формой.
-const VerbForms = ({ v, lang }) => html`<div class="verb-stack"><${VerbCard} v=${v} lang=${lang} compact tr /><${VerbExamples} v=${v} /></div>`;
+// С 25.11.2026 (макет 3.13 дизайнера) сверху — карточка самого слова, как в занятии: уровень, на котором слово учится
+// (из words.tsv), «НЕПРАВИЛЬНЕ ДІЄСЛОВО», слово Word/XL, транскрипция, озвучка, перевод Translation/M; поэтому у V1 перевода нет.
+const cap = (x) => (x ? x.charAt(0).toUpperCase() + x.slice(1) : x);
+function VerbForms({ course, v, lang }) {
+  const word = v.v1.split(' / ')[0];
+  // уровень — как у слова в words.tsv (там его и учат); нет в words.tsv (be, burst, arise… — 15 глаголов) — уровень из таблицы глаголов
+  const lvl = (course.byText && course.byText.get(word.toLowerCase()) || {}).lvl || v.lvl;
+  return html`<div class="verb-stack">
+    <div class="card word-main">
+      <div class="word-main__top"><${LevelTag} lvl=${lvl} size="m" /><${Overline}>${t('verbs.irregular')}</${Overline}></div>
+      <div class="new-head"><div class="new-head__text">
+        <div class="t-word-xl">${cap(word)}</div>
+        ${v.ipa[0] && html`<div class="t-label-16-regular muted">/${v.ipa[0]}/</div>`}</div>
+        <${SpeakButton} text=${word} lang=${lang} /></div>
+      <div class="t-translation-m">${cap(L(v.tr))}</div>
+    </div>
+    <${VerbCard} v=${v} lang=${lang} compact /><${VerbExamples} v=${v} /></div>`;
+}
 
 // Экран 12b: карточка глагола, внизу «Далі». После порции — итог 19c. Свайп вправо — предыдущий глагол, влево — вперёд до уже просмотренного.
 function VerbCards({ course, group, route, back }) {
@@ -155,7 +172,7 @@ function VerbCards({ course, group, route, back }) {
   }
   return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${() => next()} />`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
-    <${VerbForms} v=${v} lang=${lang} />
+    <${VerbForms} course=${course} v=${v} lang=${lang} />
   </${Screen}>`;
 }
 
@@ -287,7 +304,7 @@ function queue(course, g, review) {
 function markSeen(course, g, v) { update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; }); }
 function progressOf(course, g) { const cs = cards(course); return { seen: g.items.filter((v) => seen(cs[v.id])).length, total: g.items.length }; }
 function Item({ course, item }) {
-  return html`<${VerbForms} v=${item} lang=${ttsLang(course)} />`;
+  return html`<${VerbForms} course=${course} v=${item} lang=${ttsLang(course)} />`;
 }
 
 function GroupScreen(props) {
