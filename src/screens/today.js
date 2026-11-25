@@ -6,7 +6,9 @@ import { feature } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { t, L, plural, num } from '../i18n/index.js';
 import { progress } from '../core/store.js';
-import { dayGoal, myLevel, practicePrefs } from '../core/session.js';
+import { dayGoal, practicePrefs } from '../core/session.js';
+
+const LEVEL_DONE = 0.8;   // доля выученных слов уровня, с которой он показывается в чипе
 import { GROUP_TYPES } from '../groups/index.js';
 import { learnedStats, streak, todayStats } from '../core/stats.js';
 import { Screen, Title, Button, Icon, Stat, cx } from '../ui/kit.js';
@@ -25,7 +27,6 @@ export function Today({ course, go, toast }) {
   const noLevels = !p.levels.length && !p.queue.length;
   // Заголовков «Час повторити слова» и «Сьогодні план виконано!» нет (19.11.2026): сверху только чип «🔥 B1» справа,
   // и всё содержимое поднимается выше. Заголовок остался лишь в редком случае, когда уровни не выбраны («Обери рівні»).
-  const me = myLevel(p);   // уровень: по тесту или самый высокий из выбранных
   const levels = () => go('settings', { pick: 'levels' });
   // Главная кнопка ведёт на 2.2 «Що тренуємо». Цель на день выполнена — «Вчити ще», иначе «Вчити слова».
   const main = noLevels ? html`<${Button} label=${t('today.chooseLevels')} onClick=${levels} />`
@@ -35,10 +36,14 @@ export function Today({ course, go, toast }) {
   const share = (a, b) => (!a || !b ? 0 : (a / b) * 100);
   const pctText = (v) => (v > 0 && v < 0.5 ? '<1%' : `${Math.round(v)}%`);
   const perLevel = Object.fromEntries(LEVELS.map((l) => [l, course.words.filter((w) => w.lvl === l).length]));
+  // Чип «🔥 A2» (решение дизайнера, 25.11.2026): самый высокий уровень, где в «Вивчено» не меньше 80 % слов уровня
+  // (A1 100 % и A2 80 % → A2). Ни один уровень не дошёл до 80 % — чипа нет. Не нажимается. Раньше: уровень по тесту
+  // или самый высокий из выбранных, по нажатию — лист «Обери рівні».
+  const me = [...LEVELS].reverse().find((l) => perLevel[l] && learned.byLevel[l] / perLevel[l] >= LEVEL_DONE) || null;
   return html`<${Screen} cls="screen--tab screen--today" tone="today">
     ${(noLevels || me) && html`<div class=${cx('today-head', noLevels && 'today-head--title')}>
       ${noLevels && html`<${Title} main=${greeting()} accent=${t('today.noLevels')} />`}
-      ${me && html`<button class="level-chip t-label-13" onClick=${levels} aria-label=${`${t('today.yourLevel')} ${me}`}><${Icon} name="flame" size=${18} /><b>${me}</b></button>`}
+      ${me && html`<div class="level-chip t-label-13" aria-label=${`${t('today.yourLevel')} ${me}`}><${Icon} name="flame" size=${18} /><b>${me}</b></div>`}
     </div>`}
     <div class="hero hero--today"><div class="t-number-hero">${num(day.words)}</div>
       <div class="hero__label"><div class="t-label-16 hero__text">${t('today.passed')}</div>
