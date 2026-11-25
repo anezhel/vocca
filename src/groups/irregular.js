@@ -139,7 +139,7 @@ function VerbForms({ course, v, lang }) {
     <${VerbCard} v=${v} lang=${lang} compact /><${VerbExamples} v=${v} /></div>`;
 }
 
-// Экран 12b: карточка глагола, внизу «Далі». После порции — итог 19c. Свайп вправо — предыдущий глагол, влево — вперёд до уже просмотренного.
+// Экран 12b (3.13): карточка глагола, внизу стрелки ‹ › по краям, 96 × 56, как в добірках (25.11.2026; раньше «Далі»). После порции — итог 19c. Свайп вправо — предыдущий глагол, влево — вперёд до уже просмотренного.
 function VerbCards({ course, group, route, back }) {
   const lang = ttsLang(course);
   const N = route.size === 'all' ? Infinity : route.size || CONFIG.verbSessionSize;   // «Кількість слів» с 2.2
@@ -170,7 +170,9 @@ function VerbCards({ course, group, route, back }) {
     update(() => { const cs = cards(course); cs[v.id] = { ...(cs[v.id] || {}), seen: Date.now() }; });
     if (pos + 1 < list.length) { step(pos + 1, dir); setFar(Math.max(far, pos + 1)); } else { setFar(Math.max(far, pos)); setEnter(dir); setDone(true); }
   }
-  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<${Button} label=${t('common.next')} onClick=${() => next()} />`}>
+  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="sky" bottom=${html`<div class="row-arrows row-arrows--pair">
+      <button class="nav-arrow" disabled=${pos === 0} onClick=${() => step(pos - 1, 'left')} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
+      <button class="nav-arrow" onClick=${() => (pos < far ? step(pos + 1, 'right') : next('right'))} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
     <${VerbForms} course=${course} v=${v} lang=${lang} />
   </${Screen}>`;
