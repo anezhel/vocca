@@ -37,14 +37,14 @@ export function Today({ course, go, toast }) {
   const pctText = (v) => (v > 0 && v < 0.5 ? '<1%' : `${Math.round(v)}%`);
   const perLevel = Object.fromEntries(LEVELS.map((l) => [l, course.words.filter((w) => w.lvl === l).length]));
   // Чип «🔥 A2» (решение дизайнера, 25.11.2026): самый высокий уровень, где в «Вивчено» не меньше 80 % слов уровня
-  // (A1 100 % и A2 80 % → A2). Ни один уровень не дошёл до 80 % — «0», по нажатию тост «Рівень ще не визначено…»;
-  // с уровнем — не нажимается. Раньше: уровень по тесту или самый высокий из выбранных, по нажатию — лист «Обери рівні».
+  // (A1 100 % и A2 80 % → A2). Ни один уровень не дошёл до 80 % — «0». Раньше: уровень по тесту или самый высокий из выбранных, по нажатию — лист «Обери рівні».
   const me = [...LEVELS].reverse().find((l) => perLevel[l] && learned.byLevel[l] / perLevel[l] >= LEVEL_DONE) || null;
+  // По нажатию — тост: «Твій рівень — A2: вивчено 86 % слів цього рівня» / «Рівень ще не визначено…» (25.11.2026)
+  const chipText = me ? t('today.levelToast', { lvl: me, p: Math.floor((learned.byLevel[me] / perLevel[me]) * 100) }) : t('today.noLevelYet');
   return html`<${Screen} cls="screen--tab screen--today" tone="today">
     ${html`<div class=${cx('today-head', noLevels && 'today-head--title')}>
       ${noLevels && html`<${Title} main=${greeting()} accent=${t('today.noLevels')} />`}
-      ${me ? html`<div class="level-chip t-label-13" aria-label=${`${t('today.yourLevel')} ${me}`}><${Icon} name="flame" size=${18} /><b>${me}</b></div>`
-        : html`<button class="level-chip t-label-13" onClick=${() => toast && toast(t('today.noLevelYet'))} aria-label=${t('today.noLevelYet')}><${Icon} name="flame" size=${18} /><b>0</b></button>`}
+      <button class="level-chip t-label-13" onClick=${() => toast && toast(chipText)} aria-label=${chipText}><${Icon} name="flame" size=${18} /><b>${me || '0'}</b></button>
     </div>`}
     <div class="hero hero--today"><div class="t-number-hero">${num(day.words)}</div>
       <div class="hero__label"><div class="t-label-16 hero__text">${t('today.passed')}</div>
