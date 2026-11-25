@@ -33,7 +33,7 @@ export default {
     { id: 'links', section: 'words', title: { uk: 'Зв’язки слів', ru: 'Связи слов' } },
     { id: 'phrases', section: 'words', title: { uk: 'Вирази', ru: 'Выражения' } },
     { id: 'confusing', section: 'words', title: { uk: 'Не плутай', ru: 'Не путай' } },
-    { id: 'tenses', section: 'grammar', title: { uk: 'Часи', ru: 'Времена' } },
+    { id: 'tenses', section: 'grammar', title: { uk: 'Часи', ru: 'Времена' }, list: 'items' },   // list: 'items' — на «Практика» список правил (12 времён), а не добірок
     { id: 'conditionals', section: 'grammar', title: { uk: 'Умовні речення', ru: 'Условные предложения' } },
     { id: 'grammar', section: 'grammar', title: { uk: 'Граматичні слова', ru: 'Грамматические слова' } },
   ],

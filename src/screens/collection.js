@@ -28,10 +28,12 @@ export function Collection({ course, route, go, back }) {
   const size = route.size === 'all' ? Infinity : route.size || CONFIG.groupSessionSize;
   const build = (review) => groups.flatMap((g) => T(g).queue(course, g, review).map((item) => ({ g, item })));
   const [queue] = useState(() => build(!!route.review));
+  // from — открыть сразу на этом экране (правило из списка «Часи» на «Практика»; 26.11.2026)
+  const at0 = route.from ? Math.max(0, queue.findIndex((x) => x.item.id === route.from)) : 0;
   const [start, setStart] = useState(0);
-  const [pos, setPos] = useState(0);
+  const [pos, setPos] = useState(at0);
   const [done, setDone] = useState(false);
-  const [far, setFar] = useState(0);        // дальше всего дошли в этой порции (листать вперёд свайпом — до сюда)
+  const [far, setFar] = useState(at0);      // дальше всего дошли в этой порции (листать вперёд свайпом — до сюда)
   const [enter, setEnter] = useState(null);
   const step = (p, dir) => { setPos(p); setEnter(dir); scrollTo(0, 0); };
   useSwipe(done ? () => { setDone(false); setEnter('left'); scrollTo(0, 0); } : pos > 0 ? () => step(pos - 1, 'left') : null,
