@@ -422,6 +422,8 @@ button.card { width: 100%; text-align: left; }
 .link-btn { height: 52px; width: 100%; text-align: center; }
 /* 2.3 новое слово (20.11.2026): ‹ · «Знаю» · «Вчити» · › — стрелки 40 × 40 без фона, кнопки поровну, через 8 */
 .row-arrows { display: grid; grid-template-columns: 72px minmax(0, 1fr) 72px; gap: var(--space-8); align-items: center; }   /* ‹ · «Уже знаю» / «Вивчати знов» · › (25.11.2026) */
+.row-arrows--compact { grid-template-columns: 80px minmax(0, 1fr) 80px; gap: 2px; }   /* стрелки 80, между кнопками 2 (макет 3.7 дизайнера, 25.11.2026) */
+.row-arrows--compact .nav-arrow { width: 80px; }
 .row-arrows--compact .btn, .row-arrows--compact .nav-arrow { height: 48px; }   /* занятие, добірки, глаголы 3.13, правила: все три кнопки 48 (макет 3.8 дизайнера, 25.11.2026) */
 .row-arrows--compact .btn--secondary { background: var(--rating-good); color: var(--text-primary); border-color: transparent; }   /* «Уже знаю» / «Вивчати знов» лавандовая rating/good, чёрный текст, без обводки (макет 3.8) */
 .row-arrows .btn { padding: 0 var(--space-4); white-space: nowrap; min-width: 0; }
