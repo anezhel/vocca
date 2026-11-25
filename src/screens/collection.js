@@ -41,7 +41,7 @@ export function Collection({ course, route, go, back }) {
   if (done || !cur) {
     const pr = groups.reduce((a, g) => { const x = T(g).progressOf(course, g); return { seen: a.seen + x.seen, total: a.total + x.total }; }, { seen: 0, total: 0 });
     return html`<${GroupDone} title=${groups.map((g) => L(g.title)).join('», «')} many=${groups.length > 1} seen=${pr.seen} total=${pr.total}
-      left=${left} next=${Math.min(size, left)} unit=${groups.every((g) => g.type === 'irregular') ? 'verbs' : 'words'}
+      left=${left} next=${Math.min(size, left)} unit=${groups.every((g) => g.type === 'irregular') ? 'verbs' : groups.every((g) => T(g).unit) ? T(groups[0]).unit : 'words'}
       onMore=${() => { setStart(start + list.length); setPos(0); setFar(0); setEnter(null); setDone(false); scrollTo(0, 0); }}
       onRepeat=${() => { setPos(0); setFar(0); setEnter(null); setDone(false); scrollTo(0, 0); }}
       onFinish=${() => go('today', {}, true)} />`;

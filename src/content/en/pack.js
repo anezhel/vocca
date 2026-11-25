@@ -7,6 +7,7 @@
 // type — как выглядит экран группы:
 //   'relation'  — слово и связанные с ним слова (синонимы, антонимы, ложные друзья…) — src/groups/relation.js
 //   'irregular' — неправильные глаголы с тренажёром трёх форм — src/groups/irregular.js
+//   'rule'      — правило грамматики: времена, условные предложения (3.15, 3.16) — src/groups/rule.js; kind — подпись над названием
 // chip — подпись-связка между карточками, examples / note — заголовки блоков «Порівняй» и пояснения.
 
 export default {
@@ -32,6 +33,8 @@ export default {
     { id: 'links', section: 'words', title: { uk: 'Зв’язки слів', ru: 'Связи слов' } },
     { id: 'phrases', section: 'words', title: { uk: 'Вирази', ru: 'Выражения' } },
     { id: 'confusing', section: 'words', title: { uk: 'Не плутай', ru: 'Не путай' } },
+    { id: 'tenses', section: 'grammar', title: { uk: 'Часи', ru: 'Времена' } },
+    { id: 'conditionals', section: 'grammar', title: { uk: 'Умовні речення', ru: 'Условные предложения' } },
     { id: 'grammar', section: 'grammar', title: { uk: 'Граматичні слова', ru: 'Грамматические слова' } },
   ],
 
@@ -69,6 +72,15 @@ export default {
     { id: 'similar', topic: 'confusing', type: 'relation', file: 'groups/similar.tsv',
       title: { uk: 'Схожі слова', ru: 'Похожие слова' }, chip: { uk: '≈ звучить схоже', ru: '≈ звучит похоже' },
       examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'Як розрізнити', ru: 'Как различить' } },
+    // ── tenses / conditionals (25.11.2026): экраны правил 3.15 / 3.16
+    { id: 'tenses-present', topic: 'tenses', type: 'rule', file: 'groups/tenses-present.tsv',
+      title: { uk: 'Теперішні часи', ru: 'Настоящие времена' }, kind: { uk: 'Час', ru: 'Время' } },
+    { id: 'tenses-past', topic: 'tenses', type: 'rule', file: 'groups/tenses-past.tsv',
+      title: { uk: 'Минулі часи', ru: 'Прошедшие времена' }, kind: { uk: 'Час', ru: 'Время' } },
+    { id: 'tenses-future', topic: 'tenses', type: 'rule', file: 'groups/tenses-future.tsv',
+      title: { uk: 'Майбутні часи', ru: 'Будущие времена' }, kind: { uk: 'Час', ru: 'Время' } },
+    { id: 'conditionals', topic: 'conditionals', type: 'rule', file: 'groups/conditionals.tsv',
+      title: { uk: 'Умовні речення', ru: 'Условные предложения' }, kind: { uk: 'Умовне речення', ru: 'Условное предложение' } },
     // ── grammar
     { id: 'pronouns', topic: 'grammar', type: 'relation', file: 'groups/pronouns.tsv',
       title: { uk: 'Займенники', ru: 'Местоимения' }, chip: { uk: '→ інші форми', ru: '→ другие формы' },

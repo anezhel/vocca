@@ -651,3 +651,11 @@ button.card { width: 100%; text-align: left; }
 .note-text b { font-weight: 600; }   /* слово в начале строки пояснення (25.11.2026) */
 .note-head { font-weight: 600; margin-bottom: var(--space-8); }   /* «Протилежне до …» — заголовок, отступ вниз 8 (25.11.2026) */
 .note + .note { border-top: 1px solid var(--border-muted); margin-top: var(--space-8); padding-top: var(--space-16); }   /* синонимы | антонимы — разделены линией */
+
+/* Экран правила грамматики 3.15 / 3.16 (25.11.2026): формулы — как формы V1–V3 (тег · формула · пример, через линию 16),
+   слова-подсказки — серые пилюли bg/surface-2 через 6 */
+.rule-forms__list { padding: 0; border-radius: 0; background: none; box-shadow: none; }
+.rule-forms .overline { margin-bottom: var(--space-16); }
+.rule-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rule-chip { padding: 6px 12px; border-radius: var(--radius-full); background: var(--bg-surface-2); color: var(--text-primary); }
+.rule .word-main .t-word-xl { overflow-wrap: anywhere; }

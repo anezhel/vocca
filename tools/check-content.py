@@ -2,7 +2,7 @@
 """Проверка таблиц слов и групп после правок.  Запуск:  python3 tools/check-content.py
 Находит: пустые обязательные колонки, неверный уровень, повторы слов, незакрытые [скобки] в примерах, сдвинутые колонки,
 экраны добірок, где примеров меньше, чем слов (у каждого слова на экране — свой пример, по порядку слов),
-пояснения («У чому різниця» и др.), где названы не все слова экрана, и экраны без пояснения там, где оно нужно."""
+пояснения («У чому різниця» и др.), где названы не все слова экрана, и экраны без пояснения там, где оно нужно; у правил грамматики — пустые обязательные колонки."""
 import re
 import os, sys
 
@@ -76,7 +76,18 @@ for lang in sorted(os.listdir(CONTENT)):
         head, rows = table(path)
         for n, r in rows:
             brackets(path, n, r)
-            if 'v1' in head:
+            if 'name' in head:
+                # правило грамматики (rule.js): название, уровень, перевод, «Коли вживаємо», хотя бы одна формула и пример
+                if r.get('level') not in LEVELS:
+                    warn(path, n, f'«{r.get("name")}»: уровень «{r.get("level")}» — нужен A1–C2')
+                for col in ('name', 'uk', 'ru', 'use_uk', 'use_ru', 'f1', 'ex1', 'ex1_uk', 'ex1_ru'):
+                    if not r.get(col):
+                        warn(path, n, f'«{r.get("name")}»: пустая колонка {col}')
+                if bool(r.get('vs')) != bool(r.get('note_uk') and r.get('note_ru')):
+                    warn(path, n, f'«{r.get("name")}»: vs и note_uk / note_ru заполняются вместе')
+                if r.get('vs') and r.get('vs').lower() not in (r.get('note_uk', '') + r.get('note_ru', '')).lower():
+                    warn(path, n, f'«{r.get("name")}»: в пояснении не названо {r.get("vs")}')
+            elif 'v1' in head:
                 if not (r.get('v1') and r.get('v2') and r.get('v3')):
                     warn(path, n, 'нужны все три формы: v1, v2, v3')
             elif not r.get('word'):
