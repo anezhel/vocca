@@ -340,7 +340,8 @@ export function Mark({ text, hl = [] }) {
 }
 
 // Пример: строка по-английски + перевод
-export const Example = ({ ex, hl }) => html`<div class="example"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${hl} /></div>
+// pre — подпись перед предложением тем же шрифтом: «V1 · We always win…» (примеры неправильных глаголов, 25.11.2026)
+export const Example = ({ ex, hl, pre }) => html`<div class="example"><div class="t-body-16-medium">${pre && `${pre} · `}<${Mark} text=${ex.en} hl=${hl} /></div>
   <div class="t-label-14 muted">${L(ex)}</div></div>`;
 
 // Aura/Tab bar — стеклянная капсула. За активной вкладкой — светло-розовый пузырёк (nav/active-bg),
