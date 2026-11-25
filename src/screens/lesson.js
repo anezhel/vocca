@@ -12,6 +12,8 @@ import { tts } from '../core/tts.js';
 import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx, Icon } from '../ui/kit.js';
 import { Ring } from '../groups/done.js';
 import { VerbCard, VerbExamples } from '../groups/irregular.js';
+import { LEVELS } from '../content/index.js';
+import { phraseForms } from '../core/forms.js';
 
 export function Lesson({ course, route, go, back }) {
   const [lesson] = useState(() => startLesson(course, route.prefs || practicePrefs(course)));
@@ -121,19 +123,40 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
 // общие «Порівняй» (примеры из добірок) и «У чому різниця» (пояснения из добірок), см. RelMore. Добірки — все, кроме «Спільнокореневі» (решено так)
 // и «3 форми дієслів» (у неё своя карточка выше). Несколько строк одной добірки для слова (look after, look for…) — в один блок.
 const REL_ORDER = ['synonyms', 'antonyms', 'confusing', 'false-friends', 'similar', 'phrasal', 'collocations', 'pronouns', 'idioms'];
+// Связанные слова одной добірки (из всех её строк для этого слова) — по уровню, от простого к сложному: A1 → C2,
+// без уровня — в конце (решение дизайнера, 25.11.2026; раньше — в порядке строк таблицы: A1, A2, B1, A2…).
+// Примеры — к каждому связанному слову и в том же порядке (раньше — первые 4 из всех строк, и у look из 12 фразовых
+// примеры были только к 4). Пример к слову находим по выделенной [фразе] или по форме слова в предложении;
+// не нашли — по месту в строке (ex1 ↔ to1 или ex1 — само слово, ex2 ↔ to1). Примеры с самим словом — первыми.
+const LVL_RANK = (l) => { const i = LEVELS.indexOf(l); return i < 0 ? LEVELS.length : i; };
+const exTarget = (e, j, it) => {
+  const m = /\[([^\]]+)\]/.exec(e.en || '');
+  const key = m ? m[1].toLowerCase().replace(/’/g, "'") : null;
+  const hit = key ? it.targets.find((tg) => tg.w && phraseForms(tg.w.toLowerCase()).has(key)) : null;
+  if (hit || key === (it.w || '').toLowerCase()) return hit || null;
+  if (it.ex.length === it.targets.length) return it.targets[j];
+  if (it.ex.length === it.targets.length + 1) return j ? it.targets[j - 1] : null;
+  return null;
+};
 export function relatedOf(course, w) {
   const word = (w.w || '').toLowerCase();
   return REL_ORDER.map((id) => course.groupList.find((g) => g.id === id)).filter(Boolean).map((g) => {
     const items = (g.items || []).filter((i) => (i.w || '').toLowerCase() === word);
     if (!items.length) return null;
-    const seen = new Set(), targets = [];
+    const seen = new Map(), targets = [], baseEx = [];
     for (const it of items) for (const tg of it.targets) {
       const key = (tg.w || (tg.tr && L(tg.tr)) || '').toLowerCase();
-      if (key && !seen.has(key)) { seen.add(key); targets.push(tg); }
+      if (key && !seen.has(key)) { const slot = { tg, ex: [] }; seen.set(key, slot); targets.push(slot); }
     }
     if (!targets.length) return null;
-    return { g, link: items[0].link, targets, ex: items.flatMap((it) => it.ex).slice(0, 4), notes: items.map((it) => it.note).filter(Boolean),
-      hl: [w.w, ...targets.map((x) => x.w).filter(Boolean)] };
+    for (const it of items) it.ex.forEach((e, j) => {
+      const tg = exTarget(e, j, it);
+      const slot = tg && seen.get((tg.w || (tg.tr && L(tg.tr)) || '').toLowerCase());
+      (slot ? slot.ex : baseEx).push(e);
+    });
+    const sorted = targets.map((x, i) => ({ ...x, i })).sort((a, b) => LVL_RANK(a.tg.lvl) - LVL_RANK(b.tg.lvl) || a.i - b.i);
+    return { g, link: items[0].link, targets: sorted.map((x) => x.tg), ex: [...baseEx, ...sorted.flatMap((x) => x.ex)],
+      notes: items.map((it) => it.note).filter(Boolean), hl: [w.w, ...sorted.map((x) => x.tg.w).filter(Boolean)] };
   }).filter(Boolean);
 }
 
