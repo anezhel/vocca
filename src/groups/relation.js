@@ -84,4 +84,7 @@ function Item({ course, group, item }) {
     </div>`;
 }
 
-export default { load, stats, queue, markSeen, progressOf, Item };
+// «Уже знаю» на экране добірки: основное слово и связанные — в «Вивчено» (те, что есть в словаре курса)
+const knownWords = (item) => [item.w, ...item.targets.map((x) => x.w)].filter(Boolean);
+
+export default { load, stats, queue, markSeen, progressOf, Item, knownWords };

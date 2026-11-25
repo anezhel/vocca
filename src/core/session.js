@@ -133,6 +133,22 @@ function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.
 // повторение — «Важко» (hard) / «Легко» (almost) / «Вивчено» (learned).
 // «Пізніше»: статус не меняется — слово остаётся новым и уходит в конец своего уровня (p.skipped); в «слова за день»
 // и в итог занятия не идёт, но карточка пройдена (счётчик «5 / 20» растёт).
+// «Уже знаю» в добірках, на глаголах 3.13 и правилах (решение дизайнера, 25.11.2026): слова экрана, которые есть в словаре курса
+// (основное и связанные; у глагола — сам глагол), сразу в «Вивчено», как «Уже знаю» в занятии. Слов нет в словаре — ничего.
+export function knowWords(course, texts) {
+  update(() => {
+    const p = progress(course.id);
+    for (const x of texts) {
+      const w = x && course.byText && course.byText.get(String(x).toLowerCase());
+      if (!w) continue;
+      dropFromQueue(course, w.id);
+      const was = bucket(p.cards[w.id]);
+      if (was === 'learned') continue;
+      p.cards[w.id] = mark(p.cards[w.id], 'learned');
+      countLearned();
+    }
+  });
+}
 const setSkipped = (p, id, on) => { p.skipped = p.skipped || {}; if (on) p.skipped[id] = Date.now(); else delete p.skipped[id]; };
 export function answer(course, lesson, item, st) {
   let prev = null;

@@ -1,12 +1,14 @@
 // Занятие по добіркам (3.1–3.10) и итог 3.11. Открывается кнопкой «Вчити / Почати / Повторити» у добірки на «Практика».
-// Экраны идут один за другим, внизу стрелки ‹ › — как в занятии, но без кнопки посередине (решение дизайнера, 25.11.2026;
-// раньше — «Далі»): ‹ — предыдущий экран (на первом бледная), › — вперёд, как свайп влево; за заход — «Кількість слів» с «Що тренуємо» (по умолчанию 20).
+// Экраны идут один за другим, внизу ‹ · «Уже знаю» · › — как в занятии (макет 3.8 дизайнера, 25.11.2026; раньше «Далі»,
+// днём 25.11 — только стрелки): ‹ — предыдущий экран (на первом бледная), › — вперёд, как свайп влево; «Уже знаю» — слова
+// экрана, что есть в словаре, в «Вивчено», и дальше; за заход — «Кількість слів» с «Що тренуємо» (по умолчанию 20).
 // Свайп вправо — предыдущая карточка (и с итога 3.11 — последняя), влево — вперёд, но только до уже просмотренной.
 import { html, useState } from '../../lib/preact-htm.js';
 import { CONFIG } from '../config.js';
 import { GROUP_TYPES } from '../groups/index.js';
 import { t, L } from '../i18n/index.js';
-import { Screen, TopBar, Title, useSwipe, enterCls, cx, Icon } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, useSwipe, enterCls, cx, Icon } from '../ui/kit.js';
+import { knowWords } from '../core/session.js';
 import { GroupDone } from '../groups/done.js';
 
 const T = (g) => GROUP_TYPES[g.type];
@@ -52,8 +54,9 @@ export function Collection({ course, route, go, back }) {
     if (pos + 1 < list.length) { step(pos + 1, dir); setFar(Math.max(far, pos + 1)); } else { setFar(Math.max(far, pos)); setEnter(dir); setDone(true); }
   }
   const Item = T(cur.g).Item;
-  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${html`<div class="row-arrows row-arrows--pair">
+  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${html`<div class="row-arrows">
       <button class="nav-arrow" disabled=${pos === 0} onClick=${() => step(pos - 1, 'left')} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
+      <${Button} variant="secondary" label=${t('lesson.alreadyKnow')} onClick=${() => { knowWords(course, (T(cur.g).knownWords || (() => []))(cur.item)); pos < far ? step(pos + 1, 'right') : next('right'); }} />
       <button class="nav-arrow" onClick=${() => (pos < far ? step(pos + 1, 'right') : next('right'))} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`}>
     <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
     ${!T(cur.g).noTitle && html`<${Title} main=${L(cur.g.title)} cls="title--group" />`}
