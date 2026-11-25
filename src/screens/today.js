@@ -96,6 +96,7 @@ function topicsOf(course, section) {
   return blocks.filter((b) => b.items.length).map((b) => ({ ...b, items: [...b.items].sort((x, y) => RANK[x.k] - RANK[y.k]) }));
 }
 
+// Названия тем и добірок — Label/16 Semibold (решение дизайнера, 26.11.2026; было Title/L 18 и Title/M 17).
 // Тема со списком правил (tp.list === 'items', «Часи»; решение дизайнера, 26.11.2026): вместо добірок — сами правила по порядку,
 // название по-английски (Present Simple), под ним мелко — по-украински / по-русски («Теперішній простий час»), без «Вивчено».
 // Только времена — конструкции (be going to, у правила свой kind) в список не входят. «Вчити» открывает добірку на этом правиле.
@@ -129,10 +130,10 @@ function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
       const on = !!shown[b.id];
       return html`<div key=${b.id} class="coll-block">
         <button class="coll-block__head" aria-expanded=${on} onClick=${() => setShown({ ...shown, [b.id]: !on })}>
-          <span class="t-title-l">${b.title}</span><span class="count-pill t-label-13-medium">${b.items.length}</span><span class="grow"></span>
+          <span class="t-label-16-strong">${b.title}</span><span class="count-pill t-label-13-medium">${b.items.length}</span><span class="grow"></span>
           <span class="ib ib--grey" style="--ib:40px">${chev(on)}</span></button>
         ${on && html`<div class="coll-rows">${b.items.map(({ g, s, k, rule }) => html`<div key=${rule ? rule.id : g.id} class="coll-row">
-          <div class="coll-row__head"><div class="coll-row__text"><span class="t-title-m">${rule ? rule.name : L(g.title)}</span>
+          <div class="coll-row__head"><div class="coll-row__text"><span class="t-label-16-strong">${rule ? rule.name : L(g.title)}</span>
             <span class="t-label-12-medium muted">${rule ? L(rule.tr) : t('groups.learnedOf', { a: s.learned, b: s.total })}</span></div>
             <button class="pill-btn pill-btn--learning t-label-14-strong" onClick=${() => (rule ? go('collection', { groups: [g.id], from: rule.id, review: true }) : open3(g, k))}>${t('groups.learn')}</button></div>
         </div>`)}</div>`}
