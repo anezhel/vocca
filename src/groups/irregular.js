@@ -13,7 +13,7 @@ import { t, L, pn } from '../i18n/index.js';
 import { update, progress, getState } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Pill, cx, useSwipe, enterCls } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, Icon, SpeakButton, Overline, Mark, Example, Pill, cx, useSwipe, enterCls } from '../ui/kit.js';
 import { GroupDone } from './done.js';
 import { addIrregular } from '../core/forms.js';
 
@@ -94,6 +94,11 @@ function Home({ course, group, route, go, back }) {
 // Заголовок (название группы) убран 20.11.2026. Подписей «теперішній час…» и пояснения в макете нет.
 // compact — в занятии (2.3b, макет 20.11.2026): без перевода у V1 (он в карточке слова над формами), форма мельче (Label/17 Medium),
 // транскрипция у всех трёх Label/14, тег ближе к слову (сверху 2, до формы 8).
+// Примеры трёх форм отдельной карточкой «Приклади · 3 форми дієслова» — в занятии (2.3b), перед «Порівняй» (25.11.2026).
+// В компактной карточке форм (compact) примеров нет; на 3.13 они по-прежнему под каждой формой.
+export const VerbExamples = ({ v }) => html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')} · ${t('lesson.formsLink')}</${Overline}>
+  <div class="examples">${v.ex.map((ex, i) => html`<${Example} ex=${ex} hl=${(v['v' + (i + 1)] || '').split(' / ')} />`)}</div></div>`;
+
 export function VerbCard({ v, lang, compact }) {
   const form = (n) => v['v' + n];
   // compact (занятие, 2.3b): одна белая карточка, формы через линию — как синонимы (25.11.2026); на 3.13 — три карточки
@@ -107,7 +112,7 @@ export function VerbCard({ v, lang, compact }) {
           ${n === 1 && !compact && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
         <${SpeakButton} text=${form(n).replace(' / ', ', ')} lang=${lang} kind="outline" />
       </div>
-      ${ex && html`<div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>
+      ${ex && !compact && html`<div class="verb-ex__box"><div class="t-body-16-medium"><${Mark} text=${ex.en} hl=${form(n).split(' / ')} /></div>
         <div class="t-label-14 muted">${L(ex)}</div></div>`}
     </div>`;
   })}</div>`;

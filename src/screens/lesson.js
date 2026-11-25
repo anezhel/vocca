@@ -10,7 +10,7 @@ import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
 import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx, Icon } from '../ui/kit.js';
 import { Ring } from '../groups/done.js';
-import { VerbCard } from '../groups/irregular.js';
+import { VerbCard, VerbExamples } from '../groups/irregular.js';
 
 export function Lesson({ course, route, go, back }) {
   const [lesson] = useState(() => startLesson(course, route.prefs || practicePrefs(course)));
@@ -103,7 +103,8 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
       <div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div></div>`}
     ${w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
       ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`}
-    ${rel.length > 0 && html`<${RelMore} rel=${rel} w=${w} own=${ownEx && relEx ? w.ex : null} />`}
+    ${verb && verb.ex.length > 0 && html`<${VerbExamples} v=${verb} />`}
+    ${rel.length > 0 && html`<${RelMore} rel=${rel} w=${w} own=${ownEx && relEx ? w.ex : null} skipBase=${verb && verb.ex.length > 0} />`}
   </${Screen}>`;
 }
 
@@ -143,13 +144,13 @@ const marked = (en) => { const m = /\[([^\]]+)\]/.exec(en || ''); return m ? m[1
 // own — свои примеры слова (когда есть и примеры добірок): идут первыми, одинаковые предложения — один раз,
 // заголовок — «Приклади · Порівняй» (одна добірка: «Приклади · <её подпись>», а если подпись и так «Приклади» — «Приклади · <добірка>»).
 const plain = (en) => (en || '').replace(/[[\]]/g, '').trim().toLowerCase();
-function RelMore({ rel, w, own }) {
+function RelMore({ rel, w, own, skipBase }) {
   const base = (w.w || '').toLowerCase();
   const ex = [], seen = new Set();
   for (const e of own || []) if (!seen.has(plain(e.en))) { seen.add(plain(e.en)); ex.push(e); }
   // Пример с самим словом — один на весь блок: есть свои примеры — примеры добірок с самим словом не показываем
   // («New York is famous…» и без «He is a famous singer»; решение дизайнера, 25.11.2026)
-  let baseShown = ex.length > 0;
+  let baseShown = ex.length > 0 || !!skipBase;   // skipBase: у глагола свой блок «Приклади · 3 форми дієслова» — сам глагол в «Порівняй» не повторяем
   for (const r of rel) for (const e of r.ex) {
     if (seen.has(plain(e.en))) continue;
     if (marked(e.en) === base) { if (baseShown) continue; baseShown = true; }
