@@ -23,8 +23,14 @@ export function Lesson({ course, route, go, back }) {
   const hist = lesson.history;
   const show = (i, dir) => { setView(i); setEnter(dir); scrollTo(0, 0); };
   const at = view == null ? hist.length : view;
+  // Ответ на текущую карточку; dir — откуда въедет следующая ('right' — свайпом / стрелкой ›)
+  const answerCur = (st, dir = null) => { answer(course, lesson, item, st); lesson.queue.shift(); setEnter(dir); redraw((n) => n + 1); scrollTo(0, 0); };
+  // › и свайп влево на текущей карточке — одно и то же: новое слово → Важкі, повторение → на ступень выше
+  const forward = () => answerCur(item.kind === 'new' ? 'hard' : stepUp(course, item.id), 'right');
+  // Свайп в обе стороны без ограничений (решение дизайнера, 25.11.2026): вперёд можно и с карточки, которую ещё не прошли —
+  // как ›. Раньше вперёд листались только уже пройденные карточки.
   useSwipe(at > 0 && !sheet ? () => show(at - 1, 'left') : null,
-    view != null && !sheet ? () => show(view + 1 < hist.length ? view + 1 : null, 'right') : null);
+    sheet ? null : view != null ? () => show(view + 1 < hist.length ? view + 1 : null, 'right') : item ? forward : null);
 
   useEffect(() => { if (!item && !lesson.finished && lesson.total) { lesson.finished = true; finishLesson(lesson); redraw((n) => n + 1); } }, [item]);
   if (!lesson.total) return html`<${Empty} go=${go} />`;
@@ -45,10 +51,10 @@ export function Lesson({ course, route, go, back }) {
 
   const w = wordById(course, item.id);
   if (!w) { lesson.queue.shift(); lesson.total--; redraw((n) => n + 1); return null; }
-  const onAnswer = (st, dir = null) => { answer(course, lesson, item, st); lesson.queue.shift(); setEnter(dir); redraw((n) => n + 1); scrollTo(0, 0); };
+  const onAnswer = answerCur;
   // › на новой карточке — начать учить слово (→ Важкі; с 25.11.2026, раньше — дальше без ответа), ‹ — к предыдущей карточке
   return html`<${WordCard} key=${item.id} course=${course} w=${w} lesson=${lesson} bar=${{ ...bar, done: lesson.done }} item=${item} enter=${enter} onAnswer=${onAnswer}
-    onPrev=${hist.length ? () => show(hist.length - 1, 'left') : null} onNext=${() => onAnswer(item.kind === 'new' ? 'hard' : stepUp(course, item.id), 'right')} />
+    onPrev=${hist.length ? () => show(hist.length - 1, 'left') : null} onNext=${forward} />
     ${exit}`;
 }
 
