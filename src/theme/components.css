@@ -647,3 +647,5 @@ button.card { width: 100%; text-align: left; }
 
 /* 4.2: «Скинути прогрес» — розовая карточка с белым кружком */
 .danger-btn { display: flex; align-items: center; gap: var(--space-12); text-align: left; padding: var(--space-12) var(--space-16); }
+
+.note-text b { font-weight: 600; }   /* слово в начале строки пояснення (25.11.2026) */

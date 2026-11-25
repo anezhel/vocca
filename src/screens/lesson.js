@@ -9,7 +9,7 @@ import { bucket } from '../core/srs.js';
 import { startLesson, answer, reanswer, finishLesson, practicePrefs } from '../core/session.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
-import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx, Icon } from '../ui/kit.js';
+import { Screen, TopBar, Title, Button, SpeakButton, LevelTag, Overline, Example, Mark, ConfirmSheet, useSwipe, enterCls, cx, Icon, Note } from '../ui/kit.js';
 import { Ring } from '../groups/done.js';
 import { VerbCard, VerbExamples } from '../groups/irregular.js';
 import { LEVELS } from '../content/index.js';
@@ -197,7 +197,7 @@ function RelMore({ rel, w, own, skipBase, def }) {
       <div class="examples">${ex.map((e) => html`<${Example} ex=${e} hl=${hl} />`)}</div></div>`}
     ${def}
     ${notes.length > 0 && html`<div class="card card--lesson card--def"><${Overline}>${noteTitle}</${Overline}>
-      ${notes.map((n) => html`<p class="t-body-15 pre-line">${L(n)}</p>`)}</div>`}`;
+      ${notes.map((n) => html`<${Note} text=${L(n)} />`)}</div>`}`;
 }
 
 // 2.3b · Новое слово — неправильный глагол (макет 20.11.2026): под карточкой слова чип «3 форми дієслова» и три карточки V1–V3,

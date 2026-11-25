@@ -344,6 +344,14 @@ export function Mark({ text, hl = [] }) {
 export const Example = ({ ex, hl, pre }) => html`<div class="example"><div class="t-body-16-medium">${pre && `${pre} · `}<${Mark} text=${ex.en} hl=${hl} /></div>
   <div class="t-label-14 muted">${L(ex)}</div></div>`;
 
+// Пояснення («У чому різниця», «Як це працює»…): строка «word — пояснение» — слово до тире жирным
+// (решение дизайнера, 25.11.2026). Жирным — только если до тире есть латиница и это короткий кусок (слово, фраза, «huge і enormous»).
+export const Note = ({ text }) => html`<p class="t-body-15 pre-line note-text">${(text || '').split('\n').map((line, i) => {
+  const m = /^(.{1,40}?) — /.exec(line);
+  const head = m && /[A-Za-z]/.test(m[1]) ? m[1] : null;
+  return html`${i ? '\n' : ''}${head ? html`<b>${head}</b>${line.slice(head.length)}` : line}`;
+})}</p>`;
+
 // Aura/Tab bar — стеклянная капсула. За активной вкладкой — светло-розовый пузырёк (nav/active-bg),
 // иконка и подпись в нём красно-розовые. При смене вкладки пузырёк переезжает с лёгкой пружинкой, не увеличиваясь;
 // его можно тянуть пальцем — вкладка выбирается, когда палец отпущен. Нажатие на вкладку — обычный click.

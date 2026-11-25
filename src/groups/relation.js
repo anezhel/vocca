@@ -5,7 +5,7 @@ import { tri } from '../content/index.js';
 import { t, L, pn } from '../i18n/index.js';
 import { update, progress } from '../core/store.js';
 import { ttsLang } from '../core/words.js';
-import { SpeakButton, Overline, Example } from '../ui/kit.js';
+import { SpeakButton, Overline, Example, Note } from '../ui/kit.js';
 
 const nl = (s) => s.replace(/¶/g, '\n');
 
@@ -80,7 +80,7 @@ function Item({ course, group, item }) {
       </div>
       ${item.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${L(group.examples)}</${Overline}>
         <div class="examples">${item.ex.map((ex) => html`<${Example} ex=${ex} hl=${hl} />`)}</div></div>`}
-      ${item.note && html`<div class="card card--pad"><${Overline}>${L(group.note, { link: item.link })}</${Overline}><p class="t-body-15 pre-line">${L(item.note)}</p></div>`}
+      ${item.note && html`<div class="card card--pad"><${Overline}>${L(group.note, { link: item.link })}</${Overline}><${Note} text=${L(item.note)} /></div>`}
     </div>`;
 }
 
