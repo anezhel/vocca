@@ -4,8 +4,7 @@
 // ответ ярче, остальные бледнее; другой ответ меняет статус слова (reanswer) и ведёт к следующей карточке.
 import { html, useState, useEffect } from '../../lib/preact-htm.js';
 import { t, L, plural } from '../i18n/index.js';
-import { getState, progress } from '../core/store.js';
-import { bucket } from '../core/srs.js';
+import { getState } from '../core/store.js';
 import { startLesson, answer, reanswer, finishLesson, practicePrefs } from '../core/session.js';
 import { wordById, shown, ipaOf, ttsLang } from '../core/words.js';
 import { tts } from '../core/tts.js';
@@ -27,8 +26,9 @@ export function Lesson({ course, route, go, back }) {
   const at = view == null ? hist.length : view;
   // Ответ на текущую карточку; dir — откуда въедет следующая ('right' — свайпом / стрелкой ›)
   const answerCur = (st, dir = null) => { answer(course, lesson, item, st); lesson.queue.shift(); setEnter(dir); redraw((n) => n + 1); scrollTo(0, 0); };
-  // › и свайп влево на текущей карточке — одно и то же: новое слово → Важкі, повторение → на ступень выше
-  const forward = () => answerCur(item.kind === 'new' ? 'hard' : stepUp(course, item.id), 'right');
+  // › и свайп влево на текущей карточке — одно и то же: новое слово остаётся новым (25.11.2026; раньше → Важкі),
+  // повторение — «пам’ятаю», слово остаётся вивченим
+  const forward = () => answerCur(item.kind === 'new' ? 'seen' : 'learned', 'right');
   // Свайп в обе стороны без ограничений (решение дизайнера, 25.11.2026): вперёд можно и с карточки, которую ещё не прошли —
   // как ›. Раньше вперёд листались только уже пройденные карточки.
   useSwipe(at > 0 && !sheet ? () => show(at - 1, 'left') : null,
@@ -54,14 +54,12 @@ export function Lesson({ course, route, go, back }) {
   const w = wordById(course, item.id);
   if (!w) { lesson.queue.shift(); lesson.total--; redraw((n) => n + 1); return null; }
   const onAnswer = answerCur;
-  // › на новой карточке — начать учить слово (→ Важкі; с 25.11.2026, раньше — дальше без ответа), ‹ — к предыдущей карточке
+  // › на новой карточке — слово остаётся новым, дальше (25.11.2026; раньше → Важкі), ‹ — к предыдущей карточке
   return html`<${WordCard} key=${item.id} course=${course} w=${w} lesson=${lesson} bar=${{ ...bar, done: lesson.done }} item=${item} enter=${enter} onAnswer=${onAnswer}
     onPrev=${hist.length ? () => show(hist.length - 1, 'left') : null} onNext=${forward} />
     ${exit}`;
 }
 
-// › на повторении — «помню»: статус на ступень выше (Важкі → Майже вивчені → Вивчено)
-const stepUp = (course, id) => (bucket(progress(course.id).cards[id]) === 'hard' ? 'almost' : 'learned');
 
 // Под выбор на «Що тренуємо» слов не нашлось
 const Empty = ({ go }) => html`<${Screen} bottom=${html`<div class="done-actions"><${Button} label=${t('practice.change')} onClick=${() => go('practice', {}, true)} />
@@ -88,13 +86,14 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
   const def = w.def && html`<div class="card card--lesson card--def"><${Overline}>${t('lesson.meaning')}</${Overline}>
       ${w.def.en && html`<p class="t-body-16-medium">${w.def.en}</p>`}<p class="t-label-14 muted">${L(w.def)}</p></div>`;
   const relEx = rel.some((r) => r.ex.length > 0);
-  // Нижний ряд (25.11.2026): ‹ · кнопка · › — как в добірках (макет 3.8): все 48, стрелки чёрные 72, кнопка лавандовая. Новое слово: «Уже знаю» → Вивчено, › = начать учить (→ Важкі).
-  // Повторение: «Вивчати знов» (RU «Учить снова»; было «Повернути у вивчення») → Важкі, › = помню (Важкі → Майже вивчені → Вивчено). Раньше: «Важко» · «Легко» · «Вивчено».
+  // Нижний ряд (25.11.2026): ‹ · кнопка · › — как в добірках (макет 3.8): все 48, стрелки чёрные 80, кнопка лавандовая.
+  // Новое слово: «Уже знаю» → Вивчено, › — дальше, слово остаётся новым. Повторение: «Повернути в нові» (RU «Вернуть в новые»;
+  // было «Вивчати знов» → Важкі) → Нові, › — «пам’ятаю», остаётся вивченим. Статусов два — Нові и Вивчено (25.11.2026).
   // На пройденной карточке (вернулись назад) все кнопки активные, как обычно (решение дизайнера, 25.11.2026; раньше невыбранные бледнели).
   const bottom = html`<div class="row-arrows row-arrows--compact">
       <button class="nav-arrow" disabled=${!onPrev} onClick=${onPrev} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
       ${isNew ? html`<${Button} variant="secondary" label=${t('lesson.alreadyKnow')} onClick=${() => onAnswer('learned')} />`
-        : html`<${Button} variant="secondary" label=${t('lesson.backToLearning')} onClick=${() => onAnswer('hard')} />`}
+        : html`<${Button} variant="secondary" label=${t('lesson.backToNew')} onClick=${() => onAnswer('new')} />`}
       <button class="nav-arrow" onClick=${onNext} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`;
   return html`<${Screen} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="today" bottom=${bottom}>
     <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} />
@@ -228,7 +227,7 @@ export function irregularOf(course, w) {
 // 2.5 · Підсумок заняття: полное лаймовое кольцо — сколько слов пройдено. «Продовжити» — ещё заход с тем же выбором,
 // «Змінити налаштування» — на 2.2, «Закінчити» — на «Практика».
 function Summary({ lesson, go, enter }) {
-  const n = lesson.done - lesson.stats.skipped;   // пропущенные слова в итог не идут
+  const n = lesson.done - (lesson.stats.skipped || 0);   // старые «Пізніше» в итог не шли; с 25.11.2026 пролистанное новое слово — пройдено
   return html`<${Screen} cls=${cx('screen--done screen--center', enterCls(enter))} tone="none" bottom=${html`<div class="done-actions">
       <${Button} label=${t('common.continue')} onClick=${() => go('lesson', { prefs: lesson.prefs, n: Date.now() }, true)} />
       <${Button} variant="secondary" label=${t('practice.change')} onClick=${() => go('practice', {}, true)} />
