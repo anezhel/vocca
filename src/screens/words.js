@@ -4,9 +4,10 @@
 import { html, useState, useMemo } from '../../lib/preact-htm.js';
 import { LEVELS } from '../content/index.js';
 import { t, L, num, plural } from '../i18n/index.js';
-import { progress } from '../core/store.js';
+import { progress, getState } from '../core/store.js';
+import { dayKey } from '../core/dates.js';
 import { status } from '../core/srs.js';
-import { shown, ipaOf, ttsLang, returnToLearning } from '../core/words.js';
+import { shown, ipaOf, ttsLang, returnToNew } from '../core/words.js';
 import { Screen, Title, Segmented, SearchField, WordRow, Icon, IconButton, Button, Sheet, LevelTag, SpeakButton, Example, cx } from '../ui/kit.js';
 
 const PAGE = 60;
@@ -47,9 +48,11 @@ export function Words({ course, toast }) {
   const [query, setQuery] = useState('');
   const words = allWords(course);
   const counts = useMemo(() => Object.fromEntries(LEVELS.map((l) => [l, course.words.filter((w) => w.lvl === l).length])), [course.id]);
+  // «Вчу» (с 25.11.2026) — слова, пройденные сегодня в занятии (новые и повторённые); статусов два — Нові и Вивчено
+  const today = new Set((getState().log[dayKey()] || {}).ids || []);
   const byStatus = words.filter((w) => {
     const s = status(p.cards[w.id]);
-    if (filter === 'learning' && s !== 'learning' && !p.queue.includes(w.id)) return false;
+    if (filter === 'learning' && !today.has(w.id)) return false;
     if (filter === 'learned' && s !== 'learned') return false;
     if (filter === 'fresh' && (s !== 'fresh' || p.queue.includes(w.id))) return false;
     return !levels.length || levels.includes(w.lvl);
@@ -61,7 +64,7 @@ export function Words({ course, toast }) {
   const search = (v) => { setQuery(v); setShownN(PAGE); setOpen(null); };
   const lang = ttsLang(course);
   const giveBack = (w) => {
-    returnToLearning(course, w.id);
+    returnToNew(course, w.id);
     setAsk(null); redraw((n) => n + 1);
     if (toast) toast(t('words.returned', { w: shown(course, w) }));
   };
@@ -99,17 +102,17 @@ function ExpandRow({ course, w, lang, open, onToggle, onReturn }) {
     </div>
     ${open && html`<div class="learned-row__body">
       ${w.ex.length > 0 && html`<div class="examples">${w.ex.slice(0, 2).map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div>`}
-      ${onReturn && html`<button class="learned-row__back t-label-14-strong" onClick=${onReturn}><${Icon} name="refresh" size=${16} />${t('words.returnToLearning')}</button>`}
+      ${onReturn && html`<button class="learned-row__back t-label-14-strong" onClick=${onReturn}><${Icon} name="refresh" size=${16} />${t('words.returnToNew')}</button>`}
     </div>`}
   </div>`;
 }
 
-// Лист 04b: «Повернути у вивчення?»
+// Лист 04b: «Повернути в нові?»
 function ReturnSheet({ course, w, onClose, onYes }) {
   return html`<${Sheet} onClose=${onClose}>
     <div class="sheet__head sheet__head--row"><div><div class="t-heading-h2">${shown(course, w)}</div><div class="t-label-15 muted">${L(w.tr)}</div></div>
       <${IconButton} icon="close" onClick=${onClose} label=${t('common.close')} /></div>
     <p class="t-body-15 muted">${t('words.returnText')}</p>
-    <${Button} variant="dark" label=${t('words.returnToLearning')} onClick=${onYes} />
+    <${Button} variant="dark" label=${t('words.returnToNew')} onClick=${onYes} />
   </${Sheet}>`;
 }

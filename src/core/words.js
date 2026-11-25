@@ -37,13 +37,14 @@ export function isAdded(course, text) {
 export const tipSeen = (key) => !!getState().tips[key];
 export const setTipSeen = (key) => update((s) => { s.tips[key] = true; });
 
-// «Повернути у вивчення»: выученное слово снова в «Важкі» и попадёт в занятие, если выбрать «Важкі»
-export function returnToLearning(course, id, now = Date.now()) {
+// «Повернути в нові» (с 25.11.2026; раньше «Повернути у вивчення» → Важкі): выученное слово снова новое — карточка удаляется,
+// слово снова попадёт в «Нові слова». Если стало «Вивчено» сегодня — «вивчено за день» на одно меньше.
+export function returnToNew(course, id, now = Date.now()) {
   update(() => {
     const p = progress(course.id), c = p.cards[id] || {};
     const today = new Date(now).toDateString();
     const learnedAt = c.learnedAt || (c.known ? c.last : null);
     if (learnedAt && new Date(learnedAt).toDateString() === today) { const d = getState().log[dayKeyOf(now)]; if (d && d.learned) d.learned--; }
-    p.cards[id] = mark(c, 'hard', now);
+    delete p.cards[id];
   });
 }

@@ -21,10 +21,10 @@ export function myLevel(p) {
 // kind — один тип слов (как радио): 'new' «Нові слова» | 'groups' «Добірки» | 'review' «Повторити вивчені»
 // (с 25.11.2026, макет 2.2a: «Важко згадати» и «Легко згадати» объединены в «Повторити вивчені»).
 // group — выбранная добірка (для 'groups'); null — выберет экран 2.2. Старый выбор из нескольких типов (kinds) → первый из них,
-// старые 'hard' / 'almost' → 'review'.
+// старые 'hard' / 'almost' → 'review' (с 25.11.2026 «Повторити вивчені» — это выученные слова).
 export const PRACTICE_KINDS = ['new', 'groups', 'review'];
 // Какие статусы слов входят в тип
-export const KIND_BUCKETS = { new: ['new'], review: ['hard', 'almost'] };
+export const KIND_BUCKETS = { new: ['new'], review: ['learned'] };   // с 25.11.2026 «Повторити вивчені» — выученные слова
 const OLD_KINDS = { hard: 'review', almost: 'review' };
 export function practicePrefs(course) {
   const p = progress(course.id);
@@ -102,15 +102,15 @@ export function levelCounts(course, kinds) {
 // Сколько слов найдётся под выбор — для подписи и пустого состояния
 export function countFor(course, prefs) {
   const p = progress(course.id);
-  return { new: pickFresh(course, p, 1, prefs.levels).length, hard: known(course, p, 'hard', prefs.levels).length, almost: known(course, p, 'almost', prefs.levels).length };
+  return { new: pickFresh(course, p, 1, prefs.levels).length, learned: known(course, p, 'learned', prefs.levels).length };
 }
 
-// Очередь занятия: выбранные группы слов поровну (по одному по кругу), потом по порядку — «Важкі», «Майже вивчені», «Нові»
+// Очередь занятия: выбранные типы слов поровну (по одному по кругу): «Вивчено» (повторение — от давно отмеченных), «Нові»
 export function buildQueue(course, prefs) {
   const p = progress(course.id);
   const N = prefs.size === 'all' ? CONFIG.practiceAllCap : prefs.size;
   const kinds = kindsOf(prefs);
-  const order = ['hard', 'almost', 'new'].filter((k) => kinds.includes(k));
+  const order = ['learned', 'new'].filter((k) => kinds.includes(k));
   const pools = Object.fromEntries(order.map((k) => [k, k === 'new' ? pickFresh(course, p, N, prefs.levels) : known(course, p, k, prefs.levels)]));
   const take = Object.fromEntries(order.map((k) => [k, 0]));
   let total = 0;
@@ -129,10 +129,6 @@ export function startLesson(course, prefs) {
 export function countLearned(delta = 1) { const d = dayLog(dayKey()); d.learned = Math.max(0, (d.learned || 0) + delta); }
 function dropFromQueue(course, id) { const p = progress(course.id); p.queue = p.queue.filter((x) => x !== id); }
 
-// Кнопка на карточке: новое слово — «Знаю» (learned) / «Вчити» (hard) / «Пізніше» (skip);
-// повторение — «Важко» (hard) / «Легко» (almost) / «Вивчено» (learned).
-// «Пізніше»: статус не меняется — слово остаётся новым и уходит в конец своего уровня (p.skipped); в «слова за день»
-// и в итог занятия не идёт, но карточка пройдена (счётчик «5 / 20» растёт).
 // «Уже знаю» в добірках, на глаголах 3.13 и правилах (решение дизайнера, 25.11.2026): слова экрана, которые есть в словаре курса
 // (основное и связанные; у глагола — сам глагол), сразу в «Вивчено», как «Уже знаю» в занятии. Слов нет в словаре — ничего.
 export function knowWords(course, texts) {
@@ -150,23 +146,30 @@ export function knowWords(course, texts) {
   });
 }
 const setSkipped = (p, id, on) => { p.skipped = p.skipped || {}; if (on) p.skipped[id] = Date.now(); else delete p.skipped[id]; };
+// Ответ на карточке (с 25.11.2026 статусов два — «Нові» и «Вивчено»):
+//   'learned' — «Уже знаю» на новом слове, › («пам’ятаю») на повторении → «Вивчено»;
+//   'seen'    — › на новом слове: слово остаётся новым (без карточки) и уходит в конец своего уровня, но пройдено сегодня;
+//   'new'     — «Повернути в нові» на повторении: карточка удаляется.
+// Каждое пройденное слово попадает в список дня (d.ids) — это фильтр «Вчу» на вкладке «Слова».
+function applyStatus(p, id, prev, st) {
+  if (st === 'learned') { p.cards[id] = mark(prev, 'learned'); setSkipped(p, id, false); }
+  else { delete p.cards[id]; setSkipped(p, id, st === 'seen'); }
+}
+const noteToday = (d, id) => { d.ids = d.ids || []; if (!d.ids.includes(id)) d.ids.push(id); };
 export function answer(course, lesson, item, st) {
   let prev = null;
-  const skip = st === 'skip';
   update(() => {
     const p = progress(course.id);
     prev = p.cards[item.id] ? { ...p.cards[item.id] } : null;
     dropFromQueue(course, item.id);
-    setSkipped(p, item.id, skip);
-    if (skip) return;
     const was = bucket(p.cards[item.id]);
-    p.cards[item.id] = mark(p.cards[item.id], st);
+    applyStatus(p, item.id, p.cards[item.id], st);
     if (st === 'learned' && was !== 'learned') countLearned();
     const d = dayLog(dayKey()); if (item.kind === 'new') d.fresh++; else d.reviews++;
+    noteToday(d, item.id);
   });
   lesson.done++;
-  if (skip) lesson.stats.skipped++;
-  else if (item.kind === 'new') lesson.stats.fresh++; else lesson.stats.reviews++;
+  if (item.kind === 'new') lesson.stats.fresh++; else lesson.stats.reviews++;
   if (st === 'learned') lesson.stats.learned++;
   lesson.history.push({ item, prev, st });   // для свайпа назад: карточка, какой она была до ответа, и ответ
 }
@@ -176,19 +179,14 @@ export function answer(course, lesson, item, st) {
 // а «Пізніше» ↔ ответ — ещё «слова за день» и итог: пропущенное слово снова без карточки, отвеченное — с карточкой.
 export function reanswer(course, lesson, entry, st) {
   if (entry.st === st) return;
-  const wasSkip = entry.st === 'skip', nowSkip = st === 'skip';
   update(() => {
     const p = progress(course.id);
     const id = entry.item.id;
     const was = bucket(entry.prev);
-    if (nowSkip) { if (entry.prev) p.cards[id] = entry.prev; else delete p.cards[id]; }
-    else p.cards[id] = mark(entry.prev, st);
-    setSkipped(p, id, nowSkip);
+    applyStatus(p, id, entry.prev, st);
     const before = entry.st === 'learned' && was !== 'learned', after = st === 'learned' && was !== 'learned';
     if (before !== after) countLearned(after ? 1 : -1);
-    if (wasSkip !== nowSkip) { const d = dayLog(dayKey()); d.fresh = Math.max(0, (d.fresh || 0) + (nowSkip ? -1 : 1)); }
   });
-  if (wasSkip !== nowSkip) { lesson.stats.skipped += nowSkip ? 1 : -1; lesson.stats.fresh += nowSkip ? -1 : 1; }
   if (entry.st === 'learned') lesson.stats.learned--;
   if (st === 'learned') lesson.stats.learned++;
   entry.st = st;
@@ -208,7 +206,7 @@ export function dayGoal(course, now = Date.now()) {
   const fresh = (d.fresh || 0) + (d.knownNew || 0);
   const reviews = (d.reviews || 0) + (d.practice || 0);
   let toRepeat = 0;
-  for (const [id, c] of Object.entries(p.cards)) { const b = bucket(c); if ((b === 'hard' || b === 'almost') && wordById(course, id)) toRepeat++; }
+  for (const [id, c] of Object.entries(p.cards)) { if (bucket(c) === 'learned' && wordById(course, id)) toRepeat++; }
   const repeatNeed = Math.min(p.repeatGoal, reviews + toRepeat);
   return { fresh, reviews, newGoal: p.newGoal, repeatGoal: p.repeatGoal, done: fresh >= p.newGoal && reviews >= repeatNeed };
 }

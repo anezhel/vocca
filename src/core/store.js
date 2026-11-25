@@ -1,4 +1,5 @@
 // Весь прогресс хранится на телефоне (localStorage). Сервер не нужен.
+import { legacyBucket } from './srs.js';
 import { CONFIG } from '../config.js';
 
 const KEY = 'vocca:aura:v1';
@@ -39,6 +40,17 @@ export function update(fn) { fn(state); save(); emit(); }
 export const subscribe = (f) => { subs.add(f); return () => subs.delete(f); };
 
 // Настройки и прогресс одного языка
+// 25.11.2026: статусов два — «Нові» и «Вивчено» (решение дизайнера). Один раз: майже вивчені → вивчено (дата — когда отметили),
+// важкі → нові (карточка удаляется). Выученные не трогаем.
+function migrateTwoStatuses(c) {
+  for (const [id, card] of Object.entries(c.cards)) {
+    const b = legacyBucket(card);
+    if (b === 'hard') delete c.cards[id];
+    else if (b === 'almost') { const at = card.at || card.last || Date.now(); c.cards[id] = { st: 'learned', at, n: card.n || card.reps || 1, learnedAt: at }; }
+  }
+  c.twoStatuses = true;
+}
+
 export function progress(id = state.course) {
   if (!state.courses[id]) state.courses[id] = {};
   const c = state.courses[id];
@@ -56,6 +68,7 @@ export function progress(id = state.course) {
   c.skipped = c.skipped || {}; // новые слова, пропущенные кнопкой «Пізніше» (слово → время) — идут в конце своего уровня
   c.groups = c.groups || {};   // группа → { seen: { экран: время } }
   c.verbs = c.verbs || {};     // неправильный глагол → карточка
+  if (!c.twoStatuses) migrateTwoStatuses(c);
   return c;
 }
 
