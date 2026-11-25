@@ -75,7 +75,7 @@ function Item({ course, group, item }) {
             <div class="t-word-l">${group.meaning ? L(tg.tr) : tg.w}</div>
             ${!group.meaning && tg.ipa && html`<div class="t-label-15 rel__sub">/${tg.ipa}/</div>`}
             <div class="t-label-14 rel__sub">${group.meaning ? L(item.hint) : L(tg.tr)}</div></div>
-            ${!group.meaning && html`<${SpeakButton} text=${tg.w} lang=${lang} />`}</div>
+            ${!group.meaning && html`<${SpeakButton} text=${tg.w} lang=${lang} kind="white" />`}</div>
         </div>`)}</div>
       </div>
       ${item.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${L(group.examples)}</${Overline}>
