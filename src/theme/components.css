@@ -298,6 +298,10 @@ button.card { width: 100%; text-align: left; }
 .rel__target .rel__lvl[data-level="B2"] { color: var(--level-b2-text); }
 .rel__target .rel__lvl[data-level="C1"] { color: var(--level-c1-text); }
 .rel__target .rel__lvl[data-level="C2"] { color: var(--level-c2-text); }
+/* Озвучка — в строке слова, по центру строки (решение дизайнера, 26.11.2026; раньше — справа от всего текста, у жёлтых по верху) */
+.rel__wordrow { display: flex; align-items: center; gap: var(--space-12); }
+.rel__wordrow > .t-word-l { flex: 1; min-width: 0; }
+.rel__wordrow > .ib { flex: none; }
 .rel__sub { color: var(--text-on-pastel); opacity: .75; }
 /* 3.13 · Картка дієслова: те же карточки, что у 3.1, но текст сверху, внизу у белой место под чип; приклади — сразу под лаймовыми */
 /* 3.13 · картка дієслова (20.11.2026): три белые карточки через 4 — тег V1–V3, форма, транскрипция, озвучка; пример в сером блоке */
@@ -487,6 +491,8 @@ button.card { width: 100%; text-align: left; }
 .syn-card { padding: var(--space-20); border-radius: var(--radius-28); }
 .syn-row { display: flex; align-items: flex-start; gap: var(--space-8); }   /* макет 2.3a (24.11.2026): уровень · слово · озвучка, всё по верху */
 .syn-row + .syn-row { border-top: 1px solid var(--border-muted); margin-top: var(--space-12); padding-top: var(--space-12); }
+/* Озвучка — по центру строки слова (Word/M, 24): кнопка 40 выступает на 8 вверх и вниз, высота строки не меняется (26.11.2026) */
+.syn-row > .ib, .verb-form__head > .ib { margin: -8px 0; }
 .syn-row__text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }   /* слово · транскрипция · перевод — каждое своей строкой (24.11.2026) */
 /* Уровень связанного слова: плашка цвета уровня (level/a1…c2, как у тега в карточке слова; 25.11.2026), текст чёрный,
    Label/12 Semibold, поля 4 / 6, ширина не меньше 30 — слова в столбик ровно. Цвет — из [data-level] */

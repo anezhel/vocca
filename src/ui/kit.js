@@ -3,6 +3,7 @@ import { html, useEffect, useLayoutEffect, useState, useRef } from '../../lib/pr
 import { ICONS } from './icons.js';
 import { t, L } from '../i18n/index.js';
 import { tts } from '../core/tts.js';
+import { getState, update } from '../core/store.js';
 import { phraseForms } from '../core/forms.js';
 
 export { html };
@@ -156,11 +157,21 @@ export function Steps({ total, done, solid }) {
 
 // Верхняя панель: крестик или «назад», шаги с подписью, справа — место под иконку
 // count — счётчик «4 / 8» справа; с ним прогресс рисуется сплошной линией (экраны групп 11, 19–27)
-export const TopBar = ({ onClose, onBack, label, total, done, right, count }) => html`<div class="top-bar">
+// Звук в верхней строке (решение дизайнера, 26.11.2026): включён — при перелистывании слово озвучивается само, выключен — тихо.
+// Это та же настройка, что «Озвучувати слова» в настройках (state.autoplay).
+export function SoundToggle() {
+  const on = getState().autoplay !== false;
+  return html`<${IconButton} icon=${on ? 'speaker' : 'speaker-off'} cls="sound-toggle" label=${t(on ? 'common.soundOff' : 'common.soundOn')}
+    onClick=${() => { if (on) tts.stop(); update((s) => { s.autoplay = !on; }); }} />`;
+}
+
+// sound — справа от счётчика кнопка звука (экраны со словами: занятие, добірки, карточки глаголов)
+export const TopBar = ({ onClose, onBack, label, total, done, right, count, sound }) => html`<div class="top-bar">
   ${onClose && html`<${IconButton} icon="close" onClick=${onClose} label=${t('common.close')} />`}
   ${onBack && html`<${IconButton} icon="arrow-left" size=${48} onClick=${onBack} label=${t('common.back')} />`}
   <div class="top-bar__mid">${label && html`<div class="t-label-13 muted">${label}</div>`}${total != null && html`<${Steps} total=${total} done=${done} solid=${!!count} />`}</div>
   <div class=${cx('top-bar__right', count && 'top-bar__right--auto')}>${count ? html`<${Counter}>${count}</${Counter}>` : right || ''}</div>
+  ${sound && html`<${SoundToggle} />`}
 </div>`;
 
 export const Counter = ({ children }) => html`<span class="counter t-label-13-medium">${children}</span>`;

@@ -3,7 +3,7 @@ export default {
   common: {
     continue: 'Продовжити', next: 'Далі', apply: 'Застосувати', done: 'Готово', start: 'Почати', close: 'Закрити', back: 'Назад', gotIt: 'Зрозуміло',
     again: 'Ще раз', home: 'На головну', learn: 'Вчити', added: 'Додано', iKnow: 'Знаю', train: 'Тренувати', check: 'Перевірити',
-    dontRemember: 'Не пам’ятаю', dontKnow: 'Не знаю', soon: 'Незабаром', cancel: 'Скасувати', change: 'Змінити', listen: 'Прослухати',
+    dontRemember: 'Не пам’ятаю', dontKnow: 'Не знаю', soon: 'Незабаром', cancel: 'Скасувати', change: 'Змінити', listen: 'Прослухати', soundOn: 'Увімкнути звук', soundOff: 'Вимкнути звук',
     min: 'хв', hint: 'Підказка', more: 'Показати ще',
   },
   levels: {
