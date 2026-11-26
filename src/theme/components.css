@@ -299,7 +299,7 @@ button.card { width: 100%; text-align: left; }
 .rel__lvword { line-height: 30px; }
 .rel__lvsub { display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary); white-space: pre-line; }   /* ¶ в таблице — новая строка («Дослівно:» ⏎ «…») */
 .rel__lv--accent .rel__lvsub { gap: 2px; }
-.rel__lv > .ib { flex: none; }
+.rel__lv > .ib { flex: none; margin-top: 4px; }   /* как тег уровня */
 /* 3.13 · Картка дієслова: те же карточки, что у 3.1, но текст сверху, внизу у белой место под чип; приклади — сразу под лаймовыми */
 /* 3.13 · картка дієслова (20.11.2026): три белые карточки через 4 — тег V1–V3, форма, транскрипция, озвучка; пример в сером блоке */
 .verb-forms { display: flex; flex-direction: column; gap: var(--space-4); }
@@ -402,7 +402,7 @@ button.card { width: 100%; text-align: left; }
 .how { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--space-12); }
 .how li { display: flex; gap: var(--space-12); align-items: flex-start; }
 .how__n { width: 24px; height: 24px; border-radius: 50%; background: var(--bg-inverse); color: var(--text-on-inverse); display: grid; place-items: center; flex: none; }
-.test-q__word { display: flex; justify-content: space-between; align-items: center; gap: var(--space-12); }
+.test-q__word { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-12); }
 .answers { display: flex; flex-direction: column; gap: var(--space-10); }
 .answer { padding: 18px var(--space-20); border-radius: var(--radius-24); border: 2px solid transparent; }
 .answer--on { border-color: var(--border-strong); }
@@ -483,6 +483,7 @@ button.card { width: 100%; text-align: left; }
 .word-main__top .overline { margin: 0; letter-spacing: 0.02em; }   /* «НОВЕ СЛОВО» / «ПОВТОРЕННЯ» — интервал 2 % (у Overline 4 %; 25.11.2026) */
 .word-main .new-head__text { gap: 2px; }
 .word-main .new-head { margin-top: 0; align-items: flex-start; }
+.new-head > .ib, .drill-card__head > .ib, .test-q__word > .ib { margin-top: 2px; }   /* по верху слова Word/XL */
 .new-head__text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .new-head__text .overline { margin: 0; }
 .tags--word { gap: 6px; }
@@ -493,8 +494,10 @@ button.card { width: 100%; text-align: left; }
 .syn-card { padding: var(--space-20); border-radius: var(--radius-28); }
 .syn-row { display: flex; align-items: flex-start; gap: var(--space-8); }   /* макет 2.3a (24.11.2026): уровень · слово · озвучка, всё по верху */
 .syn-row + .syn-row { border-top: 1px solid var(--border-muted); margin-top: var(--space-12); padding-top: var(--space-12); }
-/* Озвучка — по центру строки слова (Word/M, 22): кнопка 40 выступает на 9 вверх и вниз, высота строки не меняется (26.11.2026) */
-.syn-row > .ib, .verb-form__head > .ib { margin: -9px 0; }   /* строка слова 22: кнопка 40 выступает на 9 */
+/* Кнопка озвучки — верхом по верхней линии слова (решение дизайнера, 26.11.2026; раньше — по центру строки слова, выступала на 9 вверх):
+   везде на той же высоте, что метка уровня рядом со словом — в строках занятия и форм V1–V3 сверху 2, в добірках 4 (слово Word/L, строка 30),
+   в карточке слова, тренажёре и тесте уровня — 2 */
+.syn-row > .ib, .verb-form__head > .ib { margin-top: 2px; }
 .syn-row__text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }   /* слово · транскрипция · перевод — каждое своей строкой (24.11.2026) */
 /* Уровень связанного слова: плашка цвета уровня (level/a1…c2, как у тега в карточке слова; 25.11.2026), текст чёрный,
    Label/12 Semibold, поля 4 / 6, ширина не меньше 30 — слова в столбик ровно. Цвет — из [data-level] */
