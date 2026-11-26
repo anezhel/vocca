@@ -1,7 +1,7 @@
 // Экран 2.1 «Практика» (вкладка; до 18.11.2026 — «Сьогодні»): сколько слов пройдено сегодня и минут, цель на день,
 // три плитки (дні поспіль · вивчено слів · % курсу), «Вчити слова» → 2.2 «Що тренуємо», «Добірки слів» раскрываются на месте,
 // карточка «Статистика» — доля выученных слов по уровням.
-import { html, useState } from '../../lib/preact-htm.js';
+import { html, useState, useEffect } from '../../lib/preact-htm.js';
 import { feature } from '../config.js';
 import { LEVELS } from '../content/index.js';
 import { t, L, plural, num } from '../i18n/index.js';
@@ -18,7 +18,14 @@ function greeting() {
   return t(h < 5 ? 'today.night' : h < 12 ? 'today.morning' : h < 18 ? 'today.day' : 'today.evening');
 }
 
-export function Today({ course, go, toast }) {
+// Вид «Практика» при возврате (просьба дизайнера, 26.11.2026): открыли добірку из раскрытых «Добірки слів» / «Граматика»,
+// закрыли крестиком — те же блоки и темы раскрыты, прокрутка та же. Помним для этой «Практика» в стеке (route.n): переход
+// с нижнего меню или «Закінчити» создаёт новую — она открывается свёрнутой, как раньше.
+const view = { n: null, open: {}, shown: {}, y: 0 };
+
+export function Today({ course, go, toast, route = {} }) {
+  if (view.n !== route.n) Object.assign(view, { n: route.n, open: {}, shown: {}, y: 0 });
+  useEffect(() => { if (view.y) { const y = view.y; view.y = 0; requestAnimationFrame(() => scrollTo(0, y)); } }, []);
   const p = progress(course.id);
   const goal = dayGoal(course);
   const learned = learnedStats(course);
@@ -108,9 +115,12 @@ function ruleRows(list, tp) {
 
 // Строка «Добірки слів» / «Граматика» с раскрывающимися темами. Тем нет — строка показывает тост (soon), если он задан.
 // Под темами — чёрная кнопка «Тренажер» (решение дизайнера, 25.11.2026, макет 2.1c).
-function Topics({ course, go, section, icon, title, sub, mint, soon, toast }) {
-  const [open, setOpen] = useState(false);
-  const [shown, setShown] = useState({});
+function Topics({ course, go: go0, section, icon, title, sub, mint, soon, toast }) {
+  const [open, setOpen0] = useState(!!view.open[section]);
+  const [shown, setShown0] = useState(view.shown[section] || {});
+  const setOpen = (v) => { view.open[section] = v; setOpen0(v); };
+  const setShown = (v) => { view.shown[section] = v; setShown0(v); };
+  const go = (...a) => { view.y = scrollY; go0(...a); };   // запомнить прокрутку перед уходом с «Практика»
   const blocks = topicsOf(course, section);
   const size = practicePrefs(course).size;
   // «3 форми дієслів» открывает свой экран с группами и «Тренажер», остальные добірки — сразу занятие
