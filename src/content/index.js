@@ -38,7 +38,8 @@ function wordFromRow(r, seen) {
   let id = r.id || r.word;
   while (seen.has(id)) id += '+';
   seen.add(id);
-  const ex = [tri(r, 'example'), tri(r, 'example2')].filter((x) => x && x.en);
+  // по примеру на каждое значение перевода (через «;»), в том же порядке; до трёх (example3 — с 26.11.2026)
+  const ex = [tri(r, 'example'), tri(r, 'example2'), tri(r, 'example3')].filter((x) => x && x.en);
   return {
     id, w: r.word, wUk: r.word_uk || '', ipa: r.ipa || '', ipaUk: r.ipa_uk || '', pos: r.pos || '', lvl: r.level, topic: r.topic || '',
     tr: { uk: r.uk || r.ru, ru: r.ru || r.uk }, ex,
