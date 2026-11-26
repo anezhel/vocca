@@ -30,7 +30,11 @@ export function Collection({ course, route, go, back }) {
   const groups = ids.map((id) => course.groupList.find((g) => g.id === id)).filter(Boolean);
   const size = route.size === 'all' ? Infinity : route.size || CONFIG.groupSessionSize;
   const build = (review) => groups.flatMap((g) => T(g).queue(course, g, review).map((item) => ({ g, item })));
-  const [queue] = useState(() => build(!!route.review));
+  // Правила (времена, условные; 3.15 / 3.16): внизу кнопок нет (решение дизайнера, 26.11.2026). Открыли одно правило
+  // с «Практика» (route.from) — только оно, без счётчика, закрывается крестиком; с 2.2 — вся добірка, листать свайпом.
+  const rules = groups.length > 0 && groups.every((g) => T(g).unit === 'rules');
+  const one = rules && !!route.from;
+  const [queue] = useState(() => { const q = build(!!route.review); return one ? q.filter((x) => x.item.id === route.from).slice(0, 1) : q; });
   // from — открыть сразу на этом экране (правило из списка «Часи» на «Практика»; 26.11.2026)
   const at0 = route.from ? Math.max(0, queue.findIndex((x) => x.item.id === route.from)) : 0;
   const [start, setStart] = useState(0);
@@ -39,8 +43,10 @@ export function Collection({ course, route, go, back }) {
   const [far, setFar] = useState(at0);      // дальше всего дошли в этой порции (листать вперёд свайпом — до сюда)
   const [enter, setEnter] = useState(null);
   const step = (p, dir) => { setPos(p); setEnter(dir); scrollTo(0, 0); };
-  useSwipe(done ? () => { setDone(false); setEnter('left'); scrollTo(0, 0); } : pos > 0 ? () => step(pos - 1, 'left') : null,
-    done ? null : () => (pos < far ? step(pos + 1, 'right') : next('right')));   // вперёд — всегда, как «Далі» (25.11.2026)
+  // у правил кнопки «дальше» нет — правило пройдено, как только открыли
+  useEffect(() => { const x = !done && queue[start + pos]; if (rules && x) T(x.g).markSeen(course, x.g, x.item); }, [start, pos, done]);
+  useSwipe(one ? null : done ? () => { setDone(false); setEnter('left'); scrollTo(0, 0); } : pos > 0 ? () => step(pos - 1, 'left') : null,
+    one || done ? null : () => (pos < far ? step(pos + 1, 'right') : next('right')));   // вперёд — всегда, как «Далі» (25.11.2026)
   const speakOf = (x) => x && x.g.type === 'relation' ? x.item.w : '';   // что озвучить при перелистывании
   const preview = queue[start + pos];
   // Звук включён — слово экрана озвучивается само при перелистывании (26.11.2026); у правил слов нет
@@ -64,11 +70,11 @@ export function Collection({ course, route, go, back }) {
   }
   const Item = T(cur.g).Item;
   // Заголовка добірки над карточками нет (решение дизайнера, 26.11.2026; было «Синоніми», «Антоніми»…)
-  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${html`<div class="row-arrows row-arrows--compact">
+  return html`<${Screen} key=${start + ':' + pos} cls=${cx('screen--grey', enterCls(enter))} tone="sky" bottom=${rules ? null : html`<div class="row-arrows row-arrows--compact">
       <button class="nav-arrow" disabled=${pos === 0} onClick=${() => step(pos - 1, 'left')} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
       <${Button} variant="secondary" label=${t('lesson.alreadyKnow')} onClick=${() => { knowWords(course, (T(cur.g).knownWords || (() => []))(cur.item)); pos < far ? step(pos + 1, 'right') : next('right'); }} />
       <button class="nav-arrow" onClick=${() => (pos < far ? step(pos + 1, 'right') : next('right'))} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`}>
-    <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} sound=${!!speakOf(cur)} />
+    ${one ? html`<${TopBar} onClose=${back} />` : html`<${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} sound=${!!speakOf(cur)} />`}
     <${Item} key=${cur.g.id + ':' + cur.item.id} course=${course} group=${cur.g} item=${cur.item} />
   </${Screen}>`;
 }
