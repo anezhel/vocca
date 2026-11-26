@@ -98,7 +98,7 @@ function ExpandRow({ course, w, lang, open, onToggle, onReturn }) {
       <span class="ib ib--grey learned-row__chev" style="--ib:40px" role="button" aria-expanded=${open} aria-label=${t('words.examples')}><${Icon} name="chevron-down" size=${18} /></span>
     </div>
     ${open && html`<div class="learned-row__body">
-      ${w.ex.length > 0 && html`<div class="examples">${w.ex.slice(0, 2).map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div>`}
+      ${w.ex.length > 0 && html`<div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div>`}
       ${onReturn && html`<button class="learned-row__back t-label-14-strong" onClick=${onReturn}><${Icon} name="refresh" size=${16} />${t('words.returnToLearning')}</button>`}
     </div>`}
   </div>`;

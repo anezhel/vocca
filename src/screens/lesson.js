@@ -198,7 +198,11 @@ export function lessonExamples(rel, w, own, skipBase) {
   const pick = skipBase
     ? fromGroups.find((e) => !hasTarget(e)) || mine.find((e) => !hasTarget(e)) || fromGroups[0] || mine[0]
     : mine.find((e) => !hasTarget(e)) || fromGroups.find((e) => !hasTarget(e)) || mine[0] || fromGroups[0];
-  if (pick) add(pick, true);
+  // Несколько значений в переводе («чайові; порада») — по своему предложению на каждое (решение дизайнера, 26.11.2026):
+  // свои примеры слова идут по порядку значений, берём их все, а не одно.
+  const meanings = ((w.tr && (w.tr.uk || w.tr.ru)) || '').split(';').length;
+  if (meanings > 1 && !skipBase && mine.length >= meanings) for (const e of mine.slice(0, meanings)) add(e, true);
+  else if (pick) add(pick, true);
   for (const r of rel) for (const s of r.slots) {
     const e = s.ex.find((x) => !seen.has(plain(x.en)));
     if (e) add(e, false);
