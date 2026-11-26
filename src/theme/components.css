@@ -292,7 +292,9 @@ button.card { width: 100%; text-align: left; }
 /* Синонимы 3.1 (макет дизайнера, 26.11.2026; было: тег над словом, на жёлтой — цветной текст уровня):
    тег слева от слова · текст · озвучка, всё по верху, через 10 и 12. Тег 20, поля 0 / 6, Label/11 Medium, текст чёрный;
    на белой карточке — цвет уровня, на жёлтой — белый; сверху 4 — по строке слова (Word/L, строка 30). */
-.rel--lv .rel__pair { gap: 6px; }
+/* между белой и жёлтой карточкой 8, плашка «≈ синоніми» (28) — по центру этого промежутка (26.11.2026; было 6) */
+.rel--lv .rel__pair { gap: 0; }
+.rel--lv .rel__chip { height: 28px; display: flex; align-items: center; margin: -10px 0; }
 .rel--lv .rel__base { padding: var(--space-20); }
 .rel__lv { flex: 1; min-width: 0; display: flex; align-items: flex-start; }
 .rel__lvwrap { flex: none; display: flex; padding-top: 4px; margin-right: 10px; }
