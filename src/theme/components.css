@@ -289,19 +289,20 @@ button.card { width: 100%; text-align: left; }
 .rel__chip { align-self: center; position: relative; z-index: 2; margin: -18px 0; padding: 6px var(--space-12); border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
 .rel__target { background: var(--bg-accent); color: var(--text-on-accent); border-radius: var(--radius-28); padding: var(--space-20); display: flex; flex-direction: column; gap: var(--space-16); box-shadow: none; }
 .rel__row { display: flex; align-items: flex-start; gap: var(--space-12); }
-/* Чип уровня над словом на экране добірки (3.1, 26.11.2026): на белой карточке — цветной, на жёлтой — белый с тёмным текстом уровня */
-.rel__lvl { align-self: flex-start; height: 20px; padding: 0 8px; margin-bottom: 4px; }
-.rel__target .rel__lvl { background: #fff; }
-.rel__target .rel__lvl[data-level="A1"] { color: var(--level-a1-text); }
-.rel__target .rel__lvl[data-level="A2"] { color: var(--level-a2-text); }
-.rel__target .rel__lvl[data-level="B1"] { color: var(--level-b1-text); }
-.rel__target .rel__lvl[data-level="B2"] { color: var(--level-b2-text); }
-.rel__target .rel__lvl[data-level="C1"] { color: var(--level-c1-text); }
-.rel__target .rel__lvl[data-level="C2"] { color: var(--level-c2-text); }
-/* Озвучка — в строке слова, по центру строки (решение дизайнера, 26.11.2026; раньше — справа от всего текста, у жёлтых по верху) */
-.rel__wordrow { display: flex; align-items: center; gap: var(--space-12); }
-.rel__wordrow > .t-word-l { flex: 1; min-width: 0; }
-.rel__wordrow > .ib { flex: none; }
+/* Синонимы 3.1 (макет дизайнера, 26.11.2026; было: тег над словом, на жёлтой — цветной текст уровня):
+   тег слева от слова · текст · озвучка, всё по верху, через 10 и 12. Тег 20, поля 0 / 6, Label/11 Medium, текст чёрный;
+   на белой карточке — цвет уровня, на жёлтой — белый; сверху 4 — по строке слова (Word/L, строка 30). */
+.rel--lv .rel__pair { gap: 6px; }
+.rel--lv .rel__base { padding: var(--space-20); }
+.rel__lv { flex: 1; min-width: 0; display: flex; align-items: flex-start; }
+.rel__lvwrap { flex: none; display: flex; padding-top: 4px; margin-right: 10px; }
+.rel__lvl { height: 20px; padding: 0 6px; color: var(--text-primary); }
+.rel__lv--accent .rel__lvl { background: var(--bg-surface); }
+.rel__lvtext { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; overflow-wrap: anywhere; margin-right: 12px; }
+.rel__lvword { line-height: 30px; }
+.rel__lvsub { display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary); }
+.rel__lv--accent .rel__lvsub { gap: 2px; }
+.rel__lv > .ib { flex: none; }
 .rel__sub { color: var(--text-on-pastel); opacity: .75; }
 /* 3.13 · Картка дієслова: те же карточки, что у 3.1, но текст сверху, внизу у белой место под чип; приклади — сразу под лаймовыми */
 /* 3.13 · картка дієслова (20.11.2026): три белые карточки через 4 — тег V1–V3, форма, транскрипция, озвучка; пример в сером блоке */
