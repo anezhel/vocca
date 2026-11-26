@@ -107,7 +107,7 @@ export function VerbCard({ v, lang, compact, tr }) {
     const ex = v.ex[n - 1];
     return html`<div key=${n} class=${cx('verb-form', !compact && 'card')}>
       <div class="verb-form__head">
-        <span class="verb-form__tag t-label-12-strong">V${n}</span>
+        <span class="verb-form__tag t-label-11">V${n}</span>
         <div class="verb-form__text"><div class="t-word-m">${form(n)}</div>
           ${v.ipa[n - 1] && html`<div class="t-label-14 muted">/${v.ipa[n - 1]}/</div>`}
           ${n === 1 && (!compact || tr) && v.tr && html`<div class="t-label-14 muted">${L(v.tr)}</div>`}</div>
