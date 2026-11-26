@@ -60,6 +60,13 @@
   --level-b2: #f8cfea;
   --level-c1: #d3e5f6;
   --level-c2: #e6f0a0;
+  /* текст уровня на белом (чип на жёлтой карточке): те же оттенки темнее, контраст с белым ≥ 4.5:1 (26.11.2026) */
+  --level-a1-text: #268445;
+  --level-a2-text: #755eeb;
+  --level-b1-text: #c25300;
+  --level-b2-text: #d71f98;
+  --level-c1-text: #2878c3;
+  --level-c2-text: #6e7b13;
   --rating-again: #ffc9bc;
   --rating-hard: #ffdcc2;
   --rating-good: #dcd6fa;

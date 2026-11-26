@@ -54,7 +54,7 @@ export default {
       title: { uk: 'Спільнокореневі', ru: 'Однокоренные' }, chip: { uk: '≈ одна родина', ru: '≈ одна семья' },
       examples: { uk: 'Приклади', ru: 'Примеры' }, note: { uk: 'Як утворюються', ru: 'Как образуются' } },
     { id: 'synonyms', topic: 'links', type: 'relation', file: 'groups/synonyms.tsv',
-      title: { uk: 'Синоніми', ru: 'Синонимы' }, chip: { uk: '≈ синоніми', ru: '≈ синонимы' },
+      title: { uk: 'Синоніми', ru: 'Синонимы' }, chip: { uk: '≈ синоніми', ru: '≈ синонимы' }, levels: true,
       examples: { uk: 'Порівняй', ru: 'Сравни' }, note: { uk: 'У чому різниця', ru: 'В чём разница' } },
     { id: 'antonyms', topic: 'links', type: 'relation', file: 'groups/antonyms.tsv',
       title: { uk: 'Антоніми', ru: 'Антонимы' }, chip: { uk: '↔ антоніми', ru: '↔ антонимы' },
