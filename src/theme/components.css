@@ -297,7 +297,7 @@ button.card { width: 100%; text-align: left; }
 .rel__lv--accent .rel__lvl { background: var(--bg-surface); }
 .rel__lvtext { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; overflow-wrap: anywhere; margin-right: 12px; }
 .rel__lvword { line-height: 30px; }
-.rel__lvsub { display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary); }
+.rel__lvsub { display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary); white-space: pre-line; }   /* ¶ в таблице — новая строка («Дослівно:» ⏎ «…») */
 .rel__lv--accent .rel__lvsub { gap: 2px; }
 .rel__lv > .ib { flex: none; }
 /* 3.13 · Картка дієслова: те же карточки, что у 3.1, но текст сверху, внизу у белой место под чип; приклади — сразу под лаймовыми */
