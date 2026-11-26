@@ -307,7 +307,7 @@ button.card { width: 100%; text-align: left; }
 /* 25.11.2026: как строка синонима в занятии — тег (ширина от 30) · текст · озвучка через 8, по верху; форма Word/M,
    транскрипция и перевод Label/14, строки через 2. И на 3.13, и в занятии (2.3b) */
 .verb-form__head { display: flex; align-items: flex-start; gap: var(--space-8); }
-.verb-form__tag { flex: none; min-width: 30px; text-align: center; padding: 4px var(--space-6); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); line-height: 14px; }
+.verb-form__tag { flex: none; width: 30px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; padding: 0 var(--space-6); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); line-height: 13px; }   /* макет 2.3b (26.11.2026): 30 × 20, Label/11 Medium, сверху 2 (было от 30 × 22, 12 Semibold) */
 .verb-form .verb-ex__box { padding: var(--space-6) var(--space-16); }
 /* 2.3b (занятие): формы V1–V3 в одной белой карточке, между формами линия — как строки синонимов, отступы 16 (25.11.2026) */
 .verb-stack { display: flex; flex-direction: column; gap: var(--space-16); }   /* 3.13: формы + примеры (25.11.2026) */
@@ -488,12 +488,12 @@ button.card { width: 100%; text-align: left; }
 .syn-card { padding: var(--space-20); border-radius: var(--radius-28); }
 .syn-row { display: flex; align-items: flex-start; gap: var(--space-8); }   /* макет 2.3a (24.11.2026): уровень · слово · озвучка, всё по верху */
 .syn-row + .syn-row { border-top: 1px solid var(--border-muted); margin-top: var(--space-12); padding-top: var(--space-12); }
-/* Озвучка — по центру строки слова (Word/M, 24): кнопка 40 выступает на 8 вверх и вниз, высота строки не меняется (26.11.2026) */
-.syn-row > .ib, .verb-form__head > .ib { margin: -8px 0; }
+/* Озвучка — по центру строки слова (Word/M, 22): кнопка 40 выступает на 9 вверх и вниз, высота строки не меняется (26.11.2026) */
+.syn-row > .ib, .verb-form__head > .ib { margin: -9px 0; }   /* строка слова 22: кнопка 40 выступает на 9 */
 .syn-row__text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }   /* слово · транскрипция · перевод — каждое своей строкой (24.11.2026) */
 /* Уровень связанного слова: плашка цвета уровня (level/a1…c2, как у тега в карточке слова; 25.11.2026), текст чёрный,
    Label/12 Semibold, поля 4 / 6, ширина не меньше 30 — слова в столбик ровно. Цвет — из [data-level] */
-.syn-row__lvl { flex: none; min-width: 30px; display: inline-flex; align-items: center; justify-content: center; padding: var(--space-4) var(--space-6); border-radius: var(--radius-full); color: var(--text-primary); line-height: 14px; }
+.syn-row__lvl { flex: none; display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; padding: var(--space-4) var(--space-6); border-radius: var(--radius-full); color: var(--text-primary); line-height: 13px; }   /* макет 2.4 (26.11.2026): Label/11 Medium, поля 4 / 6, ширина по тексту (было от 30, 12 Semibold), сверху 2 — по верху слова */
 /* 07v · «3 форми дієслова»: форма, транскрипция, озвучка; под ней пример на сером */
 .card--lesson { padding: var(--space-20); border-radius: var(--radius-28); }
 .card--lesson .overline { margin-bottom: var(--space-12); }

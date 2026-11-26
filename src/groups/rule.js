@@ -43,7 +43,7 @@ function Item({ group, item }) {
     ${item.use && html`<div class="card card--pad"><${Overline}>${t('grammar.use')}</${Overline}><${Note} text=${L(item.use)} /></div>`}
     ${item.forms.length > 0 && html`<div class="card card--pad rule-forms"><${Overline}>${t('grammar.forms')}</${Overline}>
       <div class="verb-forms verb-forms--compact rule-forms__list">${item.forms.map((x) => html`<div class="verb-form"><div class="verb-form__head">
-        <span class="verb-form__tag t-label-12-strong">${x.tag}</span>
+        <span class="verb-form__tag t-label-11">${x.tag}</span>
         <div class="verb-form__text"><div class="t-word-m">${x.f}</div>${x.ex && html`<div class="t-label-14 muted">${x.ex}</div>`}</div>
       </div></div>`)}</div></div>`}
     ${item.markers.length > 0 && html`<div class="card card--pad"><${Overline}>${t('grammar.markers')}</${Overline}>
