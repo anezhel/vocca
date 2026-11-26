@@ -281,21 +281,16 @@ button.card { width: 100%; text-align: left; }
 .meter-row .meter { margin-top: 0; }
 .repeat-btn { display: inline-flex; align-items: center; gap: var(--space-6); padding: 9px var(--space-14); border-radius: var(--radius-full); background: var(--bg-chart-today); white-space: nowrap; flex: none; }
 .rel { display: flex; flex-direction: column; gap: var(--space-16); }
-.rel__pair { display: flex; flex-direction: column; gap: var(--space-8); }
+/* Добірки 3.1–3.10 — по макету 3.1 «Синоніми» (дизайнер, 26.11.2026; на остальных добірках — с того же дня):
+   между белой и жёлтой карточкой 8, плашка-связка (28) — по центру промежутка, заходит на 10 на обе карточки; жёлтые через 4.
+   В карточке: тег уровня · текст · озвучка, всё по верху, через 10 и 12. Тег 20, поля 0 / 6, Label/11 Medium, текст чёрный;
+   на белой карточке — цвет уровня, на жёлтой — белый; сверху 4 — по строке слова (Word/L, строка 30). Поля карточек 20.
+   Раньше: тег над словом (PR #144), до этого тегов не было; озвучка по центру строки слова (PR #145). */
+.rel__pair { display: flex; flex-direction: column; }
 .rel__targets { display: flex; flex-direction: column; gap: var(--space-4); }
-.rel__base { display: flex; align-items: center; gap: var(--space-12); padding: 18px var(--space-20); }
-.rel__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; }
-.rel__line { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--space-8); }
-.rel__chip { align-self: center; position: relative; z-index: 2; margin: -18px 0; padding: 6px var(--space-12); border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
-.rel__target { background: var(--bg-accent); color: var(--text-on-accent); border-radius: var(--radius-28); padding: var(--space-20); display: flex; flex-direction: column; gap: var(--space-16); box-shadow: none; }
-.rel__row { display: flex; align-items: flex-start; gap: var(--space-12); }
-/* Синонимы 3.1 (макет дизайнера, 26.11.2026; было: тег над словом, на жёлтой — цветной текст уровня):
-   тег слева от слова · текст · озвучка, всё по верху, через 10 и 12. Тег 20, поля 0 / 6, Label/11 Medium, текст чёрный;
-   на белой карточке — цвет уровня, на жёлтой — белый; сверху 4 — по строке слова (Word/L, строка 30). */
-/* между белой и жёлтой карточкой 8, плашка «≈ синоніми» (28) — по центру этого промежутка (26.11.2026; было 6) */
-.rel--lv .rel__pair { gap: 0; }
-.rel--lv .rel__chip { height: 28px; display: flex; align-items: center; margin: -10px 0; }
-.rel--lv .rel__base { padding: var(--space-20); }
+.rel__base { display: flex; padding: var(--space-20); }
+.rel__chip { align-self: center; position: relative; z-index: 2; height: 28px; display: flex; align-items: center; margin: -10px 0; padding: 0 var(--space-12); border-radius: var(--radius-full); background: var(--bg-inverse); color: var(--text-on-inverse); }
+.rel__target { background: var(--bg-accent); color: var(--text-on-accent); border-radius: var(--radius-28); padding: var(--space-20); display: flex; box-shadow: none; }
 .rel__lv { flex: 1; min-width: 0; display: flex; align-items: flex-start; }
 .rel__lvwrap { flex: none; display: flex; padding-top: 4px; margin-right: 10px; }
 .rel__lvl { height: 20px; padding: 0 6px; color: var(--text-primary); }
@@ -305,7 +300,6 @@ button.card { width: 100%; text-align: left; }
 .rel__lvsub { display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary); }
 .rel__lv--accent .rel__lvsub { gap: 2px; }
 .rel__lv > .ib { flex: none; }
-.rel__sub { color: var(--text-on-pastel); opacity: .75; }
 /* 3.13 · Картка дієслова: те же карточки, что у 3.1, но текст сверху, внизу у белой место под чип; приклади — сразу под лаймовыми */
 /* 3.13 · картка дієслова (20.11.2026): три белые карточки через 4 — тег V1–V3, форма, транскрипция, озвучка; пример в сером блоке */
 .verb-forms { display: flex; flex-direction: column; gap: var(--space-4); }
