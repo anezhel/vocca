@@ -34,7 +34,7 @@ function one(r, course) {
   return {
     id, w: r.word, ipa: r.ipa || '', lvl: r.level || (course && course.byText && (course.byText.get(r.word.toLowerCase()) || {}).lvl) || '', link: r.link || '',
     tr: r.uk || r.ru ? { uk: r.uk || r.ru, ru: r.ru || r.uk } : null,
-    literal: r.literal_uk || r.literal_ru ? { uk: r.literal_uk || r.literal_ru, ru: r.literal_ru || r.literal_uk } : null,
+    literal: r.literal_uk || r.literal_ru ? { uk: nl(r.literal_uk || r.literal_ru), ru: nl(r.literal_ru || r.literal_uk) } : null,   // «Дослівно:¶«…»» — значение с новой строки (26.11.2026)
     hint: r.hint_uk || r.hint_ru ? { uk: r.hint_uk || r.hint_ru, ru: r.hint_ru || r.hint_uk } : null,
     targets, ex: [1, 2, 3, 4].map((i) => tri(r, 'ex' + i)).filter((x) => x && x.en),   // до 4 примеров: по одному на каждое слово экрана
     // пояснение: ¶ в таблице — новая строка (каждое слово, о котором рассказываем, — с новой строки; 20.11.2026)
