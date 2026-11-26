@@ -307,7 +307,7 @@ button.card { width: 100%; text-align: left; }
 /* 25.11.2026: как строка синонима в занятии — тег (ширина от 30) · текст · озвучка через 8, по верху; форма Word/M,
    транскрипция и перевод Label/14, строки через 2. И на 3.13, и в занятии (2.3b) */
 .verb-form__head { display: flex; align-items: flex-start; gap: var(--space-8); }
-.verb-form__tag { flex: none; width: 30px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; padding: 0 var(--space-6); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); line-height: 13px; }   /* макет 2.3b (26.11.2026): 30 × 20, Label/11 Medium, сверху 2 (было от 30 × 22, 12 Semibold) */
+.verb-form__tag { flex: none; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; padding: 0 var(--space-6); border-radius: var(--radius-16); background: var(--bg-accent); color: var(--text-primary); line-height: 13px; }   /* макет 2.3b (26.11.2026): высота 20, ширина по тексту, поля 0 / 6, Label/11 Medium, сверху 2 (было 30 × 20; до того от 30 × 22, 12 Semibold) */
 .verb-form .verb-ex__box { padding: var(--space-6) var(--space-16); }
 /* 2.3b (занятие): формы V1–V3 в одной белой карточке, между формами линия — как строки синонимов, отступы 16 (25.11.2026) */
 .verb-stack { display: flex; flex-direction: column; gap: var(--space-16); }   /* 3.13: формы + примеры (25.11.2026) */
