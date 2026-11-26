@@ -301,6 +301,7 @@ button.card { width: 100%; text-align: left; }
 .verb-form .verb-ex__box { padding: var(--space-6) var(--space-16); }
 /* 2.3b (занятие): формы V1–V3 в одной белой карточке, между формами линия — как строки синонимов, отступы 16 (25.11.2026) */
 .verb-stack { display: flex; flex-direction: column; gap: var(--space-16); }   /* 3.13: формы + примеры (25.11.2026) */
+.verb-stack--12 { gap: var(--space-12); }   /* 3.13: между карточками 12 (решение дизайнера, 26.11.2026; было 16) */
 .verb-forms--compact { padding: var(--space-20); border-radius: var(--radius-28); gap: 0; }
 .verb-forms--compact .verb-form { padding: 0; border-radius: 0; }
 .verb-forms--compact .verb-form + .verb-form { border-top: 1px solid var(--border-muted); margin-top: var(--space-16); padding-top: var(--space-16); }   /* 16 вокруг линии (у синонимов 12) */
