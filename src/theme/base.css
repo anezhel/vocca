@@ -33,11 +33,14 @@ svg { flex: none; }
 @keyframes from-left { from { transform: translateX(-38%); opacity: 0; } }
 @keyframes from-right { from { transform: translateX(38%); opacity: 0; } }
 
-/* Нижняя панель с кнопкой: контент уходит под неё через переход из прозрачного в цвет фона */
+/* Нижняя панель с кнопкой: контент уходит под неё через переход из прозрачного в цвет фона.
+   Переход выше и плотнее (решение дизайнера, 26.11.2026): 56 над кнопками, к 30 % высоты уже 80 %, у верха кнопок — сплошной;
+   раньше 28 и сплошной к 35 % — текст под кнопками было видно слишком ярко */
 .bottom-bar {
+  --bar-bg: var(--bg-surface);
   position: fixed; z-index: 20; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px;
-  padding: var(--space-28) var(--layout-screen-x) calc(env(safe-area-inset-bottom) + 20px);
-  background: linear-gradient(to bottom, transparent, var(--bg-surface) 35%);
+  padding: var(--space-56, 56px) var(--layout-screen-x) calc(env(safe-area-inset-bottom) + 20px);
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bar-bg) 80%, transparent) 30%, var(--bar-bg) 42%);
   display: flex; flex-direction: column; gap: var(--space-10);
 }
 
@@ -70,7 +73,7 @@ svg { flex: none; }
 /* 3.1–3.10 добірки и 3.13 картка дієслова (макет 19.11.2026): светло-серый фон, голубое пятно слева и лавандовое справа;
    нижняя панель растворяется в тот же серый, а не в белый */
 .screen--grey { background: var(--bg-surface-2); }
-.screen--grey .bottom-bar { background: linear-gradient(to bottom, transparent, var(--bg-surface-2) 35%); }
+.screen--grey .bottom-bar { --bar-bg: var(--bg-surface-2); }
 .backdrop--sky i:nth-child(1) { height: 305px; background: var(--tint-sky); }
 .backdrop--sky i:nth-child(2) { height: 298px; background: var(--tint-lavender); opacity: 1; }
 .backdrop--cool i { filter: blur(70px); opacity: .85; }
