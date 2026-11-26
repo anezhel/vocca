@@ -128,7 +128,7 @@ function VerbForms({ course, v, lang }) {
   const word = v.v1.split(' / ')[0];
   // уровень — как у слова в words.tsv (там его и учат); нет в words.tsv (be, burst, arise… — 15 глаголов) — уровень из таблицы глаголов
   const lvl = (course.byText && course.byText.get(word.toLowerCase()) || {}).lvl || v.lvl;
-  return html`<div class="verb-stack">
+  return html`<div class="verb-stack verb-stack--12">
     <div class="card word-main">
       <div class="word-main__top"><${LevelTag} lvl=${lvl} size="m" /><${Overline}>${t('verbs.irregular')}</${Overline}></div>
       <div class="new-head"><div class="new-head__text">
