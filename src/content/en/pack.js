@@ -38,7 +38,7 @@ export default {
     { id: 'tense-present', section: 'grammar', title: { uk: 'Present Tense', ru: 'Present Tense' }, list: 'items', short: true },
     { id: 'tense-past', section: 'grammar', title: { uk: 'Past Tense', ru: 'Past Tense' }, list: 'items', short: true },
     { id: 'tense-future', section: 'grammar', title: { uk: 'Future Tense', ru: 'Future Tense' }, list: 'items', short: true },
-    { id: 'conditionals', section: 'grammar', title: { uk: 'Умовні речення', ru: 'Условные предложения' }, list: 'items' },   // Zero … Mixed Conditional (26.11.2026)
+    { id: 'conditionals', section: 'grammar', title: { uk: 'Conditionals', ru: 'Conditionals' }, list: 'items', short: 'first' },   // заголовок по-английски, как Present Tense; строки — первое слово, без «Conditional»: Zero · First · Second · Third · Mixed (решение дизайнера, 26.11.2026; было «Умовні речення» и «Zero Conditional»…)
     { id: 'grammar', section: 'grammar', title: { uk: 'Граматичні слова', ru: 'Грамматические слова' } },
   ],
 
