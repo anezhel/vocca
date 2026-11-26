@@ -12,22 +12,34 @@ const nl = (s) => s.replace(/¶/g, '\n');
 // Уровень связанного слова (A1–C2) — для серой плашки в занятии (24.11.2026): колонка toN_level, иначе — из words.tsv
 const lvlOf = (r, i, w, course) => r[`to${i}_level`] || (w && course && course.byText && (course.byText.get(w.toLowerCase()) || {}).lvl) || '';
 
+// Несколько строк одного слова (фразові: give up / give in и give back / away / out) — один экран со всеми
+// связанными словами списком: связанные слова, примеры и пояснения строк подряд (решение дизайнера, 26.11.2026;
+// раньше каждая строка таблицы была своим экраном — run: 2 экрана, get: 7). Счёт карточек — по экранам.
 function load(rows, g, course) {
-  const ids = new Set();
-  return rows.filter((r) => r.word).map((r) => {
-    let id = r.word; while (ids.has(id)) id += '+'; ids.add(id);
-    const targets = [1, 2, 3].map((i) => ({ w: r[`to${i}`] || '', ipa: r[`to${i}_ipa`] || '', lvl: lvlOf(r, i, r[`to${i}`], course), tr: tri(r, `to${i}`) }))
-      .filter((x) => x.w || (x.tr && (x.tr.uk || x.tr.ru)));
-    return {
-      id, w: r.word, ipa: r.ipa || '', lvl: r.level || '', link: r.link || '',
-      tr: r.uk || r.ru ? { uk: r.uk || r.ru, ru: r.ru || r.uk } : null,
-      literal: r.literal_uk || r.literal_ru ? { uk: r.literal_uk || r.literal_ru, ru: r.literal_ru || r.literal_uk } : null,
-      hint: r.hint_uk || r.hint_ru ? { uk: r.hint_uk || r.hint_ru, ru: r.hint_ru || r.hint_uk } : null,
-      targets, ex: [1, 2, 3, 4].map((i) => tri(r, 'ex' + i)).filter((x) => x && x.en),   // до 4 примеров: по одному на каждое слово экрана
-      // пояснение: ¶ в таблице — новая строка (каждое слово, о котором рассказываем, — с новой строки; 20.11.2026)
-      note: r.note_uk || r.note_ru ? { uk: nl(r.note_uk || r.note_ru), ru: nl(r.note_ru || r.note_uk) } : null,
-    };
-  });
+  const items = rows.filter((r) => r.word).map((r) => one(r, course));
+  const by = new Map();
+  for (const it of items) {
+    const a = by.get(it.id);
+    if (!a) { by.set(it.id, it); continue; }
+    a.targets.push(...it.targets); a.ex.push(...it.ex);
+    if (it.note) a.note = a.note ? { uk: a.note.uk + '\n' + it.note.uk, ru: a.note.ru + '\n' + it.note.ru } : it.note;
+    a.lvl = a.lvl || it.lvl; a.ipa = a.ipa || it.ipa; a.tr = a.tr || it.tr;
+  }
+  return [...by.values()];
+}
+function one(r, course) {
+  const id = r.word;
+  const targets = [1, 2, 3].map((i) => ({ w: r[`to${i}`] || '', ipa: r[`to${i}_ipa`] || '', lvl: lvlOf(r, i, r[`to${i}`], course), tr: tri(r, `to${i}`) }))
+    .filter((x) => x.w || (x.tr && (x.tr.uk || x.tr.ru)));
+  return {
+    id, w: r.word, ipa: r.ipa || '', lvl: r.level || '', link: r.link || '',
+    tr: r.uk || r.ru ? { uk: r.uk || r.ru, ru: r.ru || r.uk } : null,
+    literal: r.literal_uk || r.literal_ru ? { uk: r.literal_uk || r.literal_ru, ru: r.literal_ru || r.literal_uk } : null,
+    hint: r.hint_uk || r.hint_ru ? { uk: r.hint_uk || r.hint_ru, ru: r.hint_ru || r.hint_uk } : null,
+    targets, ex: [1, 2, 3, 4].map((i) => tri(r, 'ex' + i)).filter((x) => x && x.en),   // до 4 примеров: по одному на каждое слово экрана
+    // пояснение: ¶ в таблице — новая строка (каждое слово, о котором рассказываем, — с новой строки; 20.11.2026)
+    note: r.note_uk || r.note_ru ? { uk: nl(r.note_uk || r.note_ru), ru: nl(r.note_ru || r.note_uk) } : null,
+  };
 }
 
 const state = (course, g) => progress(course.id).groups[g.id] || { seen: {} };
