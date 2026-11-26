@@ -38,6 +38,7 @@ export default {
     { id: 'tense-present', section: 'grammar', title: { uk: 'Present Tense', ru: 'Present Tense' }, list: 'items', short: true },
     { id: 'tense-past', section: 'grammar', title: { uk: 'Past Tense', ru: 'Past Tense' }, list: 'items', short: true },
     { id: 'tense-future', section: 'grammar', title: { uk: 'Future Tense', ru: 'Future Tense' }, list: 'items', short: true },
+    { id: 'there-is', section: 'grammar', title: { uk: 'There is / There are', ru: 'There is / There are' }, list: 'items' },   // есть / был / будет (26.11.2026)
     { id: 'conditionals', section: 'grammar', title: { uk: 'Conditionals', ru: 'Conditionals' }, list: 'items', short: 'first' },   // заголовок по-английски, как Present Tense; строки — первое слово, без «Conditional»: Zero · First · Second · Third · Mixed (решение дизайнера, 26.11.2026; было «Умовні речення» и «Zero Conditional»…)
     { id: 'grammar', section: 'grammar', title: { uk: 'Граматичні слова', ru: 'Грамматические слова' } },
   ],
@@ -83,6 +84,8 @@ export default {
       title: { uk: 'Минулі часи', ru: 'Прошедшие времена' }, kind: { uk: 'Час', ru: 'Время' } },
     { id: 'tenses-future', topic: 'tense-future', type: 'rule', file: 'groups/tenses-future.tsv',
       title: { uk: 'Майбутні часи', ru: 'Будущие времена' }, kind: { uk: 'Час', ru: 'Время' } },
+    { id: 'there-is', topic: 'there-is', type: 'rule', file: 'groups/there-is.tsv',
+      title: { uk: 'There is / There are', ru: 'There is / There are' }, kind: { uk: 'Конструкція', ru: 'Конструкция' } },
     { id: 'conditionals', topic: 'conditionals', type: 'rule', file: 'groups/conditionals.tsv',
       title: { uk: 'Умовні речення', ru: 'Условные предложения' }, kind: { uk: 'Умовне речення', ru: 'Условное предложение' } },
     // ── grammar
