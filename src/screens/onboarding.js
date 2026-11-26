@@ -64,13 +64,16 @@ export function Course({ go, back }) {
 // Карточки уровней с чекбоксами (1.3 и лист «Обери рівні»)
 // counts — число слов на уровне отдельной строкой под пояснением (лист «Обери рівні», 20.11.2026)
 export function LevelCards({ value, onChange, testLevel, counts }) {
-  return html`<div class="level-cards">${LEVELS.map((l) => {
+  // В листе «Обери рівні» (counts) — компактнее, по макету 4.2b (26.11.2026): поля 12 / 16 / 12 / 20, уровень Number/XS (26 Thin),
+  // пояснение и число слов — Label/12 и Label/12 Medium, чекбокс 26. На шаге 1.3 — как было.
+  const sm = !!counts;
+  return html`<div class=${cx('level-cards', sm && 'level-cards--sheet')}>${LEVELS.map((l) => {
     const on = value.includes(l);
     return html`<button class=${cx('level-card', 'card', on && 'level-card--on')} onClick=${() => onChange(on ? value.filter((x) => x !== l) : [...value, l])}>
-      <span class="t-number-m">${l}</span>
+      <span class=${sm ? 't-number-xs' : 't-number-m'}>${l}</span>
       <span class="level-card__text"><span class="t-title-l">${t('levels.' + l)}</span>
-        <span class="t-label-13 muted">${testLevel === l ? t('onboarding.byTest') : t('levels.desc.' + l)}</span>
-        ${counts && html`<span class="t-label-13-medium muted">${pn(counts[l] || 0, 'words')}</span>`}</span>
+        <span class=${cx(sm ? 't-label-12' : 't-label-13', 'muted')}>${testLevel === l ? t('onboarding.byTest') : t('levels.desc.' + l)}</span>
+        ${counts && html`<span class="t-label-12-medium muted">${pn(counts[l] || 0, 'words')}</span>`}</span>
       <${Check} on=${on} /></button>`;
   })}</div>`;
 }

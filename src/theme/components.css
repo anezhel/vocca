@@ -386,6 +386,11 @@ button.card { width: 100%; text-align: left; }
 .level-card { display: flex; align-items: center; gap: var(--space-16); padding: 14px var(--space-16) 14px var(--space-20); border-radius: var(--radius-24); } /* v2: все карточки белые, выбор — чекбокс */
 .level-card .t-number-m { width: 58px; }
 .level-card__text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.level-cards--sheet .level-card { padding: var(--space-12) var(--space-16) var(--space-12) var(--space-20); }   /* лист «Обери рівні», макет 4.2b (26.11.2026; было 14 / 16 / 14 / 20) */
+.level-cards--sheet .t-number-xs { flex: none; width: 36px; }   /* одна ширина у A1…C2 — названия ровно в столбик */
+.level-cards--sheet .level-card__text .t-label-12, .level-cards--sheet .level-card__text .t-label-12-medium { line-height: 14px; }   /* как в Figma (Label/12, авто ≈ 14) */
+.level-cards--sheet .checkbox { width: 26px; height: 26px; }
+.level-cards--sheet .checkbox svg { width: 18px; height: 18px; }   /* галочка 18 в квадрате 26 */
 .level-card--on { background: var(--bg-surface); box-shadow: 0 var(--effect-card-shadow-y) var(--effect-card-shadow-radius) var(--effect-shadow-card); }
 .test-card { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-16) 18px; background: var(--tint-lavender); box-shadow: none; }
 .seg--wide { margin-top: calc(var(--space-4) * -1); }
