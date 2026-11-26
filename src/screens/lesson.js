@@ -113,7 +113,7 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
     ${ownEx && !relEx && html`<div class="card card--lesson"><${Overline}>${t('lesson.examples')}</${Overline}>
       <div class="examples">${w.ex.map((ex) => html`<${Example} ex=${ex} hl=${[w.w]} />`)}</div></div>`}
     ${verb && verb.ex.length > 0 && html`<${VerbExamples} v=${verb} />`}
-    ${rel.length > 0 ? html`<${RelMore} rel=${rel} w=${w} own=${ownEx && relEx ? w.ex : null} skipBase=${verb && verb.ex.length > 0} def=${def} />` : def}
+    ${rel.length > 0 ? html`<${RelMore} rel=${rel} w=${w} own=${ownEx && relEx ? w.ex : null} skipBase=${verb && verb.ex.length > 0 ? verb.ex : null} def=${def} />` : def}
   </${Screen}>`;
 }
 
@@ -171,7 +171,8 @@ const RelCard = ({ r, lang }) => html`<span class="word-pair__link t-label-12-me
 // Примеры всех добірок подряд; пример только с самим словом («They live in a big house», «This is a big box») — один раз.
 // Подписи: одна добірка — её собственные («Як запам’ятати», «Чому саме make»…; «Приклади» — с названием добірки,
 // чтобы не путать с примерами слова), несколько добірок — общие «Порівняй» и «У чому різниця».
-const marked = (en) => { const m = /\[([^\]]+)\]/.exec(en || ''); return m ? m[1].toLowerCase() : ''; };
+// все выделенные куски через пробел: «It's hard to [get] my idea [across]» — это get across, а не get (26.11.2026)
+const marked = (en) => [...(en || '').matchAll(/\[([^\]]+)\]/g)].map((m) => m[1]).join(' ').toLowerCase();
 // own — свои примеры слова (когда есть и примеры добірок): идут первыми, одинаковые предложения — один раз,
 // заголовок — «Приклади · Порівняй» (одна добірка: «Приклади · <её подпись>», а если подпись и так «Приклади» — «Приклади · <добірка>»).
 const plain = (en) => (en || '').replace(/[[\]]/g, '').trim().toLowerCase();
@@ -187,12 +188,17 @@ export function lessonExamples(rel, w, own, skipBase) {
   const hasTarget = (e) => { if (!tre) return false; tre.lastIndex = 0; const hit = tre.test(plain(e.en)); tre.lastIndex = 0; return hit; };
   const ex = [], seen = new Set();
   const add = (e, main) => { seen.add(plain(e.en)); ex.push({ e, main }); };
-  if (!skipBase) {   // у глагола свой блок «Приклади · 3 форми дієслова» — сам глагол в «Порівняй» не повторяем
-    const mine = own || [];
-    const fromGroups = rel.flatMap((r) => r.baseEx).concat(rel.flatMap((r) => r.ex).filter((e) => marked(e.en) === base));
-    const pick = mine.find((e) => !hasTarget(e)) || fromGroups.find((e) => !hasTarget(e)) || mine[0] || fromGroups[0];
-    if (pick) add(pick, true);
-  }
+  // Сам глагол — тоже первым, чтобы было с чем сравнивать (решение дизайнера, 26.11.2026; с PR #101 у неправильных глаголов
+  // его здесь не было — он в «Приклади · 3 форми дієслова»). У глагола (skipBase — его примеры форм) берём другое предложение:
+  // сначала из добірок (lie → «The cat likes to lie in the sun.»), не повторяя примеры форм.
+  const avoid = new Set((Array.isArray(skipBase) ? skipBase : []).map((e) => plain(e.en)));
+  const ok = (e) => e && !avoid.has(plain(e.en));
+  const mine = (own || (skipBase ? w.ex : null) || []).filter(ok);   // у глагола своих примеров в own нет — берём из words.tsv
+  const fromGroups = rel.flatMap((r) => r.baseEx).concat(rel.flatMap((r) => r.ex).filter((e) => marked(e.en) === base)).filter(ok);
+  const pick = skipBase
+    ? fromGroups.find((e) => !hasTarget(e)) || mine.find((e) => !hasTarget(e)) || fromGroups[0] || mine[0]
+    : mine.find((e) => !hasTarget(e)) || fromGroups.find((e) => !hasTarget(e)) || mine[0] || fromGroups[0];
+  if (pick) add(pick, true);
   for (const r of rel) for (const s of r.slots) {
     const e = s.ex.find((x) => !seen.has(plain(x.en)));
     if (e) add(e, false);

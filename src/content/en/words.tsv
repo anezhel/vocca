@@ -81,7 +81,7 @@ read	riːd	verb	A1	study	читати	читать	I read before bed.	Я чит�
 write	raɪt	verb	A1	study	писати	писать	Write your name here.	Напишіть тут своє ім’я.	Напишите здесь своё имя.										
 speak	spiːk	verb	A1	communication	говорити	говорить	Do you speak English?	Ви розмовляєте англійською?	Вы говорите по-английски?										
 listen	ˈlɪsən	verb	A1	communication	слухати	слушать	Listen to me, please.	Послухай мене, будь ласка.	Послушай меня, пожалуйста.										
-sleep	sliːp	verb	A1	health	спати	спать	I sleep eight hours a night.	Я сплю вісім годин на добу.	Я сплю восемь часов в сутки.										
+sleep	sliːp	verb	A1	health	спати	спать	I sleep eight hours a night.	Я сплю вісім годин на добу.	Я сплю восемь часов в сутки.	Cats sleep a lot.	Коти багато сплять.	Кошки много спят.							
 walk	wɔːk	verb	A1	actions	гуляти, іти пішки	гулять, идти пешком	We walk in the park every evening.	Ми щовечора гуляємо в парку.	Мы гуляем в парке каждый вечер.										
 phone	foʊn	noun	A1	tech	телефон	телефон	My phone is dead.	У мене розрядився телефон.	У меня сел телефон.										
 computer	kəmˈpjuːtər	noun	A1	tech	комп’ютер	компьютер	I work on my computer all day.	Я цілий день працюю за комп’ютером.	Я весь день работаю за компьютером.										
@@ -187,7 +187,7 @@ far	fɑːr	adv	A1	city	далеко	далеко	Is the airport far from here?	�
 who	huː	pron	A1	basics	хто	кто	Who is that man?	Хто цей чоловік?	Кто этот мужчина?										
 try	traɪ	verb	A1	actions	намагатися; пробувати	пытаться; пробовать	Try this cake!	Скуштуй цей торт!	Попробуй этот торт!										
 party	ˈpɑːrti	noun	A1	leisure	вечірка	вечеринка	Are you coming to the party?	Ти прийдеш на вечірку?	Ты придёшь на вечеринку?										
-run	rʌn	verb	A1	actions	бігати, бігти	бегать, бежать	I run in the park every morning.	Я бігаю в парку щоранку.	Я бегаю в парке каждое утро.										
+run	rʌn	verb	A1	actions	бігати, бігти	бегать, бежать	I run in the park every morning.	Я бігаю в парку щоранку.	Я бегаю в парке каждое утро.	Don't run in the hall!	Не бігай у коридорі!	Не бегай в коридоре!							
 country	ˈkʌntri	noun	A1	travel	країна; сільська місцевість	страна; сельская местность	Canada is a big country.	Канада — велика країна.	Канада — большая страна.										
 which	wɪtʃ	pron	A1	basics	який, котрий	который, какой	Which bus goes downtown?	Який автобус їде до центру?	Какой автобус идёт в центр?										
 open	ˈoʊpən	adj	A1	shopping	відчинений; відчиняти	открытый; открывать	Is the store open on Sunday?	Магазин відчинений у неділю?	Магазин открыт в воскресенье?										
@@ -264,7 +264,7 @@ bank	bæŋk	noun	A1	city	банк	банк	The bank opens at nine.	Банк ві
 September	sepˈtembər	noun	A1	time	вересень	сентябрь	The new school year starts in September.	Новий навчальний рік починається у вересні.	Новый учебный год начинается в сентябре.										
 usually	ˈjuːʒəwəli	adv	A1	time	зазвичай	обычно	I usually get up at seven.	Зазвичай я встаю о сьомій.	Обычно я встаю в семь.										
 OK	oʊˈkeɪ	int	A1	communication	гаразд, добре	хорошо, ладно	OK, let's go.	Гаразд, ходімо.	Ладно, пошли.										
-stand	stænd	verb	A1	actions	стояти	стоять	Please stand in line.	Будь ласка, станьте в чергу.	Пожалуйста, встаньте в очередь.										
+stand	stænd	verb	A1	actions	стояти	стоять	Please stand in line.	Будь ласка, станьте в чергу.	Пожалуйста, встаньте в очередь.	Don't stand so close.	Не стій так близько.	Не стой так близко.							
 blue	bluː	adj	A1	basics	синій, блакитний	синий, голубой	The sky is blue.	Небо блакитне.	Небо голубое.										
 green	ɡriːn	adj	A1	basics	зелений	зелёный	I love green tea.	Я люблю зелений чай.	Я люблю зелёный чай.										
 picture	ˈpɪktʃər	noun	A1	home	картина; фотографія	картина; фотография	This is a picture of my family.	Це фотографія моєї родини.	Это фотография моей семьи.										
@@ -310,7 +310,7 @@ hi	haɪ	int	A1	communication	привіт	привет	Hi! How are you?	Прив
 interesting	ˈɪntrəstɪŋ	adj	A1	qualities	цікавий	интересный	This is an interesting book.	Це цікава книжка.	Это интересная книга.										
 welcome	ˈwelkəm	int	A1	communication	ласкаво просимо	добро пожаловать	Welcome to New York!	Ласкаво просимо до Нью-Йорка!	Добро пожаловать в Нью-Йорк!										
 minute	ˈmɪnɪt	noun	A1	time	хвилина	минута	I'll be there in ten minutes.	Я буду там за десять хвилин.	Я буду там через десять минут.										
-sell	sel	verb	A1	shopping	продавати	продавать	They sell fresh bread here.	Тут продають свіжий хліб.	Здесь продают свежий хлеб.										
+sell	sel	verb	A1	shopping	продавати	продавать	They sell fresh bread here.	Тут продають свіжий хліб.	Здесь продают свежий хлеб.	Do you sell stamps?	Ви продаєте марки?	Вы продаёте марки?							
 clean	kliːn	adj	A1	home	чистий; прибирати	чистый; убирать	My room is clean.	Моя кімната чиста.	Моя комната чистая.										
 photo	ˈfoʊtoʊ	noun	A1	tech	фото	фотография	This is a photo of my family.	Це фото моєї родини.	Это фото моей семьи.	Can you take a photo of us?	Можете нас сфотографувати?	Можете нас сфотографировать?							
 train	treɪn	noun	A1	travel	потяг	поезд	The train leaves at seven.	Потяг відправляється о сьомій.	Поезд отправляется в семь.										
@@ -559,11 +559,11 @@ end	end	noun	A2	time	кінець; закінчувати(ся)	конец; за
 team	tiːm	noun	A2	work	команда	команда	We work as a team.	Ми працюємо в команді.	Мы работаем в команде.										
 than	ðæn	conj	A2	basics	ніж	чем	She is older than me.	Вона старша за мене.	Она старше меня.										
 sure	ʃʊr	adj	A2	qualities	упевнений; звісно	уверенный; конечно	Are you sure?	Ти впевнена?	Ты уверена?										
-keep	kiːp	verb	A2	actions	зберігати, тримати; продовжувати	хранить, держать; продолжать	Keep the change.	Решту залиште собі.	Сдачу оставьте себе.										
+keep	kiːp	verb	A2	actions	зберігати, тримати; продовжувати	хранить, держать; продолжать	Keep the change.	Решту залиште собі.	Сдачу оставьте себе.	Can I keep this book?	Можна залишити собі цю книжку?	Можно оставить себе эту книгу?							
 ever	ˈevər	adv	A2	time	коли-небудь	когда-либо	Have you ever been to Paris?	Ти коли-небудь була в Парижі?	Ты когда-нибудь была в Париже?										
 company	ˈkʌmpəni	noun	A2	work	компанія, фірма	компания, фирма	She works for a big company.	Вона працює у великій компанії.	Она работает в большой компании.										
 any	ˈeni	det	A2	basics	будь-який; якийсь	любой; какой-нибудь	Do you have any questions?	У вас є запитання?	У вас есть вопросы?										
-let	let	verb	A2	actions	дозволяти	позволять, разрешать	Let me help you.	Дай я тобі допоможу.	Давай я тебе помогу.										
+let	let	verb	A2	actions	дозволяти	позволять, разрешать	Let me help you.	Дай я тобі допоможу.	Давай я тебе помогу.	Let the dog in.	Впусти собаку.	Впусти собаку.							
 real	riːl	adj	A2	qualities	справжній, реальний	настоящий, реальный	Is that a real diamond?	Це справжній діамант?	Это настоящий бриллиант?										
 group	ɡruːp	noun	A2	people	група	группа	We travel in a small group.	Ми подорожуємо невеликою групою.	Мы путешествуем небольшой группой.										
 business	ˈbɪznəs	noun	A2	work	бізнес, справа; підприємство	бизнес, дело; предприятие	My uncle has his own business.	У мого дядька власний бізнес.	У моего дяди свой бизнес.										
@@ -926,7 +926,7 @@ fail	feɪl	verb	A2	study	провалити, не скласти	провали�
 scared	skerd	adj	A2	feelings	наляканий	испуганный	The kids are scared of the dark.	Діти бояться темряви.	Дети боятся темноты.										
 painting	ˈpeɪntɪŋ	noun	A2	leisure	картина; живопис	картина; живопись	This painting is very old.	Ця картина дуже стара.	Эта картина очень старая.										
 newspaper	ˈnuːzpeɪpər	noun	A2	leisure	газета	газета	My dad reads the newspaper every morning.	Тато щоранку читає газету.	Папа каждое утро читает газету.										
-hang	hæŋ	verb	A2	actions	вішати; висіти	вешать; висеть	Hang your coat here.	Повісь пальто тут.	Повесь пальто здесь.										
+hang	hæŋ	verb	A2	actions	вішати; висіти	вешать; висеть	Hang your coat here.	Повісь пальто тут.	Повесь пальто здесь.	Hang the towel on the hook.	Повісь рушник на гачок.	Повесь полотенце на крючок.							
 careful	ˈkerfəl	adj	A2	feelings	обережний, уважний	осторожный, аккуратный	Be careful, the floor is wet.	Обережно, підлога мокра.	Осторожно, пол мокрый.										
 cry	kraɪ	verb	A2	feelings	плакати	плакать	The baby is crying.	Малюк плаче.	Малыш плачет.										
 prize	praɪz	noun	A2	leisure	приз, нагорода	приз, награда	She won first prize.	Вона отримала перший приз.	Она получила первый приз.										
