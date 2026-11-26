@@ -3,7 +3,10 @@
 // днём 25.11 — только стрелки): ‹ — предыдущий экран (на первом бледная), › — вперёд, как свайп влево; «Уже знаю» — слова
 // экрана, что есть в словаре, в «Вивчено», и дальше; за заход — «Кількість слів» с «Що тренуємо» (по умолчанию 20).
 // Свайп вправо — предыдущая карточка (и с итога 3.11 — последняя), влево — вперёд, но только до уже просмотренной.
-import { html, useState } from '../../lib/preact-htm.js';
+import { html, useState, useEffect } from '../../lib/preact-htm.js';
+import { getState } from '../core/store.js';
+import { tts } from '../core/tts.js';
+import { ttsLang } from '../core/words.js';
 import { CONFIG } from '../config.js';
 import { GROUP_TYPES } from '../groups/index.js';
 import { t, L } from '../i18n/index.js';
@@ -38,6 +41,10 @@ export function Collection({ course, route, go, back }) {
   const step = (p, dir) => { setPos(p); setEnter(dir); scrollTo(0, 0); };
   useSwipe(done ? () => { setDone(false); setEnter('left'); scrollTo(0, 0); } : pos > 0 ? () => step(pos - 1, 'left') : null,
     done ? null : () => (pos < far ? step(pos + 1, 'right') : next('right')));   // вперёд — всегда, как «Далі» (25.11.2026)
+  const speakOf = (x) => x && x.g.type === 'relation' ? x.item.w : '';   // что озвучить при перелистывании
+  const preview = queue[start + pos];
+  // Звук включён — слово экрана озвучивается само при перелистывании (26.11.2026); у правил слов нет
+  useEffect(() => { const w = !done && speakOf(preview); if (w && getState().autoplay !== false) tts.speak(w, ttsLang(course)); }, [start, pos, done]);
   if (!groups.length) return null;
   const list = queue.slice(start, size === Infinity ? undefined : start + size);
   const left = Math.max(0, queue.length - start - list.length);
@@ -61,7 +68,7 @@ export function Collection({ course, route, go, back }) {
       <button class="nav-arrow" disabled=${pos === 0} onClick=${() => step(pos - 1, 'left')} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
       <${Button} variant="secondary" label=${t('lesson.alreadyKnow')} onClick=${() => { knowWords(course, (T(cur.g).knownWords || (() => []))(cur.item)); pos < far ? step(pos + 1, 'right') : next('right'); }} />
       <button class="nav-arrow" onClick=${() => (pos < far ? step(pos + 1, 'right') : next('right'))} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`}>
-    <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
+    <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} sound=${!!speakOf(cur)} />
     <${Item} key=${cur.g.id + ':' + cur.item.id} course=${course} group=${cur.g} item=${cur.item} />
   </${Screen}>`;
 }

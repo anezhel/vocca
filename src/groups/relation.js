@@ -66,18 +66,18 @@ function Item({ course, group, item }) {
   return html`<div class="rel">
       <div class="rel__pair">
       <div class="card rel__base">
-        <div class="rel__text"><${Lvl} l=${item.lvl} /><div class="t-word-l">${item.w}</div>
+        <div class="rel__text"><${Lvl} l=${item.lvl} />
+          <div class="rel__wordrow"><div class="t-word-l">${item.w}</div>${item.w && html`<${SpeakButton} text=${item.w} lang=${lang} />`}</div>
           ${!group.meaning && item.ipa && html`<div class="t-label-15 muted">/${item.ipa}/</div>`}
           <div class="t-label-14 muted">${L(item.literal) || L(item.tr)}</div></div>
-        ${item.w && html`<${SpeakButton} text=${item.w} lang=${lang} />`}
       </div>
       ${chip && html`<div class="rel__chip t-label-12-strong">${chip}</div>`}
       <div class="rel__targets">${item.targets.map((tg) => html`<div class="card rel__target">
           <div class="rel__row"><div class="rel__text"><${Lvl} l=${tg.lvl} />
-            <div class="t-word-l">${group.meaning ? L(tg.tr) : tg.w}</div>
+            <div class="rel__wordrow"><div class="t-word-l">${group.meaning ? L(tg.tr) : tg.w}</div>
+              ${!group.meaning && html`<${SpeakButton} text=${tg.w} lang=${lang} kind="white" />`}</div>
             ${!group.meaning && tg.ipa && html`<div class="t-label-15 rel__sub">/${tg.ipa}/</div>`}
-            <div class="t-label-14 rel__sub">${group.meaning ? L(item.hint) : L(tg.tr)}</div></div>
-            ${!group.meaning && html`<${SpeakButton} text=${tg.w} lang=${lang} kind="white" />`}</div>
+            <div class="t-label-14 rel__sub">${group.meaning ? L(item.hint) : L(tg.tr)}</div></div></div>
         </div>`)}</div>
       </div>
       ${item.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${L(group.examples)}</${Overline}>

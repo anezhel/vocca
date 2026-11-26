@@ -97,7 +97,7 @@ function WordCard({ course, w, lesson, bar, item, chosen, enter, onAnswer, onPre
         : html`<${Button} variant="secondary" label=${t('lesson.backToLearning')} onClick=${() => onAnswer('hard')} />`}
       <button class="nav-arrow" onClick=${onNext} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`;
   return html`<${Screen} cls=${cx('screen--lesson screen--grey', enterCls(enter))} tone="today" bottom=${bottom}>
-    <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} />
+    <${TopBar} onClose=${bar.onClose} total=${bar.total} done=${bar.done + 1} count=${bar.count || counter(lesson)} sound />
     <div class="word-pair">
       <div class="card word-main">
         <div class="word-main__top"><${LevelTag} lvl=${w.lvl} size="m" /><${Overline}>${t(isNew ? 'lesson.cardNew' : 'lesson.cardReview')}</${Overline}></div>

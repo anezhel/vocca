@@ -162,6 +162,8 @@ function VerbCards({ course, group, route, back }) {
   useSwipe(done ? () => { setDone(false); setEnter('left'); scrollTo(0, 0); } : pos > 0 ? () => step(pos - 1, 'left') : null,
     done ? null : () => (pos < far ? step(pos + 1, 'right') : next('right')));   // вперёд — всегда, как «Далі» (25.11.2026)
   const restart = (s) => { setStart(s); setPos(0); setFar(0); setEnter(null); setDone(false); scrollTo(0, 0); };
+  // Звук включён — глагол (1-я форма) озвучивается при перелистывании (26.11.2026)
+  useEffect(() => { if (!done && v && getState().autoplay !== false) tts.speak(v.v1.split(' / ')[0], lang); }, [start, pos, done]);
 
   if (done || !v) {
     const cs = cards(course);
@@ -176,7 +178,7 @@ function VerbCards({ course, group, route, back }) {
       <button class="nav-arrow" disabled=${pos === 0} onClick=${() => step(pos - 1, 'left')} aria-label=${t('lesson.prevWord')}><${Icon} name="chevron-left" size=${22} /></button>
       <${Button} variant="secondary" label=${t('lesson.alreadyKnow')} onClick=${() => { knowWords(course, [v.v1.split(' / ')[0]]); pos < far ? step(pos + 1, 'right') : next('right'); }} />
       <button class="nav-arrow" onClick=${() => (pos < far ? step(pos + 1, 'right') : next('right'))} aria-label=${t('lesson.nextWord')}><${Icon} name="chevron-right" size=${22} /></button></div>`}>
-    <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} />
+    <${TopBar} onClose=${back} total=${list.length} done=${pos + 1} count=${`${pos + 1} / ${list.length}`} sound />
     <${VerbForms} course=${course} v=${v} lang=${lang} />
   </${Screen}>`;
 }
