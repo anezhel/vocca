@@ -32,7 +32,7 @@ function one(r, course) {
   const targets = [1, 2, 3].map((i) => ({ w: r[`to${i}`] || '', ipa: r[`to${i}_ipa`] || '', lvl: lvlOf(r, i, r[`to${i}`], course), tr: tri(r, `to${i}`) }))
     .filter((x) => x.w || (x.tr && (x.tr.uk || x.tr.ru)));
   return {
-    id, w: r.word, ipa: r.ipa || '', lvl: r.level || '', link: r.link || '',
+    id, w: r.word, ipa: r.ipa || '', lvl: r.level || (course && course.byText && (course.byText.get(r.word.toLowerCase()) || {}).lvl) || '', link: r.link || '',
     tr: r.uk || r.ru ? { uk: r.uk || r.ru, ru: r.ru || r.uk } : null,
     literal: r.literal_uk || r.literal_ru ? { uk: r.literal_uk || r.literal_ru, ru: r.literal_ru || r.literal_uk } : null,
     hint: r.hint_uk || r.hint_ru ? { uk: r.hint_uk || r.hint_ru, ru: r.hint_ru || r.hint_uk } : null,
@@ -73,42 +73,22 @@ function Item({ course, group, item }) {
   const lang = ttsLang(course);
   const hl = [item.w, ...item.targets.map((x) => x.w)];
   const chip = L(group.chip, { link: item.link });
-  // Синонимы (group.levels; макет 3.1 дизайнера, 26.11.2026): тег уровня слева от слова, озвучка справа — всё по верху.
-  // Тег 20 px, Label/11 Medium, текст чёрный; на белой карточке — цвет уровня, на жёлтой — белый. Слово Word/L со строкой 30,
-  // до транскрипции 8; транскрипция и перевод через 4 (белая) / 2 (жёлтая), перевод 14 / 15.
-  if (group.levels) {
-    const Row = ({ l, w, ipa, tr, kind }) => html`<div class=${cx('rel__lv', kind === 'white' && 'rel__lv--accent')}>
-      <span class="rel__lvwrap">${l && html`<span class="level-tag rel__lvl" data-level=${l}>${l}</span>`}</span>
+  // Макет 3.1 «Синоніми» (дизайнер, 26.11.2026); с того же дня — у всех добірок 3.1–3.10: тег уровня слева от слова,
+  // озвучка справа — всё по верху. Тег 20 px, Label/11 Medium, текст чёрный; на белой карточке — цвет уровня, на жёлтой — белый.
+  // Слово Word/L со строкой 30, до транскрипции 8; транскрипция и перевод через 4 (белая) / 2 (жёлтая), перевод 14 / 15.
+  // Нет уровня — нет тега. Ідіоми (group.meaning): в жёлтой карточке значение и подсказка — без тега и озвучки.
+  const Row = ({ l, w, say, ipa, tr, kind }) => html`<div class=${cx('rel__lv', kind === 'white' && 'rel__lv--accent')}>
+      ${l && html`<span class="rel__lvwrap"><span class="level-tag rel__lvl" data-level=${l}>${l}</span></span>`}
       <div class="rel__lvtext"><div class="t-word-l rel__lvword">${w}</div>
-        <div class="rel__lvsub">${ipa && html`<div class="t-label-15">/${ipa}/</div>`}${tr && html`<div class=${kind === 'white' ? 't-label-15' : 't-label-14'}>${tr}</div>`}</div></div>
-      ${w && html`<${SpeakButton} text=${w} lang=${lang} kind=${kind} />`}</div>`;
-    return html`<div class="rel rel--lv">
+        ${(ipa || tr) && html`<div class="rel__lvsub">${ipa && html`<div class="t-label-15">/${ipa}/</div>`}${tr && html`<div class=${kind === 'white' ? 't-label-15' : 't-label-14'}>${tr}</div>`}</div>`}</div>
+      ${say && html`<${SpeakButton} text=${say} lang=${lang} kind=${kind} />`}</div>`;
+  return html`<div class="rel rel--lv">
       <div class="rel__pair">
-        <div class="card rel__base"><${Row} l=${item.lvl} w=${item.w} ipa=${item.ipa} tr=${L(item.literal) || L(item.tr)} kind="grey" /></div>
+        <div class="card rel__base"><${Row} l=${item.lvl} w=${item.w} say=${item.w} ipa=${!group.meaning && item.ipa} tr=${L(item.literal) || L(item.tr)} kind="grey" /></div>
         ${chip && html`<div class="rel__chip t-label-12-strong">${chip}</div>`}
-        <div class="rel__targets">${item.targets.map((tg) => html`<div class="card rel__target"><${Row} l=${tg.lvl} w=${tg.w} ipa=${tg.ipa} tr=${L(tg.tr)} kind="white" /></div>`)}</div>
-      </div>
-      ${item.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${L(group.examples)}</${Overline}>
-        <div class="examples">${item.ex.map((ex) => html`<${Example} ex=${ex} hl=${hl} />`)}</div></div>`}
-      ${item.note && html`<div class="card card--pad"><${Overline}>${L(group.note, { link: item.link })}</${Overline}><${Note} text=${L(item.note)} /></div>`}
-    </div>`;
-  }
-  return html`<div class="rel">
-      <div class="rel__pair">
-      <div class="card rel__base">
-        <div class="rel__text">
-          <div class="rel__wordrow"><div class="t-word-l">${item.w}</div>${item.w && html`<${SpeakButton} text=${item.w} lang=${lang} />`}</div>
-          ${!group.meaning && item.ipa && html`<div class="t-label-15 muted">/${item.ipa}/</div>`}
-          <div class="t-label-14 muted">${L(item.literal) || L(item.tr)}</div></div>
-      </div>
-      ${chip && html`<div class="rel__chip t-label-12-strong">${chip}</div>`}
-      <div class="rel__targets">${item.targets.map((tg) => html`<div class="card rel__target">
-          <div class="rel__row"><div class="rel__text">
-            <div class="rel__wordrow"><div class="t-word-l">${group.meaning ? L(tg.tr) : tg.w}</div>
-              ${!group.meaning && html`<${SpeakButton} text=${tg.w} lang=${lang} kind="white" />`}</div>
-            ${!group.meaning && tg.ipa && html`<div class="t-label-15 rel__sub">/${tg.ipa}/</div>`}
-            <div class="t-label-14 rel__sub">${group.meaning ? L(item.hint) : L(tg.tr)}</div></div></div>
-        </div>`)}</div>
+        <div class="rel__targets">${item.targets.map((tg) => group.meaning
+          ? html`<div class="card rel__target"><${Row} w=${L(tg.tr)} tr=${L(item.hint)} kind="white" /></div>`
+          : html`<div class="card rel__target"><${Row} l=${tg.lvl} w=${tg.w} say=${tg.w} ipa=${tg.ipa} tr=${L(tg.tr)} kind="white" /></div>`)}</div>
       </div>
       ${item.ex.length > 0 && html`<div class="card card--pad"><${Overline}>${L(group.examples)}</${Overline}>
         <div class="examples">${item.ex.map((ex) => html`<${Example} ex=${ex} hl=${hl} />`)}</div></div>`}
